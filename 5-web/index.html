@@ -1,0 +1,53 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Lente sul Lazio</title>
+<style>
+  :root { color-scheme: light dark; --bg:#faf9f7; --fg:#1b1a18; --mut:#6b6862; --acc:#b4531f; --card:#fff; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#16150f; --fg:#eee9df; --mut:#9b968c; --card:#211f18; } }
+  body { margin:0; padding:2.5rem 1.25rem; background:var(--bg); color:var(--fg);
+         font:16px/1.55 system-ui,-apple-system,sans-serif; }
+  main { max-width:52rem; margin:0 auto; }
+  h1 { font-size:1.6rem; margin:0 0 .25rem; letter-spacing:-.02em; }
+  p.sub { color:var(--mut); margin:0 0 1.75rem; }
+  form { display:flex; gap:.5rem; margin-bottom:1.5rem; }
+  input, button { font:inherit; padding:.55rem .8rem; border-radius:.5rem;
+                  border:1px solid color-mix(in srgb, var(--fg) 20%, transparent); background:var(--card); color:var(--fg); }
+  button { background:var(--acc); color:#fff; border-color:transparent; cursor:pointer; }
+  .lente { color:var(--mut); font-style:italic; margin-bottom:1.25rem; }
+  article { background:var(--card); border-radius:.75rem; padding:1rem 1.15rem; margin-bottom:.9rem;
+            border:1px solid color-mix(in srgb, var(--fg) 10%, transparent); }
+  article h2 { font-size:1.05rem; margin:0 0 .35rem; }
+  .meta { color:var(--mut); font-size:.85rem; margin-bottom:.6rem; }
+  .urg { float:right; font-weight:700; color:var(--acc); }
+  .err { color:#b00; }
+</style>
+<main>
+  <h1>Lente sul Lazio</h1>
+  <p class="sub">La parola chiave del giorno decide come vengono letti i dati sugli alloggi turistici.</p>
+  <form id="f">
+    <input id="kw" value="Equilibrio" aria-label="parola chiave">
+    <button>Analizza</button>
+  </form>
+  <div id="out"></div>
+</main>
+<script>
+const out = document.getElementById('out');
+document.getElementById('f').onsubmit = async (e) => {
+  e.preventDefault();
+  out.innerHTML = '<p class="sub">L\'IA sta scrivendo le schede… (modello locale, ~10s a comune)</p>';
+  try {
+    const r = await fetch('/api/analisi?keyword=' + encodeURIComponent(kw.value), { signal: AbortSignal.timeout(120000) });
+    const d = await r.json();
+    if (d.errore) throw new Error(d.errore);
+    out.innerHTML = `<p class="lente">${d.lente.nome}: ${d.lente.descrizione}</p>` +
+      d.schede.map((s, i) => {
+        const c = d.comuni[i];
+        return `<article><span class="urg">urgenza ${s.urgenza}/5</span>
+          <h2>${s.titolo}</h2>
+          <p class="meta">${c.nome} (${c.provincia}) — ${c.popolazione} residenti,
+             ${c.alloggi_ultimo} alloggi, ${c.alloggi_per_1000_ab}/1000 ab, ${c.crescita_pct}% di crescita</p>
+          <p>${s.diagnosi}</p><p><strong>Azione:</strong> ${s.azione}</p></article>`;
+      }).join('');
+  } catch (err) { out.innerHTML = `<p class="err">${err.message}</p>`; }
+};
+</script>
