@@ -42,7 +42,9 @@ Stato dei 49 pronto soccorso per la cabina di regia.
     "solo_coda": true,               // live: nessun dato su trattamento/osservazione
     "avviso": "…"
   },
-  "ordinamenti": { "attesa": "Più pazienti in attesa", "…": "…" },
+  "ordinamenti": { "attesa": "Più pazienti in attesa",
+                   "meno_coda": "Meno persone in attesa adesso", "…": "…" },
+  "legenda": { /* vedi sotto */ },
   "presidi": [ { /* Indici.to_dict(), vedi sotto */ } ]
 }
 ```
@@ -60,6 +62,46 @@ senza_dato, in_allarme, note[], attesa_livelli`.
   {"livello":"3","etichetta":"Urgenza Differibile","in_attesa":2,"attesa_media_h":0.62,"attesa_max_h":0.98}
 ]
 ```
+
+### `legenda` — cosa vuol dire ogni numero
+
+Le soglie e le formule vivono in `4-src/indici.py`; la legenda le espone
+insieme ai dati, così una spiegazione non può divergere dal codice che
+descrive. Il frontend colora i marcatori leggendo `colori`, non con soglie
+proprie.
+
+```jsonc
+"legenda": {
+  "colori": [
+    {"classe":"ok","colore":"#2e7d32","fino_a":1.0,"etichetta":"Sotto la mediana della rete","significato":"…"},
+    {"classe":"medio","colore":"#f9a825","fino_a":1.5,"etichetta":"Intorno alla mediana","significato":"…"},
+    {"classe":"alto","colore":"#e53935","fino_a":null,"etichetta":"Sopra la soglia di allarme","significato":"…"},
+    {"classe":"assente","colore":"#9e9e9e","fino_a":null,"etichetta":"Nessun dato","significato":"…"}
+  ],
+  "indicatori": [
+    {"chiave":"pressione_relativa","nome":"Pressione","cosa_e":"…","come_si_calcola":"…",
+     "come_si_legge":"…","unita":"x mediana della rete","limite":"…","disponibile_in":["snapshot"]}
+  ],
+  "indicatori_non_disponibili": [{"nome":"Pressione","motivo":"…"}],
+  "soglia_allarme": 1.5,
+  "nota_scala": "…"
+}
+```
+
+### Ordinamenti: due lati della stessa colonna
+
+Le chiavi che iniziano per `meno_` ordinano in senso CRESCENTE e rispondono
+alla domanda del cittadino («dove conviene andare»), non a quella della cabina
+di regia («dove si sta peggio»). Due regole valgono in entrambi i versi:
+
+1. I valori `null` restano in fondo anche in ordine crescente: un campo non
+   calcolabile non è il valore più piccolo, è un valore che non c'è.
+2. Un presidio con `senza_dato` non compare mai in cima a un ordinamento
+   `meno_`: la sua coda è zero perché non trasmette, non perché sia libero.
+
+Gli ordinamenti si filtrano per CAMPO, non per nome: in tempo reale
+l'occupazione non è calcolabile, quindi spariscono sia `pressione` sia
+`meno_pressione`.
 
 ## GET /api/copertura
 
@@ -194,4 +236,10 @@ Con `testo:null` il frontend **lascia il testo manuale** e non inventa nulla.
 
 ## GET /api/health
 
-`{"llm":"…","voce":{"agy":…,"faster_whisper":…},"catalogo":…}`
+`{"llm":"…","voce":{"agy":…,"faster_whisper":…,"whisper_bin":…},"catalogo":…}`
+
+`voce.faster_whisper.interprete` dice in QUALE interprete la libreria è
+disponibile: su questa macchina è un virtualenv separato
+(`~/whisper/.venv`), invocato in un sottoprocesso. `motivo` dichiara anche se
+il modello è già scaricato, perché un primo uso che deve scaricarlo richiede
+rete e tempo.

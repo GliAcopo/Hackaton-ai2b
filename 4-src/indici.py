@@ -312,26 +312,186 @@ def _calibra(tutti: list[Indici],
 
 
 # Gli ordinamenti selezionabili dall'interfaccia. Chiave -> (etichetta, campo).
+# Chiave -> (etichetta, campo, verso).
+#
+# `verso` esiste per una domanda che il cruscotto non sapeva porre. Chi governa
+# la rete vuole sapere DOVE SI STA PEGGIO, e ordina in modo decrescente. Chi
+# deve andarci vuole l'opposto: dove c'e' meno coda adesso. E' la stessa
+# colonna letta dal lato giusto, e senza l'ordinamento crescente la seconda
+# domanda si risponde solo scorrendo la tabella fino in fondo.
 ORDINAMENTI = {
-    "pressione":   ("Piu' sotto pressione", "pressione_relativa"),
-    "sofferenza":  ("Piu' in sofferenza rispetto al proprio normale", "sofferenza_relativa"),
-    "attesa":      ("Piu' pazienti in attesa", "in_attesa"),
-    "presenti":    ("Piu' pazienti presenti", "presenti"),
-    "deviabile":   ("Maggior carico deviabile", "carico_deviabile"),
-    "capienza":    ("Maggior capacita' residua", "posti_residui"),
+    "pressione":   ("Piu' sotto pressione", "pressione_relativa", "desc"),
+    "sofferenza":  ("Piu' in sofferenza rispetto al proprio normale", "sofferenza_relativa", "desc"),
+    "attesa":      ("Piu' pazienti in attesa", "in_attesa", "desc"),
+    "presenti":    ("Piu' pazienti presenti", "presenti", "desc"),
+    "deviabile":   ("Maggior carico a bassa intensita'", "carico_deviabile", "desc"),
+    "capienza":    ("Maggior capacita' residua", "posti_residui", "desc"),
+    # --- il lato del cittadino ---------------------------------------------
+    "meno_coda":   ("Meno persone in attesa adesso", "in_attesa", "asc"),
+    "meno_pressione": ("Meno sotto pressione adesso", "pressione_relativa", "asc"),
+    "meno_attesa": ("Attesa media piu' breve", "attesa_h", "asc"),
 }
+
+
+# ---------------------------------------------------------------------------
+# La legenda. Sta qui e non nell'HTML per una ragione precisa: le soglie e le
+# formule sono definite in questo file, e una spiegazione che vive altrove
+# prima o poi smette di corrispondere al codice che descrive. Il frontend la
+# riceve dall'API e la mostra: se cambia una soglia, cambia anche la legenda.
+# ---------------------------------------------------------------------------
+
+# Le fasce di colore dei marcatori sulla mappa e dei pallini in tabella.
+# `fino_a` e' il limite superiore ESCLUSO; l'ultima fascia non ha limite.
+FASCE_COLORE = [
+    {"classe": "ok", "colore": "#2e7d32", "fino_a": 1.0,
+     "etichetta": "Sotto la mediana della rete",
+     "significato": "In questo istante qui c'e' meno carico che nel presidio mediano."},
+    {"classe": "medio", "colore": "#f9a825", "fino_a": 1.5,
+     "etichetta": "Intorno alla mediana",
+     "significato": "Carico paragonabile a quello del resto della rete."},
+    {"classe": "alto", "colore": "#e53935", "fino_a": None,
+     "etichetta": "Sopra la soglia di allarme",
+     "significato": "Almeno una volta e mezza la mediana della rete: e' la soglia oltre la quale il presidio e' segnalato in allarme."},
+    {"classe": "assente", "colore": "#9e9e9e", "fino_a": None,
+     "etichetta": "Nessun dato",
+     "significato": "Il presidio non trasmette. Le celle restano vuote: uno zero sarebbe una misura, e qui non c'e' misura."},
+]
+
+INDICATORI = [
+    {
+        "chiave": "pressione_relativa",
+        "nome": "Pressione",
+        "cosa_e": "Quanto e' occupato il pronto soccorso rispetto agli altri, adesso.",
+        "come_si_calcola": (
+            "Si contano i pazienti presenti pesandoli per gravita' (un rosso "
+            "pesa piu' di un bianco) e si divide per l'occupazione che quel "
+            "presidio avrebbe in media, stimata dai suoi accessi annui con la "
+            "legge di Little (L = lambda x W). Il risultato si divide poi per "
+            "la mediana della rete nello stesso istante."),
+        "come_si_legge": (
+            "1.0 = come il presidio mediano in questo momento. 2.0 = il doppio. "
+            "Sopra 1.5 il presidio e' segnalato in allarme."),
+        "unita": "x mediana della rete",
+        "limite": (
+            "Non e' una misura di qualita' delle cure ne' di appropriatezza: "
+            "dice quanta gente c'e' rispetto a quanta ne regge di solito."),
+        "disponibile_in": ["snapshot"],
+        "perche_manca_in_live": (
+            "La fonte in tempo reale pubblica solo la coda: chi e' gia' in "
+            "trattamento o in osservazione non e' noto, quindi l'occupazione "
+            "non e' calcolabile."),
+    },
+    {
+        "chiave": "sofferenza_relativa",
+        "nome": "Sofferenza",
+        "cosa_e": "Quanto quel presidio sta peggio del proprio normale, non del normale altrui.",
+        "come_si_calcola": (
+            "Si confronta l'attesa di adesso con l'attesa mediana storica di "
+            "QUEL presidio, e si normalizza sulla mediana della rete. Con la "
+            "fonte in tempo reale l'attesa non e' stimata dalla coda: e' il "
+            "tempo medio pubblicato dalla Regione."),
+        "come_si_legge": (
+            "1.0 = come il presidio mediano. Un ospedale piccolo con 20 "
+            "pazienti puo' stare peggio di un grande con 100."),
+        "unita": "x mediana della rete",
+        "limite": "Dipende dalla qualita' della baseline storica di quel presidio.",
+        "disponibile_in": ["snapshot", "live"],
+    },
+    {
+        "chiave": "in_attesa",
+        "nome": "In attesa",
+        "cosa_e": "Quante persone sono in coda in questo momento.",
+        "come_si_calcola": "Conteggio diretto pubblicato dalla fonte.",
+        "come_si_legge": (
+            "E' la lunghezza della fila, NON il tempo che aspetterebbe chi "
+            "arriva adesso."),
+        "unita": "persone",
+        "limite": (
+            "Meno persone in attesa non significa cure piu' appropriate: "
+            "significa solo che in quell'istante c'era meno fila."),
+        "disponibile_in": ["snapshot", "live"],
+    },
+    {
+        "chiave": "attesa_h",
+        "nome": "Attesa media",
+        "cosa_e": "Il tempo di attesa medio dichiarato dalla fonte, quando c'e'.",
+        "come_si_calcola": (
+            "Media pesata sui pazienti dei tempi pubblicati per priorita'. "
+            "Con lo snapshot il dato non esiste e viene stimato dalla coda: in "
+            "quel caso e' marcato come stimato, non misurato."),
+        "come_si_legge": "Ore. Riguarda chi e' gia' in coda, non chi arriva ora.",
+        "unita": "ore",
+        "limite": "Una media pubblicata non e' una previsione personale.",
+        "disponibile_in": ["snapshot", "live"],
+    },
+    {
+        "chiave": "carico_deviabile",
+        "nome": "Carico a bassa intensita'",
+        "cosa_e": "Quanta parte della coda e' fatta di codici a bassa priorita'.",
+        "come_si_calcola": (
+            "I codici a bassa intensita' osservati adesso, corretti per la "
+            "quota storica di quel presidio."),
+        "come_si_legge": "Numero indicativo di pazienti.",
+        "unita": "pazienti",
+        "limite": (
+            "Non dimostra che quei casi siano trattabili fuori dal pronto "
+            "soccorso: e' una descrizione della coda, non un giudizio clinico."),
+        "disponibile_in": ["snapshot", "live"],
+    },
+    {
+        "chiave": "posti_residui",
+        "nome": "Capacita' residua",
+        "cosa_e": "Quanti pazienti in piu' il presidio assorbe prima della soglia di allarme.",
+        "come_si_calcola": (
+            "Differenza fra il carico attuale e il carico che corrisponde a "
+            "1.5 volte la mediana della rete. Con la fonte in tempo reale si "
+            "calcola sulla coda invece che sui posti, ed e' dichiarato nelle note."),
+        "come_si_legge": "Pazienti. Piu' alto = piu' margine.",
+        "unita": "pazienti",
+        "limite": "E' una stima derivata, non un numero di posti letto reale.",
+        "disponibile_in": ["snapshot", "live"],
+    },
+]
+
+
+def legenda(fonte: str = "snapshot") -> dict:
+    """Colori, indicatori e soglie, come li usa davvero il codice."""
+    return {
+        "colori": FASCE_COLORE,
+        "indicatori": [i for i in INDICATORI if fonte in i["disponibile_in"]],
+        "indicatori_non_disponibili": [
+            {"nome": i["nome"], "motivo": i.get("perche_manca_in_live", "")}
+            for i in INDICATORI if fonte not in i["disponibile_in"]],
+        "soglia_allarme": SOGLIA_PRESSIONE,
+        "nota_scala": (
+            "Pressione e sofferenza sono espresse in multipli della mediana "
+            "della rete nello stesso istante, non in valori assoluti: 1.0 "
+            "significa «come il presidio mediano adesso»."),
+    }
 
 
 def rete(ordine: str = "pressione", fonte: str = "snapshot") -> tuple[list[Indici], dict]:
     stati, meta = stato_rete(fonte)
     calcolati = [calcola(s) for s in stati]
     _calibra(calcolati)
-    etichetta, campo = ORDINAMENTI.get(ordine, ORDINAMENTI["pressione"])
-    # i None vanno in fondo in ogni caso, non in cima per caso
-    calcolati.sort(
-        key=lambda i: (getattr(i, campo) is not None, getattr(i, campo) or 0),
-        reverse=True,
-    )
+    etichetta, campo, verso = ORDINAMENTI.get(ordine, ORDINAMENTI["pressione"])
+    crescente = verso == "asc"
+
+    # Due regole, entrambe necessarie:
+    #
+    # 1. I None vanno SEMPRE in fondo, in tutti e due i versi. In ordine
+    #    crescente sarebbe altrimenti il valore piu' piccolo di tutti, e un
+    #    campo non calcolabile finirebbe in cima come se fosse il migliore.
+    # 2. Chi non trasmette non compete. Un presidio senza dato ha in_attesa a
+    #    zero perche' non sappiamo, non perche' sia vuoto: in un ordinamento
+    #    "meno coda" comparirebbe primo, e manderemmo delle persone li' sulla
+    #    base di un'informazione che non abbiamo.
+    def chiave(i):
+        v = getattr(i, campo, None)
+        mancante = v is None or i.senza_dato
+        return (mancante, (v or 0) if crescente else -(v or 0))
+
+    calcolati.sort(key=chiave)
     meta = dict(meta)
     meta["ordine"] = {"chiave": ordine, "etichetta": etichetta, "campo": campo}
     meta["in_allarme"] = sum(1 for i in calcolati if i.in_allarme)

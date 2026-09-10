@@ -47,6 +47,12 @@ APPARECCHIATURE = RADICE / "2-data" / "derived" / "apparecchiature.json"
 
 NON_SO = "non_so"
 
+# Fasce di eta' per cui il percorso pediatrico e' quello corretto. La soglia e'
+# a 14 anni compiuti: da li' in su i presidi pediatrici generalmente non
+# prendono in carico, e mandare un quindicenne al Bambino Gesu' sarebbe un
+# viaggio a vuoto tanto quanto mandarci un adulto.
+FASCE_PEDIATRICHE = ("0_1", "1_5", "6_13")
+
 # Fonti citabili. Ogni affermazione mostrata all'utente deve poterne indicare
 # una: e' il requisito «consentire di aprire fonte, data e modalita' di
 # verifica per ogni affermazione rilevante».
@@ -160,8 +166,10 @@ def _viaggio(lat, lon, dlat, dlon, mobilita: str | None) -> dict:
 
 def _opzione_ps(i, lat, lon, fatti, meta) -> dict:
     """Un pronto soccorso come opzione, con la sua compatibilita' motivata."""
-    pediatrico = fatti.get("eta_fascia") in ("0_1", "1_13", "14_17") or \
-        fatti.get("destinatario") == "figlio"
+    # Le fasce che contano come pediatriche. Sta scritto qui una volta sola:
+    # sono le stesse in ogni punto che decide l'idoneita' di un presidio.
+    pediatrico = (fatti.get("eta_fascia") in FASCE_PEDIATRICHE
+                  or fatti.get("destinatario") == "figlio")
     codice = str(i.codice)
 
     compat, motivo = "compatibile", "Pronto soccorso generalista, accesso diretto senza prescrizione."
@@ -457,7 +465,7 @@ if __name__ == "__main__":
     import indici as _i
     lista, meta = _i.rete("attesa", "live")
     r = confronta("problema",
-                  {"destinatario": "figlio", "eta_fascia": "1_13", "mobilita": "piedi"},
+                  {"destinatario": "figlio", "eta_fascia": "6_13", "mobilita": "piedi"},
                   lista, meta, 41.8933, 12.4829)
     for g in ("opzioni", "non_verificabili", "escluse"):
         print(f"\n--- {g} ({len(r[g])}) ---")

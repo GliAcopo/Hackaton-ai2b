@@ -45,7 +45,7 @@ import territorio  # noqa: E402
 import dialogo  # noqa: E402
 import opzioni  # noqa: E402
 import voce  # noqa: E402
-from indici import ORDINAMENTI, rete  # noqa: E402
+from indici import ORDINAMENTI, legenda, rete  # noqa: E402
 
 WEB = Path(__file__).resolve().parent.parent / "5-web"
 ROMA = (41.8933, 12.4829)
@@ -420,9 +420,15 @@ class Handler(SimpleHTTPRequestHandler):
             # sotto un'etichetta che promette altro.
             # NB: "capienza" resta: in live la capacita' residua si calcola
             # sulla coda invece che sui posti (vedi indici._calibra).
-            senza = {"pressione", "presenti"} if meta.get("solo_coda") else set()
+            # Si filtra per CAMPO, non per nome dell'ordinamento: in tempo
+            # reale l'occupazione non e' calcolabile, quindi devono sparire sia
+            # "piu' sotto pressione" sia "meno sotto pressione", che leggono la
+            # stessa colonna vuota da due lati.
+            campi_ciechi = {"pressione_relativa", "presenti"} if meta.get("solo_coda") else set()
+            senza = {k for k, v in ORDINAMENTI.items() if v[1] in campi_ciechi}
             return self._json({
                 "meta": meta,
+                "legenda": legenda(meta.get("fonte_tipo", "snapshot")),
                 "ordinamenti": {k: v[0] for k, v in ORDINAMENTI.items() if k not in senza},
                 "presidi": [i.to_dict() for i in indici],
             })

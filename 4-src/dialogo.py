@@ -390,7 +390,7 @@ if __name__ == "__main__":
         [{"id": "respiro_o_coscienza", "valore": "no"}],
         [{"id": "respiro_o_coscienza", "valore": "si"},
          {"id": "destinatario", "valore": "figlio"},
-         {"id": "eta_fascia", "valore": "1_13"},
+         {"id": "eta_fascia", "valore": "6_13"},
          {"id": "durata", "valore": "oggi"},
          {"id": "gia_valutato", "valore": "no"}],
     ):

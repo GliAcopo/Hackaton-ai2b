@@ -587,5 +587,56 @@
   "opzione_id": "canale:116117",
   "spiegazione": "Hai già una prescrizione per un esame diagnostico programmabile, per il quale non è indicato l'accesso al pronto soccorso né il ricorso alla farmacia. Chiamando il 116117 puoi confrontarti con un medico per ricevere orientamento sui percorsi appropriati della rete sanitaria regionale per cure non urgenti. In questo modo eviti un accesso improprio alle strutture di emergenza e ottieni indicazioni chiare sui passi da seguire.",
   "titolo": "Contattare il 116117 per orientamento sulle cure non urgenti"
+ },
+ "6ae405f6ab3204142299d57fff7a308d": {
+  "id": "evoluzione",
+  "motivo": "Ci serve sapere come sta andando rispetto a ieri sera per capire se la situazione è peggiorata o stabile e individuare così il livello di urgenza e il servizio più adatto."
+ },
+ "dfaf8fb39a05fbb63f0a92f3ab2d9b1a": {
+  "cosa_manca": [
+   "Presenza di altri sintomi di allarme oltre alla febbre (es. convulsioni, vomito persistente, dolore acuto)",
+   "Verifica della disponibilita della continuita assistenziale (guardia medica) o di un ambulatorio di cure primarie pediatrico aperto sul territorio"
+  ],
+  "opzione_id": "farmacia:SAN GIACOMO SNC DI TOMADINI GIUSEPPINA|41.89907,12.48121",
+  "spiegazione": "Dato che tuo figlio e cosciente, respira regolarmente e ti sposti a piedi, la farmacia piu vicina e raggiungibile in 1.7 minuti per un primo consiglio e l'eventuale acquisto di farmaci da banco. Ti permettera di gestire temporaneamente il sintomo nell'attesa di metterti in contatto con il pediatra o con la continuita assistenziale. Se dovessero comparire difficolta respiratorie, alterazione dello stato di coscienza o altri segnali di emergenza, contatta subito il 112 o recati in pronto soccorso.",
+  "titolo": "Indicazione per gestione febbre e farmacia piu vicina"
+ },
+ "b92b4e3c47afae33068e0ce84a82329f": {
+  "cosa_manca": [
+   "Presenza di altri sintomi (es. convulsioni, difficolta' respiratoria, eruzioni cutanee, vomito persistente)",
+   "La temperatura esatta rilevata e la risposta a eventuali antipiretici gia' somministrati",
+   "La possibilita' di contattare telefonicamente il pediatra di libera scelta (PLS) o la continuita' assistenziale"
+  ],
+  "opzione_id": "farmacia:SAN GIACOMO SNC DI TOMADINI GIUSEPPINA|41.89907,12.48121",
+  "spiegazione": "Tuo figlio e' cosciente, respira normalmente e l'episodio e' iniziato oggi, quindi per una prima valutazione e per farmaci da banco puoi rivolgerti alla farmacia piu' vicina senza appuntamento. La farmacia SAN GIACOMO dista solo 1.7 minuti ed e' la piu' rapida da raggiungere. Se dovessero comparire difficolta' respiratorie o altri segnali di allarme, rivolgiti subito ai servizi di emergenza o al pronto soccorso.",
+  "titolo": "Accesso consigliato presso farmacia per prima assistenza"
+ },
+ "3433f29e96cd9e2912bd63406cc9fa50": {
+  "cosa_manca": [
+   "Descrizione dei sintomi specifici o della natura del malessere",
+   "Presenza di dolore acuto o di altri segnali di allarme"
+  ],
+  "opzione_id": "farmacia:SAN GIACOMO SNC DI TOMADINI GIUSEPPINA|41.89907,12.48121",
+  "spiegazione": "Poiché sei cosciente, respiri normalmente e il problema è insorto oggi senza sintomi descritti, la farmacia è il presidio più rapido da raggiungere a 1.7 minuti per una prima valutazione o consiglio. Puoi recarti direttamente lì senza appuntamento per verificare se sia sufficiente un supporto da banco. In caso di comparsa di sintomi gravi o peggioramento, fai riferimento a un pronto soccorso o al numero di emergenza.",
+  "titolo": "Indicazione operativa di primo orientamento"
+ },
+ "79c1ec5bcb4dd60c00e7a9bb8e023829": {
+  "cosa_manca": [
+   "I sintomi specifici manifestati e la loro gravita' o evoluzione",
+   "L'eventuale presenza e localizzazione di dolore acuto",
+   "Eventuali patologie pregresse note o terapie farmacologiche in corso"
+  ],
+  "opzione_id": "farmacia:SAN GIACOMO SNC DI TOMADINI GIUSEPPINA|41.89907,12.48121",
+  "spiegazione": "Essendo cosciente e respirando normalmente, puoi rivolgerti alla farmacia piu' vicina per un primo confronto senza appuntamento. La farmacia SAN GIACOMO SNC DI TOMADINI GIUSEPPINA e' l'opzione con il tempo di viaggio piu' breve, a 1.7 minuti. Se dovessi avvertire sintomi gravi, dolore acuto o un improvviso peggioramento, recati direttamente al pronto soccorso.",
+  "titolo": "Accesso alla farmacia piu' vicina per primo orientamento"
+ },
+ "ddc87ee0d1a790545909e73ec758e660": {
+  "cosa_manca": [
+   "Descrizione dei sintomi o del problema riscontrato",
+   "Eventuali patologie pregresse o terapie farmacologiche in corso"
+  ],
+  "opzione_id": "farmacia:SAN GIACOMO SNC DI TOMADINI GIUSEPPINA|41.89907,12.48121",
+  "spiegazione": "Poiché sei cosciente, respiri normalmente e non hai indicato sintomi acuti, puoi rivolgerti alla farmacia SAN GIACOMO SNC DI TOMADINI GIUSEPPINA per un primo parere e farmaci da banco senza appuntamento. È la struttura compatibile più vicina, raggiungibile in 1.7 minuti di viaggio. Qualora comparissero dolore intenso, difficoltà respiratorie o altri segnali di allarme, rivolgiti subito al pronto soccorso o al Numero Unico di Emergenza 112.",
+  "titolo": "Indicazione per primo orientamento sanitario"
  }
 }

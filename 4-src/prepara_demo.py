@@ -25,7 +25,7 @@ PERCORSI_CITTADINO = [
         "ingresso": "problema",
         "testo": "mio figlio ha 38.5 di febbre da ieri sera e non trovo il pediatra",
         "risposte": [("respiro_o_coscienza", "si"), ("destinatario", "figlio"),
-                     ("eta_fascia", "1_13"), ("durata", "oggi"),
+                     ("eta_fascia", "6_13"), ("durata", "oggi"),
                      ("gia_valutato", "no"), ("mobilita", "piedi")],
     },
     {

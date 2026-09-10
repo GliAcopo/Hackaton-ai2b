@@ -69,6 +69,47 @@ AGY_SUPPORTA_AUDIO = False
 # Modello predefinito per faster-whisper (se installato nell'ambiente).
 REGIA_WHISPER_MODEL = os.environ.get("REGIA_WHISPER_MODEL", "small")
 
+# faster-whisper non e' installato nell'ambiente che esegue REGIA: sta in un
+# virtualenv separato dell'utente. Importarlo aggiungendo quel site-packages a
+# sys.path funzionerebbe finche' le dipendenze binarie (ctranslate2, av,
+# onnxruntime) restano compatibili, e smetterebbe di funzionare senza preavviso
+# il giorno in cui non lo sono piu'. Lo invochiamo invece nel SUO interprete,
+# in un sottoprocesso: l'ambiente resta quello per cui la libreria e' stata
+# installata, e un suo crash non porta giu' il server.
+#
+# Ordine: variabile d'ambiente, poi i percorsi noti, poi niente.
+def _interprete_whisper() -> str | None:
+    esplicito = os.environ.get("REGIA_WHISPER_PYTHON", "")
+    if esplicito and Path(esplicito).exists():
+        return esplicito
+    for candidato in (Path.home() / "whisper" / ".venv" / "bin" / "python",
+                      Path.home() / ".venvs" / "whisper" / "bin" / "python"):
+        if candidato.exists():
+            return str(candidato)
+    return None
+
+
+WHISPER_PYTHON = _interprete_whisper()
+
+# Quanto si attende una trascrizione prima di rinunciare. Il primo avvio puo'
+# includere lo scaricamento del modello: e' lento una volta sola, ma se accade
+# davanti a un pubblico e' meglio rinunciare e lasciare il testo manuale che
+# restare appesi.
+TIMEOUT_TRASCRIZIONE_S = float(os.environ.get("REGIA_WHISPER_TIMEOUT", "180"))
+
+# Il programma eseguito nell'interprete del venv. E' una costante letterale:
+# il percorso dell'audio e il nome del modello arrivano da argv, mai
+# interpolati nel sorgente ne' passati a una shell.
+_PROGRAMMA_WHISPER = """
+import json, sys
+from faster_whisper import WhisperModel
+percorso, modello = sys.argv[1], sys.argv[2]
+m = WhisperModel(modello, device="cpu", compute_type="int8")
+segmenti, info = m.transcribe(percorso, language="it", vad_filter=True)
+testo = " ".join(s.text.strip() for s in segmenti).strip()
+print(json.dumps({"testo": testo, "durata": getattr(info, "duration", None)}))
+"""
+
 # Percorso o nome dell'eseguibile whisper esterno (es. whisper.cpp / main).
 REGIA_WHISPER_BIN = os.environ.get("REGIA_WHISPER_BIN", "")
 
@@ -441,7 +482,60 @@ def trascrivi(percorso_audio: str, durata_max_s: float = DURATA_MAX_S) -> dict:
                 "esito": f"errore esecuzione agy: {exc}",
             })
 
-    # 6. Tentativo 2: faster-whisper (libreria Python opzionale)
+    # 6. Tentativo 2a: faster-whisper nel suo virtualenv, via sottoprocesso.
+    if WHISPER_PYTHON:
+        inizio_fw = time.monotonic()
+        try:
+            proc = subprocess.run(
+                [WHISPER_PYTHON, "-c", _PROGRAMMA_WHISPER,
+                 percorso_audio, REGIA_WHISPER_MODEL],
+                capture_output=True, text=True, timeout=TIMEOUT_TRASCRIZIONE_S,
+                stdin=subprocess.DEVNULL,
+            )
+            if proc.returncode == 0 and proc.stdout.strip():
+                dati = json.loads(proc.stdout.strip().splitlines()[-1])
+                testo_trascritto = (dati.get("testo") or "").strip()
+                if testo_trascritto:
+                    tentativi.append({
+                        "backend": "faster-whisper",
+                        "esito": (f"trascrizione completata in "
+                                  f"{time.monotonic() - inizio_fw:.2f}s "
+                                  f"({len(testo_trascritto)} caratteri), "
+                                  f"modello {REGIA_WHISPER_MODEL}"),
+                    })
+                    return {
+                        "testo": testo_trascritto,
+                        "backend": f"faster-whisper ({REGIA_WHISPER_MODEL})",
+                        "tentativi": tentativi,
+                        "durata_s": (round(dati["durata"], 2)
+                                     if dati.get("durata") else durata_s),
+                        "limite": limite_descrittivo,
+                        "errore": None,
+                    }
+                # Audio muto o solo rumore: la trascrizione e' vuota. Non e' un
+                # errore, e non va riempita con niente.
+                tentativi.append({
+                    "backend": "faster-whisper",
+                    "esito": "nessun parlato riconosciuto nell'audio",
+                })
+            else:
+                tentativi.append({
+                    "backend": "faster-whisper",
+                    "esito": (f"uscita {proc.returncode}: "
+                              f"{(proc.stderr or '')[-300:].strip()}"),
+                })
+        except subprocess.TimeoutExpired:
+            tentativi.append({
+                "backend": "faster-whisper",
+                "esito": f"timeout dopo {TIMEOUT_TRASCRIZIONE_S}s",
+            })
+        except (json.JSONDecodeError, OSError, KeyError) as exc:
+            tentativi.append({
+                "backend": "faster-whisper",
+                "esito": f"risposta non interpretabile: {exc}",
+            })
+
+    # 6b. Tentativo 2b: faster-whisper importabile direttamente, se mai lo fosse.
     try:
         from faster_whisper import WhisperModel  # type: ignore
 
@@ -561,13 +655,31 @@ def stato() -> dict:
     """
     fw_disponibile = False
     fw_motivo = ""
-    try:
-        import faster_whisper  # noqa: F401
+    fw_dove = None
+    if WHISPER_PYTHON:
+        # Non e' importabile da qui, ma e' installato: sta nel virtualenv
+        # dell'utente e lo invochiamo nel suo interprete. Dire "non
+        # disponibile" sarebbe falso quanto dire che funziona senza averlo
+        # verificato, quindi si controlla anche che il modello sia gia' in
+        # cache: un primo uso che deve scaricare mezzo giga e' un'altra cosa.
+        cache = Path.home() / ".cache" / "huggingface" / "hub"
+        scaricato = any(cache.glob(f"*faster-whisper-{REGIA_WHISPER_MODEL}*")) \
+            if cache.exists() else False
         fw_disponibile = True
-        fw_motivo = f"installato, modello predefinito '{REGIA_WHISPER_MODEL}'"
-    except ImportError as exc:
-        fw_disponibile = False
-        fw_motivo = f"non installato ({exc})"
+        fw_dove = WHISPER_PYTHON
+        fw_motivo = (
+            f"disponibile in un interprete separato ({WHISPER_PYTHON}); "
+            f"modello '{REGIA_WHISPER_MODEL}' "
+            + ("gia' scaricato" if scaricato
+               else "NON ancora scaricato: il primo uso richiede rete"))
+    else:
+        try:
+            import faster_whisper  # noqa: F401
+            fw_disponibile = True
+            fw_dove = "ambiente corrente"
+            fw_motivo = f"installato, modello predefinito '{REGIA_WHISPER_MODEL}'"
+        except ImportError as exc:
+            fw_motivo = f"non installato ({exc})"
 
     whisper_bin_disponibile = False
     whisper_bin_motivo = ""
@@ -598,6 +710,7 @@ def stato() -> dict:
         },
         "faster_whisper": {
             "disponibile": fw_disponibile,
+            "interprete": fw_dove,
             "modello": REGIA_WHISPER_MODEL,
             "motivo": fw_motivo,
         },
