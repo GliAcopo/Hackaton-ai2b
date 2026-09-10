@@ -1,0 +1,169 @@
+Id_struttura,nome_struttura,comune,provincia,ASL,tipologia
+12000201,Osp. Di Acquapendente,ACQUAPENDENTE,VT,ASL VITERBO,Osp. a Gestione Diretta
+12000301,Osp. Di Civita Castellana,CIVITA CASTELLANA,VT,ASL VITERBO,Osp. a Gestione Diretta
+12000701,Osp. Di Tarquinia,TARQUINIA,VT,ASL VITERBO,Osp. a Gestione Diretta
+12001201,C.C.A. Salus,VITERBO,VT,ASL VITERBO,C. di Cura Privata Accreditata
+12001401,C.C.A. S.Teresa Del Bambin Gesu',VITERBO,VT,ASL VITERBO,C. di Cura Privata Accreditata
+12001501,C.C.A. Villa Immacolata,VITERBO,VT,ASL VITERBO,C. di Cura Privata Accreditata
+12001901,Osp. S.Camillo De Lellis,RIETI,RI,ASL RIETI,Osp. a Gestione Diretta
+12001902,Osp. Di Magliano Sabina,MAGLIANO SABINA,RI,ASL RIETI,Osp. a Gestione Diretta
+12001903,Osp. Distrettuale Di Amatrice,AMATRICE,RI,ASL RIETI,Osp. a Gestione Diretta
+12002601,Osp. S.Spirito,ROMA,RM,ASL RM/E,Osp. a Gestione Diretta
+12002602,Osp. Villa Betania,ROMA,RM,ASL RM/E,Osp. a Gestione Diretta
+12003001,Osp. Regionale Oftalmico,ROMA,RM,ASL RM/E,Osp. a Gestione Diretta
+12003401,Osp. G. Eastman,ROMA,RM,ASL RM/A,Osp. a Gestione Diretta
+12003601,Osp. Villa Albani,ANZIO,RM,ASL RM/H,Osp. a Gestione Diretta
+12003701,Osp. Nuovo Regina Margherita,ROMA,RM,ASL RM/A,Osp. a Gestione Diretta
+12004301,Osp. Di Anzio E Nettuno,ANZIO,RM,ASL RM/H,Osp. a Gestione Diretta
+12004401,Osp. Albano Laziale,ALBANO LAZIALE,RM,ASL RM/H,Osp. a Gestione Diretta
+12004402,Osp. Genzano Di Roma,GENZANO DI ROMA,RM,ASL RM/H,Osp. a Gestione Diretta
+12004501,Osp. S.Paolo,CIVITAVECCHIA,RM,ASL RM/F,Osp. a Gestione Diretta
+12004601,Osp. L.Parodi Delfino,COLLEFERRO,RM,ASL RM/G,Osp. a Gestione Diretta
+12004701,Osp. S.Sebastiano,FRASCATI,RM,ASL RM/H,Osp. a Gestione Diretta
+12004801,Osp. S.Giuseppe Marino,MARINO,RM,ASL RM/H,Osp. a Gestione Diretta
+12004901,Osp. SS Gonfalone,MONTEROTONDO,RM,ASL RM/G,Osp. a Gestione Diretta
+12005101,Osp. Civile Coniugi Bernardini,PALESTRINA,RM,ASL RM/G,Osp. a Gestione Diretta
+12005201,Osp. A.Angelucci,SUBIACO,RM,ASL RM/G,Osp. a Gestione Diretta
+12005301,Osp. S.Giovanni Evengelista,TIVOLI,RM,ASL RM/G,Osp. a Gestione Diretta
+12005401,Osp. Paolo Colombo,VELLETRI,RM,ASL RM/H,Osp. a Gestione Diretta
+12005501,Osp. Di Ariccia,ARICCIA,RM,ASL RM/H,Osp. a Gestione Diretta
+12005901,Osp. Padre Pio,BRACCIANO,RM,ASL RM/F,Osp. a Gestione Diretta
+12006101,Osp. G.Grassi,ROMA,RM,ASL RM/D,Osp. a Gestione Diretta
+12006501,Osp. Paraplegici Di Ostia,ROMA,RM,ASL RM/D,Osp. a Gestione Diretta
+12006601,Osp. S.Eugenio,ROMA,RM,ASL RM/C,Osp. a Gestione Diretta
+12006602,Osp. CTO Alesini,ROMA,RM,ASL RM/C,Osp. a Gestione Diretta
+12007001,Osp.C. Regina Apostolorum,ALBANO LAZIALE,RM,ASL RM/H,Osp. Classificato
+12007101,Osp.C. S.Pietro Fatebenefratelli,ROMA,RM,ASL RM/E,Osp. Classificato
+12007201,Osp.C. Fatebenefratelli,ROMA,RM,ASL RM/A,Osp. Classificato
+12007301,Osp.C. S.Carlo Di Nancy,ROMA,RM,ASL RM/E,Osp. Classificato
+12007401,Osp.C. Cristo Re,ROMA,RM,ASL RM/E,Osp. Classificato
+12007501,Osp.C. Israelitico,ROMA,RM,ASL RM/D,Osp. Classificato
+12007601,Osp.C. G.Vannini,ROMA,RM,ASL RM/C,Osp. Classificato
+12007901,C.C.A. Villa Domelia,ROMA,RM,ASL RM/A,C. di Cura Privata Accreditata
+12008201,C.C.A. Villa Delle Querce,NEMI,RM,ASL RM/H,C. di Cura Privata Accreditata
+12008301,C.C.A. Villa Valeria,ROMA,RM,ASL RM/A,C. di Cura Privata Accreditata
+12008401,C.C.A. Villa Tiberina,ROMA,RM,ASL RM/A,C. di Cura Privata Accreditata
+12008501,CC Madonna Della Fiducia,ROMA,RM,ASL RM/C,C. di Cura Privata Non Accreditata
+12008701,C.C.A. Policlinico Italia,ROMA,RM,ASL RM/A,C. di Cura Privata Accreditata
+12008801,C.C.A. Medicus Hotel,TIVOLI,RM,ASL RM/G,C. di Cura Privata Accreditata
+12008901,C.C.A. Neuroscienze,ROMA,RM,ASL RM/C,C. di Cura Privata Accreditata
+12009001,CC Villa Benedetta,ROMA,RM,ASL RM/E,C. di Cura Privata Non Accreditata
+12009101,CC Villa Luisa,ROMA,RM,ASL RM/E,C. di Cura Privata Non Accreditata
+12009201,CC Sanatrix,ROMA,RM,ASL RM/A,C. di Cura Privata Non Accreditata
+12009301,CC S.Anna,ROMA,RM,ASL RM/A,C. di Cura Privata Non Accreditata
+12009601,C.C.A. Madonna Delle Grazie,VELLETRI,RM,ASL RM/H,C. di Cura Privata Accreditata
+12009701,C.C.A. Villa Aurora,ROMA,RM,ASL RM/E,C. di Cura Privata Accreditata
+12009801,CC Ns Sig.Ra Delle Mercede,ROMA,RM,ASL RM/A,C. di Cura Privata Non Accreditata
+12010301,Pres. Luigi Di Liegro,ROMA,RM,ASL RM/D,Istituto Qualificato Presidio
+12010401,C.C.A. Villa Fulvia,ROMA,RM,ASL RM/B,C. di Cura Privata Accreditata
+12010501,C.C.A. Marco Polo,ROMA,RM,ASL RM/A,C. di Cura Privata Accreditata
+12010801,CC Assunzione Di Maria Ss,ROMA,RM,ASL RM/A,C. di Cura Privata Non Accreditata
+12011301,C.C.A. Villa Pia,ROMA,RM,ASL RM/D,C. di Cura Privata Accreditata
+12011401,CC Quisisana,ROMA,RM,ASL RM/A,C. di Cura Privata Non Accreditata
+12011501,C.C.A. S.Famiglia,ROMA,RM,ASL RM/E,C. di Cura Privata Accreditata
+12011601,C.C.A. S.Luca,ROMA,RM,ASL RM/C,C. di Cura Privata Accreditata
+12011801,CC Villa Del Rosario,ROMA,RM,ASL RM/E,C. di Cura Privata Non Accreditata
+12011901,CC Villa Mafalda,ROMA,RM,ASL RM/A,C. di Cura Privata Non Accreditata
+12012001,CC S.Domenico,ROMA,RM,ASL RM/A,C. di Cura Privata Non Accreditata
+12012201,C.C.A. S.Raffaele,ROCCA DI PAPA,RM,ASL RM/H,C. di Cura Privata Accreditata
+12012301,CC Villa Stuart,ROMA,RM,ASL RM/E,C. di Cura Privata Non Accreditata
+12012901,CC Villa Margherita,ROMA,RM,ASL RM/A,C. di Cura Privata Non Accreditata
+12013001,C.C.A. Villa Sandra,ROMA,RM,ASL RM/D,C. di Cura Privata Accreditata
+12013101,C.C.A. Villa Dei Pini,ANZIO,RM,ASL RM/H,C. di Cura Privata Accreditata
+12013201,C.C.A. Guarnieri,ROMA,RM,ASL RM/B,C. di Cura Privata Accreditata
+12013301,CC Slavatore Mundi,ROMA,RM,ASL RM/D,C. di Cura Privata Non Accreditata
+12013401,C.C.A. S.Anna,POMEZIA,RM,ASL RM/H,C. di Cura Privata Accreditata
+12013501,C.C.A. Mater Misericordiae,ROMA,RM,ASL RM/C,C. di Cura Privata Accreditata
+12013801,Osp.C. S.Giovanni Battista,ROMA,RM,ASL RM/D,Osp. Classificato
+12013901,C.C.A. Latina,ROMA,RM,ASL RM/C,C. di Cura Privata Accreditata
+12014001,C.C.A. Siglato,CIVITAVECCHIA,RM,ASL RM/F,C. di Cura Privata Accreditata
+12014101,CC Santo Volto,ROMA,RM,ASL RM/A,C. di Cura Privata Non Accreditata
+12014301,C.C.A.  Concordia Hospital,ROMA,RM,ASL RM/C,C. di Cura Privata Accreditata
+12014401,CC Valle Giulia,ROMA,RM,ASL RM/A,C. di Cura Privata Non Accreditata
+12014601,C.C.A. S.Rita Da Cascia,ROMA,RM,ASL RM/E,C. di Cura Privata Accreditata
+12015001,CC Pio Xi,ROMA,RM,ASL RM/E,C. di Cura Privata Non Accreditata
+12015501,C.C.A. Addominale,ROMA,RM,ASL RM/C,C. di Cura Privata Accreditata
+12015701,C.C.A. Fabia Mater,ROMA,RM,ASL RM/C,C. di Cura Privata Accreditata
+12015801,CC Paideia,ROMA,RM,ASL RM/E,C. di Cura Privata Non Accreditata
+12015901,C.C.A. Villa Claudia,ROMA,RM,ASL RM/E,C. di Cura Privata Accreditata
+12016301,C.C.A. S.Feliciano,ROMA,RM,ASL RM/E,C. di Cura Privata Accreditata
+12016501,Pres. Casilino,ROMA,RM,ASL RM/B,Istituto Qualificato Presidio
+12016601,C.C.A. Nuova Itor,ROMA,RM,ASL RM/B,C. di Cura Privata Accreditata
+12016901,C.C.A. Annunaziatella,ROMA,RM,ASL RM/C,C. di Cura Privata Accreditata
+12017101,C.C.A. Citta' Di Roma,ROMA,RM,ASL RM/D,C. di Cura Privata Accreditata
+12017201,CC Mater Dei,ROMA,RM,ASL RM/A,C. di Cura Privata Non Accreditata
+12017301,C.C.A. European Hospital,ROMA,RM,ASL RM/D,C. di Cura Privata Accreditata
+12017601,C.C.A. Ist.Neurotraumatologico,GROTTAFERRATA,RM,ASL RM/H,C. di Cura Privata Accreditata
+12017901,C.C.A. Ancelle Del Buon Pastore,ROMA,RM,ASL RM/E,C. di Cura Privata Accreditata
+12018001,C.C.A. Aurelia Hospital,ROMA,RM,ASL RM/E,C. di Cura Privata Accreditata
+12019101,C.C.A. Merry House,ROMA,RM,ASL RM/D,C. di Cura Privata Accreditata
+12019701,C.C.A. S.Volto,S. MARINELLA,RM,ASL RM/F,C. di Cura Privata Accreditata
+12019901,C.C.A. Villa Dante,GUIDONIA,RM,ASL RM/G,C. di Cura Privata Accreditata
+12020001,Osp. S.Maria Goretti,LATINA,LT,ASL LATINA,Osp. a Gestione Diretta
+12020401,Osp. A.Fiorini,TERRACINA,LT,ASL LATINA,Osp. a Gestione Diretta
+12020402,Osp. S.Giovanni Di Dio,FONDI,LT,ASL LATINA,Osp. a Gestione Diretta
+12020403,Osp. Regina Elena,PRIVERNO,LT,ASL LATINA,Osp. a Gestione Diretta
+12020601,Osp. Dono Svizzero,FORMIA,LT,ASL LATINA,Osp. a Gestione Diretta
+12020602,Osp. Don L.Di Liegro,GAETA,LT,ASL LATINA,Osp. a Gestione Diretta
+12020603,Osp. Civile Di Minturno,MINTURNO,LT,ASL LATINA,Osp. a Gestione Diretta
+12020901,C.C.A. Del Sole Tommaso Costa,FORMIA,LT,ASL LATINA,C. di Cura Privata Accreditata
+12021201,C.C.A. I.C.O.T.,LATINA,LT,ASL LATINA,C. di Cura Privata Accreditata
+12021301,C.C.A. San Marco,LATINA,LT,ASL LATINA,C. di Cura Privata Accreditata
+12021401,C.C.A. C.Franceschini,SABAUDIA,LT,ASL LATINA,C. di Cura Privata Accreditata
+12021501,C.C.A. Citta Di Aprilia,APRILIA,LT,ASL LATINA,C. di Cura Privata Accreditata
+12021601,Osp. F.Spaziani,FROSINONE,FR,ASL FROSINONE,Osp. a Gestione Diretta
+12021701,Osp. S.Benedetto,ALATRI,FR,ASL FROSINONE,Osp. a Gestione Diretta
+12021801,Osp. Civile Di Anagni,ANAGNI,FR,ASL FROSINONE,Osp. a Gestione Diretta
+12022601,Osp. SS.Trinita',SORA,FR,ASL FROSINONE,Osp. a Gestione Diretta
+12022801,Osp. S.Scolatica,CASSINO,FR,ASL FROSINONE,Osp. a Gestione Diretta
+12023001,C.C.A. S.Anna,CASSINO,FR,ASL FROSINONE,C. di Cura Privata Accreditata
+12023401,C.C.A. Villa Gioia,SORA,FR,ASL FROSINONE,C. di Cura Privata Accreditata
+12023501,C.C.A. Villa Serena,CASSINO,FR,ASL FROSINONE,C. di Cura Privata Accreditata
+12023601,C.C.A. S.Teresa,ISOLA DEL LIRI,FR,ASL FROSINONE,C. di Cura Privata Accreditata
+12024301,CC Villa Salaria,ROMA,RM,ASL RM/A,C. di Cura Privata Non Accreditata
+12024801,CC S.Alessandro,ROMA,RM,ASL RM/B,C. di Cura Privata Non Accreditata
+12024901,CC Villa Anna Maria,ROMA,RM,ASL RM/C,C. di Cura Privata Non Accreditata
+12025401,CC Ars Medica,ROMA,RM,ASL RM/E,C. di Cura Privata Non Accreditata
+12025601,CC Villa Flaminia,ROMA,RM,ASL RM/E,C. di Cura Privata Non Accreditata
+12025701,CC S.Maria Di Leuca,ROMA,RM,ASL RM/E,C. di Cura Privata Non Accreditata
+12026201,C.C.A. Villa Maria Immacolata,ROMA,RM,ASL RM/D,C. di Cura Privata Accreditata
+12026401,C.C.A. Villa Verde,ROMA,RM,ASL RM/E,C. di Cura Privata Accreditata
+12026501,CC Rome American Hospital,ROMA,RM,ASL RM/B,C. di Cura Privata Non Accreditata
+12026701,Osp. S.Pertini,ROMA,RM,ASL RM/B,Osp. a Gestione Diretta
+12027101,Osp. Di Belcolle,VITERBO,VT,ASL VITERBO,Osp. a Gestione Diretta
+12027102,Osp. Di Montefiascone,MONTEFIASCONE,VT,ASL VITERBO,Osp. a Gestione Diretta
+12027103,Osp. Di Ronciglione,RONCIGLIONE,VT,ASL VITERBO,Osp. a Gestione Diretta
+12027201,CC Villa Sacra Famiglia,ROMA,RM,ASL RM/E,C. di Cura Privata Non Accreditata
+12027301,C.C.A. Villa Luana,POLI,RM,ASL RM/G,C. di Cura Privata Accreditata
+12027701,C.C.A. S.Raffaele,CASSINO,FR,ASL FROSINONE,C. di Cura Privata Accreditata
+12027801,C.C.A. Villa Silvana,APRILIA,LT,ASL LATINA,C. di Cura Privata Accreditata
+12027901,C.C.A. Citta' Bianca,VEROLI,FR,ASL FROSINONE,C. di Cura Privata Accreditata
+12028001,C.C.A. S.Raffaele,MONTECOMPATRI,RM,ASL RM/H,C. di Cura Privata Accreditata
+12028101,Osp. S.Anna,ROMA,RM,ASL RM/A,Osp. a Gestione Diretta
+12028201,CC Villa Borghese,ROMA,RM,ASL RM/A,C. di Cura Privata Non Accreditata
+12028301,CC Ist. Clinico Cardiologico,ROMA,RM,ASL RM/D,C. di Cura Privata Non Accreditata
+12028401,C.C.A. Nomentana Hospital,FONTE NUOVA,RM,ASL RM/G,C. di Cura Privata Accreditata
+12032801,C.C.A. Don Carlo Gnocchi,ROMA,RM,ASL RM/E,C. di Cura Privata Accreditata
+12060601,C.C.A. S.Raffaele Portuense,ROMA,RM,ASL RM/D,C. di Cura Privata Accreditata
+12090101,A.O. S.Camillo,ROMA,RM,ASL RM/D,Az. Ospedaliera
+12090201,A.O. S.Giovanni Addolorata,ROMA,RM,ASL RM/C,Az. Ospedaliera
+12090301,A.O. S.Filippo Neri,ROMA,RM,ASL RM/E,Az. Ospedaliera
+12090303,A.O. S.Andrea,ROMA,RM,ASL RM/E,Az. Ospedaliera
+12090305,A.O. Salus Infirmorum,ROMA,RM,ASL RM/E,Az. Ospedaliera
+12090401,IRCCSpr Bambino Gesu`,ROMA,RM,ASL RM/A,IRCCS
+12090402,IRCCSpr Bambino Gesu`,PALIDORO,RM,ASL RM/A,IRCCS
+12090403,IRCCSpr Bambino Gesu`,S.MARINELLA,RM,ASL RM/A,IRCCS
+12090501,Pol.U. A.Gemelli,ROMA,RM,ASL RM/E,Az. Ospedaliera-Universitaria
+12090502,Pol.U. Columbus,ROMA,RM,ASL RM/E,Az. Ospedaliera-Universitaria
+12090601,A.O.U.U. Umberto I,ROMA,RM,ASL RM/A,Az. Ospedaliera-Universitaria
+12090801,IRCCSpub Regina Elena,ROMA,RM,ASL RM/A,IRCCS
+12090802,IRCCSpub S.Gallicano,ROMA,RM,ASL RM/A,IRCCS
+12090901,IRCCSf S.Lucia,ROMA,RM,ASL RM/C,IRCCS
+12091001,IRCCSpr S.Raffale Pisana,ROMA,RM,ASL RM/D,IRCCS
+12091101,IRCCSpr  I.D.I.,ROMA,RM,ASL RM/E,IRCCS
+12091201,IRCCSpub Inrca,ROMA,RM,ASL RM/E,IRCCS
+12091401,IRCCSpr Villa Paola,CAPRANICA,VT,ASL VITERBO,IRCCS
+12091501,Pol.U. Campus Biomedico,ROMA,RM,ASL RM/B,Az. Ospedaliera-Universitaria
+12091801,IRCCSpub L.Spallanzani,ROMA,RM,ASL RM/D,IRCCS
+12091901,A.O.U.U. S.Andrea,ROMA,RM,ASL RM/E,Az. Ospedaliera-Universitaria
+12092001,A.O.U.U. Tor Vergata,ROMA,RM,ASL RM/B,Az. Ospedaliera-Universitaria

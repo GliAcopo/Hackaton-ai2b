@@ -1,0 +1,415 @@
+﻿ASL,ANNO,SETTIMANA_INDICE,ID_PRESTAZIONE,DESC_PRESTAZIONE,COD_PRESTAZIONE,PRENOTAZIONI,PRENOTAZIONI_DAGARANTIRE,PRENOTAZIONI_DAGARANTIRE_B,PRENOTAZIONI_DAGARANTIRE_B_TMAX,PRENOTAZIONI_DAGARANTIRE_D,PRENOTAZIONI_DAGARANTIRE_D_TMAX,PRENOTAZIONI_DAGARANTIRE_P,PRENOTAZIONI_DAGARANTIRE_P_TMAX
+160114,2021,12-16 LUGLIO 2021,1,"Prima Visita cardiologica",89.7,2242,1717,575,126,513,110,524,501
+160114,2021,12-16 LUGLIO 2021,2,"Prima Visita chirurgia vascolare",89.7,236,172,67,41,31,28,41,41
+160114,2021,12-16 LUGLIO 2021,3,"Prima Visita endocrinologica",89.7,1253,943,299,64,268,74,316,267
+160114,2021,12-16 LUGLIO 2021,4,"Prima Visita neurologica",89.13,1384,1050,388,59,260,55,341,328
+160114,2021,12-16 LUGLIO 2021,5,"Prima Visita oculistica",95.02,2885,1995,399,90,567,182,988,970
+160114,2021,12-16 LUGLIO 2021,6,"Prima Visita ortopedica",89.7,1926,1558,535,117,483,99,492,486
+160114,2021,12-16 LUGLIO 2021,7,"Prima Visita ginecologica",89.26,574,395,85,30,113,43,186,176
+160114,2021,12-16 LUGLIO 2021,8,"Prima Visita otorinolaringoiatrica",89.7,2473,1729,531,133,388,278,730,730
+160114,2021,12-16 LUGLIO 2021,9,"Prima Visita urologica",89.7,1034,773,250,55,194,59,285,283
+160114,2021,12-16 LUGLIO 2021,10,"Prima Visita dermatologica",89.7,1656,1334,451,83,420,82,369,347
+160114,2021,12-16 LUGLIO 2021,11,"Prima Visita fisiatrica",89.7,2255,1908,565,524,528,503,787,786
+160114,2021,12-16 LUGLIO 2021,12,"Prima Visita gastroenterologica",89.7,233,209,66,16,63,14,62,38
+160114,2021,12-16 LUGLIO 2021,13,"Prima Visita oncologica",89.7,158,140,46,46,12,12,71,71
+160114,2021,12-16 LUGLIO 2021,14,"Prima Visita pneumologica",89.7,850,641,215,84,167,76,224,222
+160114,2021,12-16 LUGLIO 2021,15,"Mammografia bilaterale",87.37.1,1555,1325,114,39,282,253,898,838
+160114,2021,12-16 LUGLIO 2021,16,"Mammografia monolaterale",87.37.2,23,7,,,1,1,5,4
+160114,2021,12-16 LUGLIO 2021,17,"TC del Torace",87.41,607,525,179,77,127,109,192,187
+160114,2021,12-16 LUGLIO 2021,18,"TC del Torace senza e con MDC",87.41.1,879,738,225,81,183,126,250,219
+160114,2021,12-16 LUGLIO 2021,19,"TC dell'addome superiore",88.01.1,20,18,7,2,3,3,8,8
+160114,2021,12-16 LUGLIO 2021,20,"TC dell'addome superiore senza e con MDC",88.01.2,152,130,30,11,49,30,36,33
+160114,2021,12-16 LUGLIO 2021,21,"TC dell'addome inferiore",88.01.3,19,17,6,1,3,3,8,8
+160114,2021,12-16 LUGLIO 2021,22,"TC dell'addome inferiore senza e con MDC",88.01.4,142,122,31,11,43,24,35,33
+160114,2021,12-16 LUGLIO 2021,23,"TC dell'addome completo",88.01.5,125,105,40,21,27,24,30,30
+160114,2021,12-16 LUGLIO 2021,24,"TC dell'addome completo senza e con MDC",88.01.6,899,781,250,94,174,131,264,236
+160114,2021,12-16 LUGLIO 2021,25,"TC Cranio - encefalo",87.03,298,263,86,50,62,51,102,102
+160114,2021,12-16 LUGLIO 2021,26,"TC Cranio - encefalo senza e con MDC",87.03.1,436,374,111,36,88,63,125,114
+160114,2021,12-16 LUGLIO 2021,27,"TC del rachide e dello speco vertebrale cervicale",88.38.1,38,34,8,6,11,11,14,14
+160114,2021,12-16 LUGLIO 2021,28,"TC del rachide e dello speco vertebrale toracico",88.38.1,28,25,7,5,9,9,8,8
+160114,2021,12-16 LUGLIO 2021,29,"TC del rachide e dello speco vertebrale lombosacrale",88.38.1,85,75,23,11,25,24,25,25
+160114,2021,12-16 LUGLIO 2021,30,"TC del rachide e dello speco vertebrale cervicale senza e con MDC",88.38.2,2,2,1,1,,,1,1
+160114,2021,12-16 LUGLIO 2021,31,"TC del rachide e dello speco vertebrale toracico senza e con MDC",88.38.2,4,4,2,1,,,1,1
+160114,2021,12-16 LUGLIO 2021,32,"TC del rachide e dello speco vertebrale lombosacrale senza e con MDC",88.38.2,12,11,5,2,2,1,3,3
+160114,2021,12-16 LUGLIO 2021,33,"TC di Bacino e articolazioni sacroiliache",88.38.5,16,12,5,3,4,4,3,3
+160114,2021,12-16 LUGLIO 2021,34,"RM di encefalo e tronco encefalico, giunzione cranio spinale e relativo distretto vascolare",88.91.1,247,241,61,13,65,35,101,61
+160114,2021,12-16 LUGLIO 2021,35,"RM di encefalo e tronco encefalico, giunzione cranio spinale e relativo distretto vascolare senza e con MDC",88.91.2,499,478,121,9,103,45,213,121
+160114,2021,12-16 LUGLIO 2021,36,"RM di addome inferiore e scavo pelvico",88.95.4,46,43,12,4,16,13,12,9
+160114,2021,12-16 LUGLIO 2021,37,"RM di addome inferiore e scavo pelvico senza e con MDC",88.95.5,211,202,57,7,55,22,67,50
+160114,2021,12-16 LUGLIO 2021,38,"RM della colonna in toto",88.93,29,26,3,1,4,1,17,13
+160114,2021,12-16 LUGLIO 2021,39,"RM della colonna in toto senza e con MDC",88.93.1,35,33,6,1,3,,18,9
+160114,2021,12-16 LUGLIO 2021,40,"Diagnostica ecografica del capo e del collo",88.71.4,1487,1222,280,63,350,291,568,517
+160114,2021,12-16 LUGLIO 2021,41,"Eco (color) dopplergrafia cardiaca",88.72.3,788,565,152,65,149,111,240,238
+160114,2021,12-16 LUGLIO 2021,42,"Eco (color) dopplergrafia dei tronchi sovra aortici",88.73.5,887,817,208,26,282,164,310,270
+160114,2021,12-16 LUGLIO 2021,43,"Ecografia dell'addome superiore",88.74.1,902,750,179,54,200,155,346,325
+160114,2021,12-16 LUGLIO 2021,44,"Ecografia dell'addome inferiore",88.75.1,426,348,106,16,80,62,153,149
+160114,2021,12-16 LUGLIO 2021,45,"Ecografia dell'addome completo",88.76.1,1871,1573,417,121,447,327,652,620
+160114,2021,12-16 LUGLIO 2021,46,"Ecografia bilaterale della mammella",88.73.1,1821,1554,162,67,342,310,989,925
+160114,2021,12-16 LUGLIO 2021,47,"Ecografia monolaterale della mammella",88.73.2,14,11,3,,3,3,4,3
+160114,2021,12-16 LUGLIO 2021,48,"Ecografia ostetrica",88.78,284,242,26,10,43,38,169,168
+160114,2021,12-16 LUGLIO 2021,49,"Ecografia ginecologica",88.78.2,120,102,34,9,34,18,31,29
+160114,2021,12-16 LUGLIO 2021,50,"Ecocolor doppler degli arti inferiori arterioso e/o venoso",88.77.2,610,591,181,48,176,114,186,158
+160114,2021,12-16 LUGLIO 2021,51,"Colonscopia totale con endoscopio flessibile",45.23,479,410,122,44,117,54,151,78
+160114,2021,12-16 LUGLIO 2021,52,"Polipectomia dell'intestino crasso in corso di endoscopia sede unica",45.42,,,,,,,,
+160114,2021,12-16 LUGLIO 2021,53,"Rettosigmoidoscopia con endoscopio flessibile",45.24,4,4,2,2,,,2,2
+160114,2021,12-16 LUGLIO 2021,54,"Esofagogastroduodenoscopia",45.13,366,339,115,33,102,30,90,83
+160114,2021,12-16 LUGLIO 2021,55,"Esofagogastroduodenoscopia con biopsia in sede unica",45.16,286,257,114,49,59,39,67,63
+160114,2021,12-16 LUGLIO 2021,56,"Elettrocardiogramma",89.52,3138,2467,769,261,705,354,869,840
+160114,2021,12-16 LUGLIO 2021,57,"Elettrocardiogramma dinamico (Holter)",89.50,646,569,180,28,150,42,219,207
+160114,2021,12-16 LUGLIO 2021,58,"Test cardiovascolare da sforzo con cicloergometro o con pedana mobile",89.41 - 89.43,172,165,52,12,46,16,59,55
+160114,2021,12-16 LUGLIO 2021,59,"Altri test cardiovascolari da sforzo",89.44,,,,,,,,
+160114,2021,12-16 LUGLIO 2021,60,"Esame audiometrico tonale",95.41.1,934,722,163,44,189,161,356,356
+160114,2021,12-16 LUGLIO 2021,61,"Spirometria semplice",89.37.1,479,431,111,40,89,20,220,219
+160114,2021,12-16 LUGLIO 2021,62,"Spirometria globale",89.37.2,175,166,52,9,53,12,51,50
+160114,2021,12-16 LUGLIO 2021,63,"Fotografia del fundus",95.11,1,1,1,,,,,
+160114,2021,12-16 LUGLIO 2021,64,"ELETTROMIOGRAFIA SEMPLICE [EMG] PER ARTO SUPERIORE. Analisi qualitativa fino a 6 muscoli. Non associabile a 93.09.1 e 93.09.2",93.08.1,332,302,60,14,105,70,128,122
+160114,2021,12-16 LUGLIO 2021,65,"ELETTROMIOGRAFIA SEMPLICE [EMG] PER ARTO INFERIORE fino a 4 muscoli. Analisi qualitativa. Non associabile a 93.09.1 e 93.09.2",93.08.1,269,247,68,18,70,53,101,98
+160114,2021,12-16 LUGLIO 2021,66 - 67,"ELETTROMIOGRAFIA SEMPLICE [EMG] DEL CAPO fino a 4 muscoli. Analisi qualitativa. Escluso: EMG dell'occhio (95.25) e POLISONNOGRAFIA (89.17)",93.08.1,90,85,24,6,24,15,37,37
+160114,2021,12-16 LUGLIO 2021,,"ELETTROMIOGRAFIA SEMPLICE [EMG] DEL TRONCO. Analisi qualitativa. Fino a 4 muscoli",,,,,,,,,
+160114,2021,12-16 LUGLIO 2021,68,"VALUTAZIONE EMG DINAMICA DEL CAMMINO. Valutazione EMG di superficie o con elettrodi a filo (4 muscoli), associato ad esame basografico per la definizione delle fasi del passo. Non associabile a ANALISI DELLA CINEMATICA E DELLA DINAMICA DEL PASSO (93.05.7)",93.08.1,,,,,,,,
+160114,2021,12-16 LUGLIO 2021,69,"EMG DINAMICA DELL'ARTO SUPERIORE. Valutazione EMG di superficie o con elettrodi a filo (4 muscoli)",93.08.1,,,,,,,,
+160113,2021,12-16 LUGLIO 2021,1,"Prima Visita cardiologica",89.7,240,207,81,6,78,12,44,37
+160113,2021,12-16 LUGLIO 2021,2,"Prima Visita chirurgia vascolare",89.7,18,17,6,,7,1,2,2
+160113,2021,12-16 LUGLIO 2021,3,"Prima Visita endocrinologica",89.7,108,98,34,4,39,,19,6
+160113,2021,12-16 LUGLIO 2021,4,"Prima Visita neurologica",89.13,132,120,42,8,44,11,28,28
+160113,2021,12-16 LUGLIO 2021,5,"Prima Visita oculistica",95.02,177,169,41,8,63,9,57,2
+160113,2021,12-16 LUGLIO 2021,6,"Prima Visita ortopedica",89.7,156,144,55,6,57,6,30,8
+160113,2021,12-16 LUGLIO 2021,7,"Prima Visita ginecologica",89.26,51,43,17,3,20,5,4,4
+160113,2021,12-16 LUGLIO 2021,8,"Prima Visita otorinolaringoiatrica",89.7,163,153,57,6,49,8,43,43
+160113,2021,12-16 LUGLIO 2021,9,"Prima Visita urologica",89.7,35,30,9,1,14,6,5,
+160113,2021,12-16 LUGLIO 2021,10,"Prima Visita dermatologica",89.7,237,189,61,12,57,57,70,70
+160113,2021,12-16 LUGLIO 2021,11,"Prima Visita fisiatrica",89.7,230,165,33,31,53,53,77,77
+160113,2021,12-16 LUGLIO 2021,12,"Prima Visita gastroenterologica",89.7,44,41,20,1,12,,4,4
+160113,2021,12-16 LUGLIO 2021,13,"Prima Visita oncologica",89.7,19,11,4,3,,,2,2
+160113,2021,12-16 LUGLIO 2021,14,"Prima Visita pneumologica",89.7,98,79,25,3,36,3,18,18
+160113,2021,12-16 LUGLIO 2021,15,"Mammografia bilaterale",87.37.1,43,38,15,3,18,7,4,4
+160113,2021,12-16 LUGLIO 2021,16,"Mammografia monolaterale",87.37.2,3,3,1,,,,1,1
+160113,2021,12-16 LUGLIO 2021,17,"TC del Torace",87.41,37,33,11,2,10,1,10,4
+160113,2021,12-16 LUGLIO 2021,18,"TC del Torace senza e con MDC",87.41.1,46,45,17,1,7,,16,
+160113,2021,12-16 LUGLIO 2021,19,"TC dell'addome superiore",88.01.1,,,,,,,,
+160113,2021,12-16 LUGLIO 2021,20,"TC dell'addome superiore senza e con MDC",88.01.2,7,6,3,1,2,,1,
+160113,2021,12-16 LUGLIO 2021,21,"TC dell'addome inferiore",88.01.3,,,,,,,,
+160113,2021,12-16 LUGLIO 2021,22,"TC dell'addome inferiore senza e con MDC",88.01.4,6,5,3,1,2,,,
+160113,2021,12-16 LUGLIO 2021,23,"TC dell'addome completo",88.01.5,6,6,5,,,,1,
+160113,2021,12-16 LUGLIO 2021,24,"TC dell'addome completo senza e con MDC",88.01.6,54,52,18,1,9,1,18,
+160113,2021,12-16 LUGLIO 2021,25,"TC Cranio - encefalo",87.03,26,26,9,,11,1,5,
+160113,2021,12-16 LUGLIO 2021,26,"TC Cranio - encefalo senza e con MDC",87.03.1,13,12,5,,1,,2,
+160113,2021,12-16 LUGLIO 2021,27,"TC del rachide e dello speco vertebrale cervicale",88.38.1,11,11,1,1,8,2,2,
+160113,2021,12-16 LUGLIO 2021,28,"TC del rachide e dello speco vertebrale toracico",88.38.1,2,2,1,1,1,,,
+160113,2021,12-16 LUGLIO 2021,29,"TC del rachide e dello speco vertebrale lombosacrale",88.38.1,6,6,1,1,4,2,1,
+160113,2021,12-16 LUGLIO 2021,30,"TC del rachide e dello speco vertebrale cervicale senza e con MDC",88.38.2,1,1,1,,,,,
+160113,2021,12-16 LUGLIO 2021,31,"TC del rachide e dello speco vertebrale toracico senza e con MDC",88.38.2,,,,,,,,
+160113,2021,12-16 LUGLIO 2021,32,"TC del rachide e dello speco vertebrale lombosacrale senza e con MDC",88.38.2,,,,,,,,
+160113,2021,12-16 LUGLIO 2021,33,"TC di Bacino e articolazioni sacroiliache",88.38.5,,,,,,,,
+160113,2021,12-16 LUGLIO 2021,34,"RM di encefalo e tronco encefalico, giunzione cranio spinale e relativo distretto vascolare",88.91.1,27,27,12,2,12,1,2,
+160113,2021,12-16 LUGLIO 2021,35,"RM di encefalo e tronco encefalico, giunzione cranio spinale e relativo distretto vascolare senza e con MDC",88.91.2,24,24,13,,5,,4,
+160113,2021,12-16 LUGLIO 2021,36,"RM di addome inferiore e scavo pelvico",88.95.4,6,6,3,,3,1,,
+160113,2021,12-16 LUGLIO 2021,37,"RM di addome inferiore e scavo pelvico senza e con MDC",88.95.5,11,11,5,,4,,1,
+160113,2021,12-16 LUGLIO 2021,38,"RM della colonna in toto",88.93,1,1,,,1,,,
+160113,2021,12-16 LUGLIO 2021,39,"RM della colonna in toto senza e con MDC",88.93.1,,,,,,,,
+160113,2021,12-16 LUGLIO 2021,40,"Diagnostica ecografica del capo e del collo",88.71.4,88,56,20,3,24,13,12,9
+160113,2021,12-16 LUGLIO 2021,41,"Eco (color) dopplergrafia cardiaca",88.72.3,35,30,7,,19,,4,4
+160113,2021,12-16 LUGLIO 2021,42,"Eco (color) dopplergrafia dei tronchi sovra aortici",88.73.5,44,43,20,2,22,1,1,1
+160113,2021,12-16 LUGLIO 2021,43,"Ecografia dell'addome superiore",88.74.1,81,66,17,3,29,26,20,20
+160113,2021,12-16 LUGLIO 2021,44,"Ecografia dell'addome inferiore",88.75.1,27,17,4,2,7,2,6,6
+160113,2021,12-16 LUGLIO 2021,45,"Ecografia dell'addome completo",88.76.1,147,101,42,6,35,22,22,22
+160113,2021,12-16 LUGLIO 2021,46,"Ecografia bilaterale della mammella",88.73.1,49,43,15,1,17,5,10,2
+160113,2021,12-16 LUGLIO 2021,47,"Ecografia monolaterale della mammella",88.73.2,5,5,2,,,,1,1
+160113,2021,12-16 LUGLIO 2021,48,"Ecografia ostetrica",88.78,33,31,6,5,8,8,17,17
+160113,2021,12-16 LUGLIO 2021,49,"Ecografia ginecologica",88.78.2,15,11,5,1,5,2,1,1
+160113,2021,12-16 LUGLIO 2021,50,"Ecocolor doppler degli arti inferiori arterioso e/o venoso",88.77.2,49,49,16,4,25,2,3,3
+160113,2021,12-16 LUGLIO 2021,51,"Colonscopia totale con endoscopio flessibile",45.23,28,27,16,,2,1,5,5
+160113,2021,12-16 LUGLIO 2021,52,"Polipectomia dell'intestino crasso in corso di endoscopia sede unica",45.42,4,4,1,1,,,3,3
+160113,2021,12-16 LUGLIO 2021,53,"Rettosigmoidoscopia con endoscopio flessibile",45.24,,,,,,,,
+160113,2021,12-16 LUGLIO 2021,54,"Esofagogastroduodenoscopia",45.13,30,30,10,2,16,1,,
+160113,2021,12-16 LUGLIO 2021,55,"Esofagogastroduodenoscopia con biopsia in sede unica",45.16,20,19,8,2,10,1,,
+160113,2021,12-16 LUGLIO 2021,56,"Elettrocardiogramma",89.52,265,224,86,12,85,24,49,42
+160113,2021,12-16 LUGLIO 2021,57,"Elettrocardiogramma dinamico (Holter)",89.50,27,25,7,1,14,2,3,1
+160113,2021,12-16 LUGLIO 2021,58,"Test cardiovascolare da sforzo con cicloergometro o con pedana mobile",89.41 - 89.43,6,4,1,,1,1,2,2
+160113,2021,12-16 LUGLIO 2021,59,"Altri test cardiovascolari da sforzo",89.44,,,,,,,,
+160113,2021,12-16 LUGLIO 2021,60,"Esame audiometrico tonale",95.41.1,61,48,8,7,23,20,16,16
+160113,2021,12-16 LUGLIO 2021,61,"Spirometria semplice",89.37.1,59,55,10,2,17,8,27,27
+160113,2021,12-16 LUGLIO 2021,62,"Spirometria globale",89.37.2,21,20,3,,10,1,7,5
+160113,2021,12-16 LUGLIO 2021,63,"Fotografia del fundus",95.11,,,,,,,,
+160113,2021,12-16 LUGLIO 2021,64,"ELETTROMIOGRAFIA SEMPLICE [EMG] PER ARTO SUPERIORE. Analisi qualitativa fino a 6 muscoli. Non associabile a 93.09.1 e 93.09.2",93.08.1,55,55,17,17,13,13,25,25
+160113,2021,12-16 LUGLIO 2021,65,"ELETTROMIOGRAFIA SEMPLICE [EMG] PER ARTO INFERIORE fino a 4 muscoli. Analisi qualitativa. Non associabile a 93.09.1 e 93.09.2",93.08.1,58,58,21,21,18,18,19,19
+160113,2021,12-16 LUGLIO 2021,66 - 67,"ELETTROMIOGRAFIA SEMPLICE [EMG] DEL CAPO fino a 4 muscoli. Analisi qualitativa. Escluso: EMG dell'occhio (95.25) e POLISONNOGRAFIA (89.17)",93.08.1,19,19,2,2,11,11,5,5
+160113,2021,12-16 LUGLIO 2021,,"ELETTROMIOGRAFIA SEMPLICE [EMG] DEL TRONCO. Analisi qualitativa. Fino a 4 muscoli",,,,,,,,,
+160113,2021,12-16 LUGLIO 2021,68,"VALUTAZIONE EMG DINAMICA DEL CAMMINO. Valutazione EMG di superficie o con elettrodi a filo (4 muscoli), associato ad esame basografico per la definizione delle fasi del passo. Non associabile a ANALISI DELLA CINEMATICA E DELLA DINAMICA DEL PASSO (93.05.7)",93.08.1,,,,,,,,
+160113,2021,12-16 LUGLIO 2021,69,"EMG DINAMICA DELL'ARTO SUPERIORE. Valutazione EMG di superficie o con elettrodi a filo (4 muscoli)",93.08.1,,,,,,,,
+160106,2021,12-16 LUGLIO 2021,1,"Prima Visita cardiologica",89.7,310,276,40,20,50,15,179,164
+160106,2021,12-16 LUGLIO 2021,2,"Prima Visita chirurgia vascolare",89.7,16,16,6,2,4,3,1,1
+160106,2021,12-16 LUGLIO 2021,3,"Prima Visita endocrinologica",89.7,76,69,27,15,9,6,31,31
+160106,2021,12-16 LUGLIO 2021,4,"Prima Visita neurologica",89.13,94,92,24,6,11,4,53,47
+160106,2021,12-16 LUGLIO 2021,5,"Prima Visita oculistica",95.02,145,77,18,4,13,4,44,41
+160106,2021,12-16 LUGLIO 2021,6,"Prima Visita ortopedica",89.7,272,259,29,9,42,14,183,181
+160106,2021,12-16 LUGLIO 2021,7,"Prima Visita ginecologica",89.26,67,63,6,4,7,4,49,49
+160106,2021,12-16 LUGLIO 2021,8,"Prima Visita otorinolaringoiatrica",89.7,190,151,20,13,22,2,107,104
+160106,2021,12-16 LUGLIO 2021,9,"Prima Visita urologica",89.7,67,66,13,4,14,2,37,37
+160106,2021,12-16 LUGLIO 2021,10,"Prima Visita dermatologica",89.7,99,92,21,6,21,6,47,35
+160106,2021,12-16 LUGLIO 2021,11,"Prima Visita fisiatrica",89.7,157,149,22,21,19,19,108,108
+160106,2021,12-16 LUGLIO 2021,12,"Prima Visita gastroenterologica",89.7,38,33,7,5,5,2,21,21
+160106,2021,12-16 LUGLIO 2021,13,"Prima Visita oncologica",89.7,33,30,8,8,4,4,16,16
+160106,2021,12-16 LUGLIO 2021,14,"Prima Visita pneumologica",89.7,76,74,12,3,14,2,47,47
+160106,2021,12-16 LUGLIO 2021,15,"Mammografia bilaterale",87.37.1,70,64,7,2,7,7,50,50
+160106,2021,12-16 LUGLIO 2021,16,"Mammografia monolaterale",87.37.2,6,5,1,1,,,4,4
+160106,2021,12-16 LUGLIO 2021,17,"TC del Torace",87.41,28,28,4,3,9,6,15,15
+160106,2021,12-16 LUGLIO 2021,18,"TC del Torace senza e con MDC",87.41.1,55,53,12,3,14,14,24,21
+160106,2021,12-16 LUGLIO 2021,19,"TC dell'addome superiore",88.01.1,1,1,,,1,1,,
+160106,2021,12-16 LUGLIO 2021,20,"TC dell'addome superiore senza e con MDC",88.01.2,3,3,1,1,1,1,1,1
+160106,2021,12-16 LUGLIO 2021,21,"TC dell'addome inferiore",88.01.3,1,1,,,1,1,,
+160106,2021,12-16 LUGLIO 2021,22,"TC dell'addome inferiore senza e con MDC",88.01.4,2,2,1,1,1,1,,
+160106,2021,12-16 LUGLIO 2021,23,"TC dell'addome completo",88.01.5,9,9,1,,1,1,7,7
+160106,2021,12-16 LUGLIO 2021,24,"TC dell'addome completo senza e con MDC",88.01.6,57,56,9,,16,14,27,24
+160106,2021,12-16 LUGLIO 2021,25,"TC Cranio - encefalo",87.03,17,16,6,1,1,1,9,9
+160106,2021,12-16 LUGLIO 2021,26,"TC Cranio - encefalo senza e con MDC",87.03.1,28,27,8,4,7,7,10,8
+160106,2021,12-16 LUGLIO 2021,27,"TC del rachide e dello speco vertebrale cervicale",88.38.1,2,2,1,,1,,,
+160106,2021,12-16 LUGLIO 2021,28,"TC del rachide e dello speco vertebrale toracico",88.38.1,,,,,,,,
+160106,2021,12-16 LUGLIO 2021,29,"TC del rachide e dello speco vertebrale lombosacrale",88.38.1,5,5,,,4,1,1,1
+160106,2021,12-16 LUGLIO 2021,30,"TC del rachide e dello speco vertebrale cervicale senza e con MDC",88.38.2,,,,,,,,
+160106,2021,12-16 LUGLIO 2021,31,"TC del rachide e dello speco vertebrale toracico senza e con MDC",88.38.2,,,,,,,,
+160106,2021,12-16 LUGLIO 2021,32,"TC del rachide e dello speco vertebrale lombosacrale senza e con MDC",88.38.2,,,,,,,,
+160106,2021,12-16 LUGLIO 2021,33,"TC di Bacino e articolazioni sacroiliache",88.38.5,1,1,,,1,1,,
+160106,2021,12-16 LUGLIO 2021,34,"RM di encefalo e tronco encefalico, giunzione cranio spinale e relativo distretto vascolare",88.91.1,5,5,3,2,,,2,2
+160106,2021,12-16 LUGLIO 2021,35,"RM di encefalo e tronco encefalico, giunzione cranio spinale e relativo distretto vascolare senza e con MDC",88.91.2,7,7,5,2,,,2,2
+160106,2021,12-16 LUGLIO 2021,36,"RM di addome inferiore e scavo pelvico",88.95.4,1,1,,,,,1,1
+160106,2021,12-16 LUGLIO 2021,37,"RM di addome inferiore e scavo pelvico senza e con MDC",88.95.5,15,15,6,1,4,1,4,3
+160106,2021,12-16 LUGLIO 2021,38,"RM della colonna in toto",88.93,3,3,1,,,,2,2
+160106,2021,12-16 LUGLIO 2021,39,"RM della colonna in toto senza e con MDC",88.93.1,,,,,,,,
+160106,2021,12-16 LUGLIO 2021,40,"Diagnostica ecografica del capo e del collo",88.71.4,41,32,11,5,7,2,14,6
+160106,2021,12-16 LUGLIO 2021,41,"Eco (color) dopplergrafia cardiaca",88.72.3,37,30,2,,6,5,22,22
+160106,2021,12-16 LUGLIO 2021,42,"Eco (color) dopplergrafia dei tronchi sovra aortici",88.73.5,63,53,7,5,11,9,34,31
+160106,2021,12-16 LUGLIO 2021,43,"Ecografia dell'addome superiore",88.74.1,34,27,5,4,9,8,12,12
+160106,2021,12-16 LUGLIO 2021,44,"Ecografia dell'addome inferiore",88.75.1,13,12,1,1,1,1,10,9
+160106,2021,12-16 LUGLIO 2021,45,"Ecografia dell'addome completo",88.76.1,111,49,17,9,6,5,25,22
+160106,2021,12-16 LUGLIO 2021,46,"Ecografia bilaterale della mammella",88.73.1,93,87,13,4,7,7,66,66
+160106,2021,12-16 LUGLIO 2021,47,"Ecografia monolaterale della mammella",88.73.2,1,,,,,,,
+160106,2021,12-16 LUGLIO 2021,48,"Ecografia ostetrica",88.78,31,31,6,4,1,1,23,23
+160106,2021,12-16 LUGLIO 2021,49,"Ecografia ginecologica",88.78.2,15,14,,,4,4,10,10
+160106,2021,12-16 LUGLIO 2021,50,"Ecocolor doppler degli arti inferiori arterioso e/o venoso",88.77.2,65,60,8,2,14,14,30,29
+160106,2021,12-16 LUGLIO 2021,51,"Colonscopia totale con endoscopio flessibile",45.23,40,39,8,3,8,1,22,22
+160106,2021,12-16 LUGLIO 2021,52,"Polipectomia dell'intestino crasso in corso di endoscopia sede unica",45.42,,,,,,,,
+160106,2021,12-16 LUGLIO 2021,53,"Rettosigmoidoscopia con endoscopio flessibile",45.24,,,,,,,,
+160106,2021,12-16 LUGLIO 2021,54,"Esofagogastroduodenoscopia",45.13,52,51,6,3,16,11,28,28
+160106,2021,12-16 LUGLIO 2021,55,"Esofagogastroduodenoscopia con biopsia in sede unica",45.16,19,17,2,,4,2,11,11
+160106,2021,12-16 LUGLIO 2021,56,"Elettrocardiogramma",89.52,367,335,39,20,55,41,235,222
+160106,2021,12-16 LUGLIO 2021,57,"Elettrocardiogramma dinamico (Holter)",89.50,87,83,12,3,23,22,45,45
+160106,2021,12-16 LUGLIO 2021,58,"Test cardiovascolare da sforzo con cicloergometro o con pedana mobile",89.41 - 89.43,3,3,,,,,3,3
+160106,2021,12-16 LUGLIO 2021,59,"Altri test cardiovascolari da sforzo",89.44,,,,,,,,
+160106,2021,12-16 LUGLIO 2021,60,"Esame audiometrico tonale",95.41.1,86,55,4,2,8,3,43,40
+160106,2021,12-16 LUGLIO 2021,61,"Spirometria semplice",89.37.1,71,70,7,,11,9,52,52
+160106,2021,12-16 LUGLIO 2021,62,"Spirometria globale",89.37.2,14,14,2,,3,2,9,9
+160106,2021,12-16 LUGLIO 2021,63,"Fotografia del fundus",95.11,,,,,,,,
+160106,2021,12-16 LUGLIO 2021,64,"ELETTROMIOGRAFIA SEMPLICE [EMG] PER ARTO SUPERIORE. Analisi qualitativa fino a 6 muscoli. Non associabile a 93.09.1 e 93.09.2",93.08.1,99,90,8,,22,4,59,53
+160106,2021,12-16 LUGLIO 2021,65,"ELETTROMIOGRAFIA SEMPLICE [EMG] PER ARTO INFERIORE fino a 4 muscoli. Analisi qualitativa. Non associabile a 93.09.1 e 93.09.2",93.08.1,75,67,10,,14,,43,40
+160106,2021,12-16 LUGLIO 2021,66 - 67,"ELETTROMIOGRAFIA SEMPLICE [EMG] DEL CAPO fino a 4 muscoli. Analisi qualitativa. Escluso: EMG dell'occhio (95.25) e POLISONNOGRAFIA (89.17)",93.08.1,4,3,,,2,2,1,1
+160106,2021,12-16 LUGLIO 2021,,"ELETTROMIOGRAFIA SEMPLICE [EMG] DEL TRONCO. Analisi qualitativa. Fino a 4 muscoli",,,,,,,,,
+160106,2021,12-16 LUGLIO 2021,68,"VALUTAZIONE EMG DINAMICA DEL CAMMINO. Valutazione EMG di superficie o con elettrodi a filo (4 muscoli), associato ad esame basografico per la definizione delle fasi del passo. Non associabile a ANALISI DELLA CINEMATICA E DELLA DINAMICA DEL PASSO (93.05.7)",93.08.1,,,,,,,,
+160106,2021,12-16 LUGLIO 2021,69,"EMG DINAMICA DELL'ARTO SUPERIORE. Valutazione EMG di superficie o con elettrodi a filo (4 muscoli)",93.08.1,,,,,,,,
+160115,2021,12-16 LUGLIO 2021,1,"Prima Visita cardiologica",89.7,250,154,26,25,1,1,121,121
+160115,2021,12-16 LUGLIO 2021,2,"Prima Visita chirurgia vascolare",89.7,62,55,9,2,7,4,35,33
+160115,2021,12-16 LUGLIO 2021,3,"Prima Visita endocrinologica",89.7,225,127,25,21,9,9,88,88
+160115,2021,12-16 LUGLIO 2021,4,"Prima Visita neurologica",89.13,191,155,30,20,5,5,114,114
+160115,2021,12-16 LUGLIO 2021,5,"Prima Visita oculistica",95.02,542,285,21,11,7,5,250,250
+160115,2021,12-16 LUGLIO 2021,6,"Prima Visita ortopedica",89.7,380,286,32,26,17,17,225,225
+160115,2021,12-16 LUGLIO 2021,7,"Prima Visita ginecologica",89.26,123,105,11,11,8,8,86,86
+160115,2021,12-16 LUGLIO 2021,8,"Prima Visita otorinolaringoiatrica",89.7,303,228,20,19,14,14,190,190
+160115,2021,12-16 LUGLIO 2021,9,"Prima Visita urologica",89.7,200,141,22,18,9,9,105,105
+160115,2021,12-16 LUGLIO 2021,10,"Prima Visita dermatologica",89.7,428,349,58,53,23,22,260,260
+160115,2021,12-16 LUGLIO 2021,11,"Prima Visita fisiatrica",89.7,190,176,26,25,10,10,140,140
+160115,2021,12-16 LUGLIO 2021,12,"Prima Visita gastroenterologica",89.7,72,54,7,3,8,7,39,39
+160115,2021,12-16 LUGLIO 2021,13,"Prima Visita oncologica",89.7,69,66,17,17,2,2,37,37
+160115,2021,12-16 LUGLIO 2021,14,"Prima Visita pneumologica",89.7,90,74,15,14,9,9,48,48
+160115,2021,12-16 LUGLIO 2021,15,"Mammografia bilaterale",87.37.1,290,145,10,8,7,7,118,115
+160115,2021,12-16 LUGLIO 2021,16,"Mammografia monolaterale",87.37.2,,,,,,,,
+160115,2021,12-16 LUGLIO 2021,17,"TC del Torace",87.41,68,46,5,2,2,2,37,37
+160115,2021,12-16 LUGLIO 2021,18,"TC del Torace senza e con MDC",87.41.1,105,90,7,5,3,3,72,72
+160115,2021,12-16 LUGLIO 2021,19,"TC dell'addome superiore",88.01.1,3,2,2,1,,,,
+160115,2021,12-16 LUGLIO 2021,20,"TC dell'addome superiore senza e con MDC",88.01.2,10,10,,,1,1,9,9
+160115,2021,12-16 LUGLIO 2021,21,"TC dell'addome inferiore",88.01.3,2,1,1,,,,,
+160115,2021,12-16 LUGLIO 2021,22,"TC dell'addome inferiore senza e con MDC",88.01.4,7,7,,,,,7,7
+160115,2021,12-16 LUGLIO 2021,23,"TC dell'addome completo",88.01.5,8,4,1,,,,3,3
+160115,2021,12-16 LUGLIO 2021,24,"TC dell'addome completo senza e con MDC",88.01.6,121,98,9,4,5,5,74,74
+160115,2021,12-16 LUGLIO 2021,25,"TC Cranio - encefalo",87.03,42,36,8,6,3,3,25,25
+160115,2021,12-16 LUGLIO 2021,26,"TC Cranio - encefalo senza e con MDC",87.03.1,59,53,4,2,,,44,44
+160115,2021,12-16 LUGLIO 2021,27,"TC del rachide e dello speco vertebrale cervicale",88.38.1,7,6,,,1,1,5,5
+160115,2021,12-16 LUGLIO 2021,28,"TC del rachide e dello speco vertebrale toracico",88.38.1,3,3,,,,,3,3
+160115,2021,12-16 LUGLIO 2021,29,"TC del rachide e dello speco vertebrale lombosacrale",88.38.1,18,15,1,1,,,14,14
+160115,2021,12-16 LUGLIO 2021,30,"TC del rachide e dello speco vertebrale cervicale senza e con MDC",88.38.2,,,,,,,,
+160115,2021,12-16 LUGLIO 2021,31,"TC del rachide e dello speco vertebrale toracico senza e con MDC",88.38.2,,,,,,,,
+160115,2021,12-16 LUGLIO 2021,32,"TC del rachide e dello speco vertebrale lombosacrale senza e con MDC",88.38.2,,,,,,,,
+160115,2021,12-16 LUGLIO 2021,33,"TC di Bacino e articolazioni sacroiliache",88.38.5,4,4,1,1,,,3,3
+160115,2021,12-16 LUGLIO 2021,34,"RM di encefalo e tronco encefalico, giunzione cranio spinale e relativo distretto vascolare",88.91.1,39,29,6,4,,,19,19
+160115,2021,12-16 LUGLIO 2021,35,"RM di encefalo e tronco encefalico, giunzione cranio spinale e relativo distretto vascolare senza e con MDC",88.91.2,41,25,5,3,,,19,19
+160115,2021,12-16 LUGLIO 2021,36,"RM di addome inferiore e scavo pelvico",88.95.4,7,2,,,,,2,2
+160115,2021,12-16 LUGLIO 2021,37,"RM di addome inferiore e scavo pelvico senza e con MDC",88.95.5,8,2,,,,,1,1
+160115,2021,12-16 LUGLIO 2021,38,"RM della colonna in toto",88.93,16,12,2,2,,,10,10
+160115,2021,12-16 LUGLIO 2021,39,"RM della colonna in toto senza e con MDC",88.93.1,1,1,,,,,1,1
+160115,2021,12-16 LUGLIO 2021,40,"Diagnostica ecografica del capo e del collo",88.71.4,141,82,8,7,9,9,62,62
+160115,2021,12-16 LUGLIO 2021,41,"Eco (color) dopplergrafia cardiaca",88.72.3,125,73,6,5,5,5,60,60
+160115,2021,12-16 LUGLIO 2021,42,"Eco (color) dopplergrafia dei tronchi sovra aortici",88.73.5,174,102,4,2,5,4,92,84
+160115,2021,12-16 LUGLIO 2021,43,"Ecografia dell'addome superiore",88.74.1,141,119,12,12,14,14,92,92
+160115,2021,12-16 LUGLIO 2021,44,"Ecografia dell'addome inferiore",88.75.1,55,45,1,1,12,12,31,31
+160115,2021,12-16 LUGLIO 2021,45,"Ecografia dell'addome completo",88.76.1,282,236,30,28,36,36,162,162
+160115,2021,12-16 LUGLIO 2021,46,"Ecografia bilaterale della mammella",88.73.1,331,192,41,38,8,8,128,126
+160115,2021,12-16 LUGLIO 2021,47,"Ecografia monolaterale della mammella",88.73.2,4,4,,,1,1,3,3
+160115,2021,12-16 LUGLIO 2021,48,"Ecografia ostetrica",88.78,74,69,8,8,6,6,53,53
+160115,2021,12-16 LUGLIO 2021,49,"Ecografia ginecologica",88.78.2,16,14,,,4,4,10,10
+160115,2021,12-16 LUGLIO 2021,50,"Ecocolor doppler degli arti inferiori arterioso e/o venoso",88.77.2,166,129,12,3,7,2,102,87
+160115,2021,12-16 LUGLIO 2021,51,"Colonscopia totale con endoscopio flessibile",45.23,85,64,5,2,4,4,54,53
+160115,2021,12-16 LUGLIO 2021,52,"Polipectomia dell'intestino crasso in corso di endoscopia sede unica",45.42,,,,,,,,
+160115,2021,12-16 LUGLIO 2021,53,"Rettosigmoidoscopia con endoscopio flessibile",45.24,,,,,,,,
+160115,2021,12-16 LUGLIO 2021,54,"Esofagogastroduodenoscopia",45.13,56,51,2,1,8,8,39,39
+160115,2021,12-16 LUGLIO 2021,55,"Esofagogastroduodenoscopia con biopsia in sede unica",45.16,22,20,2,2,3,3,12,12
+160115,2021,12-16 LUGLIO 2021,56,"Elettrocardiogramma",89.52,388,250,27,26,7,7,208,208
+160115,2021,12-16 LUGLIO 2021,57,"Elettrocardiogramma dinamico (Holter)",89.50,71,61,5,2,7,7,49,49
+160115,2021,12-16 LUGLIO 2021,58,"Test cardiovascolare da sforzo con cicloergometro o con pedana mobile",89.41 - 89.43,67,42,4,3,1,1,36,36
+160115,2021,12-16 LUGLIO 2021,59,"Altri test cardiovascolari da sforzo",89.44,,,,,,,,
+160115,2021,12-16 LUGLIO 2021,60,"Esame audiometrico tonale",95.41.1,129,121,5,5,2,2,112,112
+160115,2021,12-16 LUGLIO 2021,61,"Spirometria semplice",89.37.1,41,26,1,1,,,25,25
+160115,2021,12-16 LUGLIO 2021,62,"Spirometria globale",89.37.2,12,8,3,2,2,2,3,3
+160115,2021,12-16 LUGLIO 2021,63,"Fotografia del fundus",95.11,17,17,8,8,4,4,4,4
+160115,2021,12-16 LUGLIO 2021,64,"ELETTROMIOGRAFIA SEMPLICE [EMG] PER ARTO SUPERIORE. Analisi qualitativa fino a 6 muscoli. Non associabile a 93.09.1 e 93.09.2",93.08.1,36,34,2,,2,,26,16
+160115,2021,12-16 LUGLIO 2021,65,"ELETTROMIOGRAFIA SEMPLICE [EMG] PER ARTO INFERIORE fino a 4 muscoli. Analisi qualitativa. Non associabile a 93.09.1 e 93.09.2",93.08.1,22,22,8,,4,4,10,6
+160115,2021,12-16 LUGLIO 2021,66 - 67,"ELETTROMIOGRAFIA SEMPLICE [EMG] DEL CAPO fino a 4 muscoli. Analisi qualitativa. Escluso: EMG dell'occhio (95.25) e POLISONNOGRAFIA (89.17)",93.08.1,13,13,1,,2,1,10,4
+160115,2021,12-16 LUGLIO 2021,,"ELETTROMIOGRAFIA SEMPLICE [EMG] DEL TRONCO. Analisi qualitativa. Fino a 4 muscoli",,,,,,,,,
+160115,2021,12-16 LUGLIO 2021,68,"VALUTAZIONE EMG DINAMICA DEL CAMMINO. Valutazione EMG di superficie o con elettrodi a filo (4 muscoli), associato ad esame basografico per la definizione delle fasi del passo. Non associabile a ANALISI DELLA CINEMATICA E DELLA DINAMICA DEL PASSO (93.05.7)",93.08.1,,,,,,,,
+160115,2021,12-16 LUGLIO 2021,69,"EMG DINAMICA DELL'ARTO SUPERIORE. Valutazione EMG di superficie o con elettrodi a filo (4 muscoli)",93.08.1,,,,,,,,
+160116,2021,12-16 LUGLIO 2021,1,"Prima Visita cardiologica",89.7,280,236,13,13,39,4,181,94
+160116,2021,12-16 LUGLIO 2021,2,"Prima Visita chirurgia vascolare",89.7,9,9,,,,,9,9
+160116,2021,12-16 LUGLIO 2021,3,"Prima Visita endocrinologica",89.7,153,122,13,13,20,2,88,36
+160116,2021,12-16 LUGLIO 2021,4,"Prima Visita neurologica",89.13,159,132,15,15,12,2,103,101
+160116,2021,12-16 LUGLIO 2021,5,"Prima Visita oculistica",95.02,164,136,14,14,22,6,99,23
+160116,2021,12-16 LUGLIO 2021,6,"Prima Visita ortopedica",89.7,174,126,8,8,12,6,105,28
+160116,2021,12-16 LUGLIO 2021,7,"Prima Visita ginecologica",89.26,126,90,12,12,9,5,68,68
+160116,2021,12-16 LUGLIO 2021,8,"Prima Visita otorinolaringoiatrica",89.7,290,172,35,35,17,3,117,117
+160116,2021,12-16 LUGLIO 2021,9,"Prima Visita urologica",89.7,132,105,6,6,4,3,95,52
+160116,2021,12-16 LUGLIO 2021,10,"Prima Visita dermatologica",89.7,313,293,22,22,28,7,243,243
+160116,2021,12-16 LUGLIO 2021,11,"Prima Visita fisiatrica",89.7,159,145,16,16,8,8,119,119
+160116,2021,12-16 LUGLIO 2021,12,"Prima Visita gastroenterologica",89.7,60,56,8,8,4,3,44,44
+160116,2021,12-16 LUGLIO 2021,13,"Prima Visita oncologica",89.7,81,64,2,1,1,1,61,56
+160116,2021,12-16 LUGLIO 2021,14,"Prima Visita pneumologica",89.7,79,72,9,9,8,4,55,55
+160116,2021,12-16 LUGLIO 2021,15,"Mammografia bilaterale",87.37.1,168,102,6,6,,,96,96
+160116,2021,12-16 LUGLIO 2021,16,"Mammografia monolaterale",87.37.2,11,5,,,,,5,5
+160116,2021,12-16 LUGLIO 2021,17,"TC del Torace",87.41,107,103,13,13,11,11,78,78
+160116,2021,12-16 LUGLIO 2021,18,"TC del Torace senza e con MDC",87.41.1,73,61,8,8,8,8,44,44
+160116,2021,12-16 LUGLIO 2021,19,"TC dell'addome superiore",88.01.1,,,,,,,,
+160116,2021,12-16 LUGLIO 2021,20,"TC dell'addome superiore senza e con MDC",88.01.2,4,4,,,1,1,3,3
+160116,2021,12-16 LUGLIO 2021,21,"TC dell'addome inferiore",88.01.3,2,2,1,1,,,1,1
+160116,2021,12-16 LUGLIO 2021,22,"TC dell'addome inferiore senza e con MDC",88.01.4,5,5,,,,,5,5
+160116,2021,12-16 LUGLIO 2021,23,"TC dell'addome completo",88.01.5,30,28,3,3,2,2,22,22
+160116,2021,12-16 LUGLIO 2021,24,"TC dell'addome completo senza e con MDC",88.01.6,99,82,13,12,8,8,61,61
+160116,2021,12-16 LUGLIO 2021,25,"TC Cranio - encefalo",87.03,71,65,8,8,6,6,48,48
+160116,2021,12-16 LUGLIO 2021,26,"TC Cranio - encefalo senza e con MDC",87.03.1,29,25,3,3,1,1,21,21
+160116,2021,12-16 LUGLIO 2021,27,"TC del rachide e dello speco vertebrale cervicale",88.38.1,10,10,1,1,1,1,8,8
+160116,2021,12-16 LUGLIO 2021,28,"TC del rachide e dello speco vertebrale toracico",88.38.1,9,9,2,2,1,1,6,6
+160116,2021,12-16 LUGLIO 2021,29,"TC del rachide e dello speco vertebrale lombosacrale",88.38.1,12,12,1,1,1,1,10,10
+160116,2021,12-16 LUGLIO 2021,30,"TC del rachide e dello speco vertebrale cervicale senza e con MDC",88.38.2,1,1,,,,,1,1
+160116,2021,12-16 LUGLIO 2021,31,"TC del rachide e dello speco vertebrale toracico senza e con MDC",88.38.2,1,1,,,,,1,1
+160116,2021,12-16 LUGLIO 2021,32,"TC del rachide e dello speco vertebrale lombosacrale senza e con MDC",88.38.2,1,1,,,,,1,1
+160116,2021,12-16 LUGLIO 2021,33,"TC di Bacino e articolazioni sacroiliache",88.38.5,5,5,1,1,1,1,3,3
+160116,2021,12-16 LUGLIO 2021,34,"RM di encefalo e tronco encefalico, giunzione cranio spinale e relativo distretto vascolare",88.91.1,31,27,7,5,3,3,16,10
+160116,2021,12-16 LUGLIO 2021,35,"RM di encefalo e tronco encefalico, giunzione cranio spinale e relativo distretto vascolare senza e con MDC",88.91.2,34,33,11,11,3,3,19,9
+160116,2021,12-16 LUGLIO 2021,36,"RM di addome inferiore e scavo pelvico",88.95.4,4,4,,,1,1,3,3
+160116,2021,12-16 LUGLIO 2021,37,"RM di addome inferiore e scavo pelvico senza e con MDC",88.95.5,46,45,7,6,5,5,33,32
+160116,2021,12-16 LUGLIO 2021,38,"RM della colonna in toto",88.93,1,1,1,1,,,,
+160116,2021,12-16 LUGLIO 2021,39,"RM della colonna in toto senza e con MDC",88.93.1,,,,,,,,
+160116,2021,12-16 LUGLIO 2021,40,"Diagnostica ecografica del capo e del collo",88.71.4,151,103,2,2,2,2,99,23
+160116,2021,12-16 LUGLIO 2021,41,"Eco (color) dopplergrafia cardiaca",88.72.3,52,44,1,1,9,6,34,30
+160116,2021,12-16 LUGLIO 2021,42,"Eco (color) dopplergrafia dei tronchi sovra aortici",88.73.5,201,190,,,10,10,180,180
+160116,2021,12-16 LUGLIO 2021,43,"Ecografia dell'addome superiore",88.74.1,59,52,1,1,6,6,45,12
+160116,2021,12-16 LUGLIO 2021,44,"Ecografia dell'addome inferiore",88.75.1,23,19,,,2,2,17,7
+160116,2021,12-16 LUGLIO 2021,45,"Ecografia dell'addome completo",88.76.1,248,215,12,12,12,12,190,92
+160116,2021,12-16 LUGLIO 2021,46,"Ecografia bilaterale della mammella",88.73.1,193,119,6,6,4,4,109,109
+160116,2021,12-16 LUGLIO 2021,47,"Ecografia monolaterale della mammella",88.73.2,6,4,3,3,,,1,1
+160116,2021,12-16 LUGLIO 2021,48,"Ecografia ostetrica",88.78,64,59,,,3,3,56,54
+160116,2021,12-16 LUGLIO 2021,49,"Ecografia ginecologica",88.78.2,29,20,1,1,2,2,17,17
+160116,2021,12-16 LUGLIO 2021,50,"Ecocolor doppler degli arti inferiori arterioso e/o venoso",88.77.2,174,161,7,7,13,13,141,141
+160116,2021,12-16 LUGLIO 2021,51,"Colonscopia totale con endoscopio flessibile",45.23,92,81,12,11,16,16,52,32
+160116,2021,12-16 LUGLIO 2021,52,"Polipectomia dell'intestino crasso in corso di endoscopia sede unica",45.42,1,1,,,,,1,1
+160116,2021,12-16 LUGLIO 2021,53,"Rettosigmoidoscopia con endoscopio flessibile",45.24,2,2,,,1,1,1,1
+160116,2021,12-16 LUGLIO 2021,54,"Esofagogastroduodenoscopia",45.13,88,73,7,6,15,15,51,32
+160116,2021,12-16 LUGLIO 2021,55,"Esofagogastroduodenoscopia con biopsia in sede unica",45.16,12,9,2,2,2,2,5,4
+160116,2021,12-16 LUGLIO 2021,56,"Elettrocardiogramma",89.52,433,339,18,18,48,43,271,145
+160116,2021,12-16 LUGLIO 2021,57,"Elettrocardiogramma dinamico (Holter)",89.50,69,67,6,4,7,7,54,54
+160116,2021,12-16 LUGLIO 2021,58,"Test cardiovascolare da sforzo con cicloergometro o con pedana mobile",89.41 - 89.43,48,42,2,2,3,3,37,24
+160116,2021,12-16 LUGLIO 2021,59,"Altri test cardiovascolari da sforzo",89.44,,,,,,,,
+160116,2021,12-16 LUGLIO 2021,60,"Esame audiometrico tonale",95.41.1,136,80,4,4,2,2,73,73
+160116,2021,12-16 LUGLIO 2021,61,"Spirometria semplice",89.37.1,49,46,2,2,5,5,39,39
+160116,2021,12-16 LUGLIO 2021,62,"Spirometria globale",89.37.2,9,8,,,,,8,8
+160116,2021,12-16 LUGLIO 2021,63,"Fotografia del fundus",95.11,,,,,,,,
+160116,2021,12-16 LUGLIO 2021,64,"ELETTROMIOGRAFIA SEMPLICE [EMG] PER ARTO SUPERIORE. Analisi qualitativa fino a 6 muscoli. Non associabile a 93.09.1 e 93.09.2",93.08.1,74,68,,,7,7,61,61
+160116,2021,12-16 LUGLIO 2021,65,"ELETTROMIOGRAFIA SEMPLICE [EMG] PER ARTO INFERIORE fino a 4 muscoli. Analisi qualitativa. Non associabile a 93.09.1 e 93.09.2",93.08.1,86,74,2,2,5,5,67,67
+160116,2021,12-16 LUGLIO 2021,66 - 67,"ELETTROMIOGRAFIA SEMPLICE [EMG] DEL CAPO fino a 4 muscoli. Analisi qualitativa. Escluso: EMG dell'occhio (95.25) e POLISONNOGRAFIA (89.17)",93.08.1,3,3,1,1,,,2,1
+160116,2021,12-16 LUGLIO 2021,,"ELETTROMIOGRAFIA SEMPLICE [EMG] DEL TRONCO. Analisi qualitativa. Fino a 4 muscoli",,,,,,,,,
+160116,2021,12-16 LUGLIO 2021,68,"VALUTAZIONE EMG DINAMICA DEL CAMMINO. Valutazione EMG di superficie o con elettrodi a filo (4 muscoli), associato ad esame basografico per la definizione delle fasi del passo. Non associabile a ANALISI DELLA CINEMATICA E DELLA DINAMICA DEL PASSO (93.05.7)",93.08.1,,,,,,,,
+160116,2021,12-16 LUGLIO 2021,69,"EMG DINAMICA DELL'ARTO SUPERIORE. Valutazione EMG di superficie o con elettrodi a filo (4 muscoli)",93.08.1,,,,,,,,
+160112,2021,12-16 LUGLIO 2021,1,"Prima Visita cardiologica",89.7,197,182,15,6,16,12,150,149
+160112,2021,12-16 LUGLIO 2021,2,"Prima Visita chirurgia vascolare",89.7,61,54,8,8,2,2,44,44
+160112,2021,12-16 LUGLIO 2021,3,"Prima Visita endocrinologica",89.7,207,188,29,27,11,11,147,136
+160112,2021,12-16 LUGLIO 2021,4,"Prima Visita neurologica",89.13,119,111,12,,15,4,84,84
+160112,2021,12-16 LUGLIO 2021,5,"Prima Visita oculistica",95.02,228,219,10,4,18,10,191,191
+160112,2021,12-16 LUGLIO 2021,6,"Prima Visita ortopedica",89.7,266,253,20,15,25,13,206,206
+160112,2021,12-16 LUGLIO 2021,7,"Prima Visita ginecologica",89.26,65,60,4,2,4,4,52,52
+160112,2021,12-16 LUGLIO 2021,8,"Prima Visita otorinolaringoiatrica",89.7,134,128,12,6,14,8,101,101
+160112,2021,12-16 LUGLIO 2021,9,"Prima Visita urologica",89.7,71,69,6,2,3,1,60,60
+160112,2021,12-16 LUGLIO 2021,10,"Prima Visita dermatologica",89.7,321,299,10,6,26,16,262,262
+160112,2021,12-16 LUGLIO 2021,11,"Prima Visita fisiatrica",89.7,203,192,9,9,27,27,156,156
+160112,2021,12-16 LUGLIO 2021,12,"Prima Visita gastroenterologica",89.7,31,26,3,2,3,1,20,19
+160112,2021,12-16 LUGLIO 2021,13,"Prima Visita oncologica",89.7,14,14,2,2,1,1,11,11
+160112,2021,12-16 LUGLIO 2021,14,"Prima Visita pneumologica",89.7,80,78,11,10,15,14,51,51
+160112,2021,12-16 LUGLIO 2021,15,"Mammografia bilaterale",87.37.1,116,111,4,3,5,5,102,102
+160112,2021,12-16 LUGLIO 2021,16,"Mammografia monolaterale",87.37.2,1,1,,,,,1,1
+160112,2021,12-16 LUGLIO 2021,17,"TC del Torace",87.41,53,53,8,5,10,10,35,34
+160112,2021,12-16 LUGLIO 2021,18,"TC del Torace senza e con MDC",87.41.1,51,46,10,7,2,,34,34
+160112,2021,12-16 LUGLIO 2021,19,"TC dell'addome superiore",88.01.1,,,,,,,,
+160112,2021,12-16 LUGLIO 2021,20,"TC dell'addome superiore senza e con MDC",88.01.2,12,12,2,1,1,,9,9
+160112,2021,12-16 LUGLIO 2021,21,"TC dell'addome inferiore",88.01.3,,,,,,,,
+160112,2021,12-16 LUGLIO 2021,22,"TC dell'addome inferiore senza e con MDC",88.01.4,12,11,2,1,1,,8,8
+160112,2021,12-16 LUGLIO 2021,23,"TC dell'addome completo",88.01.5,4,4,,,1,1,3,3
+160112,2021,12-16 LUGLIO 2021,24,"TC dell'addome completo senza e con MDC",88.01.6,47,43,9,7,4,3,30,30
+160112,2021,12-16 LUGLIO 2021,25,"TC Cranio - encefalo",87.03,24,24,8,6,1,1,15,15
+160112,2021,12-16 LUGLIO 2021,26,"TC Cranio - encefalo senza e con MDC",87.03.1,35,34,7,4,1,,26,26
+160112,2021,12-16 LUGLIO 2021,27,"TC del rachide e dello speco vertebrale cervicale",88.38.1,3,3,2,2,,,1,1
+160112,2021,12-16 LUGLIO 2021,28,"TC del rachide e dello speco vertebrale toracico",88.38.1,,,,,,,,
+160112,2021,12-16 LUGLIO 2021,29,"TC del rachide e dello speco vertebrale lombosacrale",88.38.1,2,2,1,1,,,1,1
+160112,2021,12-16 LUGLIO 2021,30,"TC del rachide e dello speco vertebrale cervicale senza e con MDC",88.38.2,,,,,,,,
+160112,2021,12-16 LUGLIO 2021,31,"TC del rachide e dello speco vertebrale toracico senza e con MDC",88.38.2,,,,,,,,
+160112,2021,12-16 LUGLIO 2021,32,"TC del rachide e dello speco vertebrale lombosacrale senza e con MDC",88.38.2,,,,,,,,
+160112,2021,12-16 LUGLIO 2021,33,"TC di Bacino e articolazioni sacroiliache",88.38.5,1,1,,,,,1,1
+160112,2021,12-16 LUGLIO 2021,34,"RM di encefalo e tronco encefalico, giunzione cranio spinale e relativo distretto vascolare",88.91.1,4,4,,,1,1,2,2
+160112,2021,12-16 LUGLIO 2021,35,"RM di encefalo e tronco encefalico, giunzione cranio spinale e relativo distretto vascolare senza e con MDC",88.91.2,13,13,6,1,,,6,6
+160112,2021,12-16 LUGLIO 2021,36,"RM di addome inferiore e scavo pelvico",88.95.4,1,1,,,,,1,1
+160112,2021,12-16 LUGLIO 2021,37,"RM di addome inferiore e scavo pelvico senza e con MDC",88.95.5,19,19,5,3,3,2,11,5
+160112,2021,12-16 LUGLIO 2021,38,"RM della colonna in toto",88.93,2,2,,,,,2,2
+160112,2021,12-16 LUGLIO 2021,39,"RM della colonna in toto senza e con MDC",88.93.1,1,1,,,,,1,1
+160112,2021,12-16 LUGLIO 2021,40,"Diagnostica ecografica del capo e del collo",88.71.4,181,155,11,8,8,6,135,132
+160112,2021,12-16 LUGLIO 2021,41,"Eco (color) dopplergrafia cardiaca",88.72.3,58,57,3,3,9,9,45,45
+160112,2021,12-16 LUGLIO 2021,42,"Eco (color) dopplergrafia dei tronchi sovra aortici",88.73.5,222,210,8,7,25,19,177,176
+160112,2021,12-16 LUGLIO 2021,43,"Ecografia dell'addome superiore",88.74.1,59,53,2,2,6,6,45,45
+160112,2021,12-16 LUGLIO 2021,44,"Ecografia dell'addome inferiore",88.75.1,19,17,,,1,1,16,16
+160112,2021,12-16 LUGLIO 2021,45,"Ecografia dell'addome completo",88.76.1,180,155,14,8,23,19,118,116
+160112,2021,12-16 LUGLIO 2021,46,"Ecografia bilaterale della mammella",88.73.1,80,70,4,4,4,4,62,62
+160112,2021,12-16 LUGLIO 2021,47,"Ecografia monolaterale della mammella",88.73.2,1,1,,,,,1,1
+160112,2021,12-16 LUGLIO 2021,48,"Ecografia ostetrica",88.78,31,31,1,1,1,1,28,28
+160112,2021,12-16 LUGLIO 2021,49,"Ecografia ginecologica",88.78.2,5,3,,,,,3,3
+160112,2021,12-16 LUGLIO 2021,50,"Ecocolor doppler degli arti inferiori arterioso e/o venoso",88.77.2,200,192,10,8,16,14,164,159
+160112,2021,12-16 LUGLIO 2021,51,"Colonscopia totale con endoscopio flessibile",45.23,31,28,5,2,4,1,19,7
+160112,2021,12-16 LUGLIO 2021,52,"Polipectomia dell'intestino crasso in corso di endoscopia sede unica",45.42,,,,,,,,
+160112,2021,12-16 LUGLIO 2021,53,"Rettosigmoidoscopia con endoscopio flessibile",45.24,,,,,,,,
+160112,2021,12-16 LUGLIO 2021,54,"Esofagogastroduodenoscopia",45.13,56,56,3,,6,6,47,47
+160112,2021,12-16 LUGLIO 2021,55,"Esofagogastroduodenoscopia con biopsia in sede unica",45.16,54,50,8,8,6,6,36,36
+160112,2021,12-16 LUGLIO 2021,56,"Elettrocardiogramma",89.52,209,193,15,8,18,17,159,158
+160112,2021,12-16 LUGLIO 2021,57,"Elettrocardiogramma dinamico (Holter)",89.50,91,90,4,4,14,14,72,72
+160112,2021,12-16 LUGLIO 2021,58,"Test cardiovascolare da sforzo con cicloergometro o con pedana mobile",89.41 - 89.43,18,18,2,1,2,2,14,14
+160112,2021,12-16 LUGLIO 2021,59,"Altri test cardiovascolari da sforzo",89.44,,,,,,,,
+160112,2021,12-16 LUGLIO 2021,60,"Esame audiometrico tonale",95.41.1,80,80,,,9,9,71,71
+160112,2021,12-16 LUGLIO 2021,61,"Spirometria semplice",89.37.1,44,44,1,,4,4,39,39
+160112,2021,12-16 LUGLIO 2021,62,"Spirometria globale",89.37.2,25,25,,,6,6,19,19
+160112,2021,12-16 LUGLIO 2021,63,"Fotografia del fundus",95.11,,,,,,,,
+160112,2021,12-16 LUGLIO 2021,64,"ELETTROMIOGRAFIA SEMPLICE [EMG] PER ARTO SUPERIORE. Analisi qualitativa fino a 6 muscoli. Non associabile a 93.09.1 e 93.09.2",93.08.1,,,,,,,,
+160112,2021,12-16 LUGLIO 2021,65,"ELETTROMIOGRAFIA SEMPLICE [EMG] PER ARTO INFERIORE fino a 4 muscoli. Analisi qualitativa. Non associabile a 93.09.1 e 93.09.2",93.08.1,2,2,2,,,,,
+160112,2021,12-16 LUGLIO 2021,66 - 67,"ELETTROMIOGRAFIA SEMPLICE [EMG] DEL CAPO fino a 4 muscoli. Analisi qualitativa. Escluso: EMG dell'occhio (95.25) e POLISONNOGRAFIA (89.17)",93.08.1,1,1,,,1,1,,
+160112,2021,12-16 LUGLIO 2021,,"ELETTROMIOGRAFIA SEMPLICE [EMG] DEL TRONCO. Analisi qualitativa. Fino a 4 muscoli",,,,,,,,,
+160112,2021,12-16 LUGLIO 2021,68,"VALUTAZIONE EMG DINAMICA DEL CAMMINO. Valutazione EMG di superficie o con elettrodi a filo (4 muscoli), associato ad esame basografico per la definizione delle fasi del passo. Non associabile a ANALISI DELLA CINEMATICA E DELLA DINAMICA DEL PASSO (93.05.7)",93.08.1,,,,,,,,
+160112,2021,12-16 LUGLIO 2021,69,"EMG DINAMICA DELL'ARTO SUPERIORE. Valutazione EMG di superficie o con elettrodi a filo (4 muscoli)",93.08.1,,,,,,,,
