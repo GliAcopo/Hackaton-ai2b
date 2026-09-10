@@ -403,41 +403,42 @@
  },
  "52d2666c736edde2cfe158bf45fca5b9": {
   "azioni_preparatorie": [
-   "Monitoraggio ordinario dei flussi di accesso ai Pronto Soccorso per malori legati all'umidita' e al calore percepito (30.8 C).",
-   "Verifica dell'adeguata climatizzazione e disponibilita' di punti idratazione nelle sale d'attesa dei DEA e presidi sanitari.",
-   "Mantenimento delle scorte ordinarie di soluzioni idratanti ed elettrolitiche per la gestione di disidratazione lieve.",
-   "Nessuna attivazione di protocolli straordinari di emergenza per polveri sottili o pollini, stante i valori nella norma."
+   "Monitoraggio ordinario dei flussi di accesso nei Pronto Soccorso per malori da calore o disidratazione.",
+   "Verifica delle scorte di soluzioni reidratanti e dispositivi infusionali nei presidi di emergenza-urgenza.",
+   "Controllo della corretta climatizzazione e ventilazione delle sale d'attesa e dei reparti di emergenza.",
+   "Sensibilizzazione dei medici di medicina generale e della rete territoriale per il monitoraggio dei pazienti cronici e fragili al domicilio.",
+   "Mantenimento dell'operativita' ordinaria della centrale operativa 118 senza necessita' di potenziamenti straordinari."
   ],
   "gruppi_vulnerabili": [
    {
-    "gruppo": "Anziani fragili e persone non autosufficienti",
-    "perche": "La temperatura percepita di 30.8 C unita all'elevata umidita' (70%) puo' ostacolare la termoregolazione e favorire disidratazione o spossatezza."
+    "gruppo": "Anziani, grandi anziani e persone non autosufficienti",
+    "perche": "La temperatura percepita di 30.8 C con umidita' al 70% riduce l'efficacia della sudorazione e della termoregolazione, aumentando il rischio di disidratazione rapida."
    },
    {
-    "gruppo": "Soggetti con patologie cardiovascolari croniche",
-    "perche": "Il disagio termico da calore umido puo' indurre cali pressori e affaticamento cardiocircolatorio."
+    "gruppo": "Pazienti con patologie croniche cardiovascolari e respiratorie",
+    "perche": "Il disagio termico moderato e l'umidita' elevata aumentano il carico cardiaco e possono indurre cali pressori o spossatezza."
    }
   ],
-  "messaggio_cittadini": "La giornata presenta condizioni stabili e buona qualita' dell'aria, ma l'umidita' elevata puo' far percepire caldo moderato. Bevete regolarmente acqua ed evitate sforzi intensi prolungati all'aperto nelle ore centrali del giorno.",
+  "messaggio_cittadini": "Le temperature percepite attorno ai 31 gradi unite all'umidita' possono provocare stanchezza e disidratazione, in particolare negli anziani. Si consiglia di bere molta acqua ed evitare sforzi prolungati all'aperto nelle ore piu' calde.",
   "rischi": [
    {
-    "effetto_atteso": "Disagio fisiologico moderato e aumento della sudorazione dovuto alla combinazione di temperatura (27.7 C) e umidita' elevata (70%).",
-    "fenomeno": "Disagio bioclimatico da calore umido (temperatura percepita 30.8 C, umidita' 70%)",
+    "effetto_atteso": "Possibile lieve incremento di accessi per spossatezza, ipotensione e disidratazione lieve in soggetti fragili a causa di temperatura percepita di 30.8 C e umidita' al 70%.",
+    "fenomeno": "Disagio termico / Calore moderato",
     "severita": "lieve"
    },
    {
-    "effetto_atteso": "Nessun impatto significativo sulla salute respiratoria della popolazione generale; valori eccellenti (AQI 32, PM10 6.2 ug/m3, PM2.5 5.0 ug/m3).",
-    "fenomeno": "Qualita' dell'aria (particolato atmosferico)",
+    "effetto_atteso": "Nessun impatto clinico; livelli ampiamente entro i limiti (AQI 32, PM10 6.2 ug/m3, PM2.5 5.0 ug/m3).",
+    "fenomeno": "Inquinamento atmosferico",
     "severita": "nessuna"
    },
    {
-    "effetto_atteso": "Assenza di sintomatologie allergiche rilevanti correlate a pollini (livelli minimi/assenti).",
-    "fenomeno": "Allergeni pollinici",
+    "effetto_atteso": "Nessuna sollecitazione per patologie allergiche respiratorie (livelli 0.0 - 0.1).",
+    "fenomeno": "Pollini aero-dispersi",
     "severita": "nessuna"
    },
    {
-    "effetto_atteso": "Nessun impatto su viabilita' o assetto idraulico/strutturale (precipitazioni 0.1 mm, vento 11.9 km/h).",
-    "fenomeno": "Precipitazioni e vento",
+    "effetto_atteso": "Nessun rischio per la rete viaria o i soccorsi (precipitazioni 0.1 mm, vento 11.9 km/h).",
+    "fenomeno": "Meteo avverso e precipitazioni",
     "severita": "nessuna"
    }
   ]

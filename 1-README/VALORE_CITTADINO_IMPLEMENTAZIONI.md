@@ -11,7 +11,11 @@ L'app serve sia chi descrive un sintomo sia chi ha già una prestazione da cerca
 ## Correzioni e cambiamenti necessari
 
 - [ ] Eliminare dal prodotto e dal pitch la gestione operativa del 118, il dispatch e i piani di deviazione. Conservare l'indicazione dei canali di emergenza quando pertinente al percorso del cittadino.
-- [ ] Rendere Cittadino il percorso principale. Trasformare Rete in monitor di dati, copertura, freschezza e bollettini ambientali.
+- [ ] Riprogettare completamente le tre schede dell'interfaccia — **Rete**, **Centrale 118** e **Cittadino** — prima di implementare nuove funzionalità:
+  - **Rete** deve diventare la dashboard della cabina di regia: raccogliere in modo più pulito e leggibile le informazioni oggi distribuite nell'app, compresi dati di rete, copertura, freschezza e bollettini ambientali.
+  - **Cittadino** deve diventare il percorso principale di orientamento alla cura, con un'esperienza tipo **HelpMe**: aiutare la persona a capire quale canale o prestazione può essere appropriato e concretamente accessibile, senza promettere diagnosi o la migliore cura in assoluto.
+  - **Centrale 118** deve essere rimossa dall'interfaccia e dal relativo codice: la gestione operativa del 118, il dispatch e i piani di deviazione sono fuori perimetro e ciò che resta non utilizzato va eliminato come dead code. Nel percorso Cittadino si possono mantenere soltanto i riferimenti ai canali di emergenza quando pertinenti.
+- [ ] Spostare nella scheda **Rete** le informazioni meteo e sui rischi che oggi vengono mostrate in **Cittadino**. La loro presentazione deve essere riprogettata in una forma più utile al cittadino: indicazione territoriale comprensibile, azioni pratiche e pertinenti, eventuali gruppi vulnerabili e canale da contattare, sempre con fonte, data/ora e distinzione tra bollettino ufficiale, dato meteo e interpretazione. Non usare il meteo per dedurre la causa dei sintomi né per produrre allerte con dati inventati o insufficienti.
 - [ ] Aggiornare USER_STORIES.md e PITCH_INTERMEDIO.md coerentemente con questo perimetro prima di implementare le nuove funzionalità.
 - [ ] Non promettere diagnosi, codice di triage validato o la migliore cura in assoluto. Distinguere orientamento, prestazione già indicata da un professionista e scelta logistica della struttura.
 - [ ] Eliminare la richiesta al modello di quantificare il tempo risparmiato senza dati comparabili. La lunghezza della coda non è il tempo di attesa individuale; una media pubblicata non è una previsione personale.
