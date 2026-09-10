@@ -12,8 +12,10 @@ Tre fonti, tutte Open-Meteo, tutte gratuite e senza API key:
 
 Ogni funzione restituisce sempre un dict con la chiave "fonte" valorizzata
 a "open-meteo" (dato fresco dalla rete), "cache" (dato letto dal disco,
-fresco o scaduto poco importa) o "fallback" (rete giù E cache vuota: numeri
-plausibili ma inventati, giusto per non far esplodere l'interfaccia).
+fresco o scaduto poco importa) o "non disponibile" (rete giù E cache vuota).
+In quest'ultimo caso il dict porta `disponibile: False` e NESSUN numero: non
+esistono valori di ripiego inventati, perché finivano nel prompt del bollettino
+e ne uscivano allerte costruite su un meteo che nessuno aveva misurato.
 La UI mostra "fonte" all'utente, quindi deve essere sempre presente e vera.
 
 Cache su disco in 2-data/cache/meteo.json e 2-data/cache/aria.json, un
@@ -63,6 +65,13 @@ URL_ARIA = os.environ.get("METEO_ARIA_URL", "https://air-quality-api.open-meteo.
 # stesso processo (es. tante località in sequenza). Ogni scrittura resta
 # comunque immediata su disco (la cache deve sopravvivere al riavvio).
 _cache_mem: dict[str, dict] = {}
+
+
+def _iso(epoch: float | None) -> str | None:
+    """Epoch -> ISO 8601. Serve a distinguere quando il dato e' stato
+    ACQUISITO da quando lo stiamo rileggendo."""
+    from datetime import datetime
+    return datetime.fromtimestamp(epoch).isoformat(timespec="seconds") if epoch else None
 
 
 def _percorso_cache(nome_file: str) -> Path:
@@ -118,48 +127,23 @@ def _http_get_json(url: str) -> dict:
     return json.loads(corpo)
 
 
-# --- Fallback: numeri plausibili quando rete e cache sono entrambe vuote ---
+# --- Assenza del dato: dichiarata, MAI sostituita con numeri plausibili ----
+#
+# Qui prima c'erano tre funzioni che restituivano una giornata romana media
+# (20 C, PM10 15, pollini a zero) quando rete e cache erano entrambe vuote.
+# Serviva a non lasciare l'interfaccia a pezzi, ma il prezzo era troppo alto:
+# quei numeri finivano nel prompt del bollettino e ne uscivano gruppi
+# vulnerabili e azioni pratiche costruiti su un meteo che nessuno aveva
+# misurato. Un'allerta calcolata su un dato inventato e' peggio di nessuna
+# allerta, perche' e' indistinguibile da una vera.
+#
+# Adesso l'assenza si dichiara: `disponibile: False`, nessuna chiave numerica,
+# e chi chiama decide cosa mostrare. Il bollettino IA non viene proprio
+# generato (vedi app._bollettino).
 
-def _fallback_corrente() -> dict:
-    """Condizioni 'medie' romane, giusto per non lasciare la UI a pezzi."""
-    return {
-        "temperatura_c": 20.0,
-        "percepita_c": 20.0,
-        "umidita_pct": 60,
-        "precipitazione_mm": 0.0,
-        "vento_kmh": 5.0,
-        "codice_meteo": 0,
-        "rilevato_il": None,
-    }
-
-
-def _fallback_storico(data: str) -> dict:
-    """Non avendo un vero storico offline, usiamo una stima da estate romana
-    tipica (per pura coincidenza vicina al dato reale del 15/07/2021: 28.0°C)."""
-    return {
-        "t_max_c": 28.0,
-        "t_min_c": 18.0,
-        "percepita_max_c": 28.0,
-        "precipitazione_mm": 0.0,
-        "data": data,
-    }
-
-
-def _fallback_aria() -> dict:
-    """Aria 'nella media', pollini bassi: scenario neutro non allarmante."""
-    return {
-        "pm10": 15.0,
-        "pm2_5": 8.0,
-        "aqi_europeo": 30,
-        "pollini": {
-            "graminacee": 0.0,
-            "olivo": 0.0,
-            "ambrosia": 0.0,
-            "ontano": 0.0,
-            "betulla": 0.0,
-        },
-        "rilevato_il": None,
-    }
+def _non_disponibile(motivo: str, **extra) -> dict:
+    return {"disponibile": False, "fonte": "non disponibile",
+            "motivo": motivo, **extra}
 
 
 # --- API pubblica ------------------------------------------------------------
@@ -171,7 +155,8 @@ def meteo_corrente(lat: float, lon: float) -> dict:
     vento_kmh, codice_meteo, rilevato_il, fonte}.
 
     Ordine dei tentativi: cache fresca (< 30 min) -> rete -> cache scaduta
-    (se la rete fallisce) -> fallback con valori plausibili.
+    (se la rete fallisce) -> dato dichiarato NON DISPONIBILE.
+    Non esiste piu' un ripiego con valori plausibili: vedi _non_disponibile.
     """
     lat_r, lon_r = round(lat, 3), round(lon, 3)
     chiave = _chiave("corrente", lat_r, lon_r)
@@ -180,7 +165,8 @@ def meteo_corrente(lat: float, lon: float) -> dict:
     adesso = time.time()
 
     if voce is not None and (adesso - voce["ts"]) < TTL_CORRENTE_S:
-        return {**voce["dati"], "fonte": "cache"}
+        return {**voce["dati"], "fonte": "cache", "disponibile": True,
+                "acquisito_il": _iso(voce["ts"])}
 
     parametri = urllib.parse.urlencode({
         "latitude": lat_r,
@@ -205,13 +191,16 @@ def meteo_corrente(lat: float, lon: float) -> dict:
         }
         cache[chiave] = {"ts": adesso, "dati": dati}
         _salva_cache(FILE_CACHE_METEO, cache)
-        return {**dati, "fonte": "open-meteo"}
-    except Exception:
-        # Rete giù, timeout, JSON inatteso: qualunque cosa vada storta,
-        # meglio un dato vecchio (o inventato) che un'eccezione in demo.
+        return {**dati, "fonte": "open-meteo", "disponibile": True,
+                "acquisito_il": _iso(time.time())}
+    except Exception as exc:
+        # Rete giù, timeout, JSON inatteso: un dato vecchio va bene purche'
+        # dichiarato tale. Un dato inventato no, a nessuna condizione.
         if voce is not None:
-            return {**voce["dati"], "fonte": "cache"}
-        return {**_fallback_corrente(), "fonte": "fallback"}
+            return {**voce["dati"], "fonte": "cache",
+                    "disponibile": True,
+                    "acquisito_il": _iso(voce["ts"])}
+        return _non_disponibile(f"meteo non raggiungibile e cache vuota ({type(exc).__name__})")
 
 
 def meteo_storico(lat: float, lon: float, data: str) -> dict:
@@ -227,7 +216,8 @@ def meteo_storico(lat: float, lon: float, data: str) -> dict:
     voce = cache.get(chiave)
 
     if voce is not None:
-        return {**voce["dati"], "fonte": "cache"}
+        return {**voce["dati"], "fonte": "cache", "disponibile": True,
+                "acquisito_il": _iso(voce["ts"])}
 
     parametri = urllib.parse.urlencode({
         "latitude": lat_r,
@@ -252,9 +242,11 @@ def meteo_storico(lat: float, lon: float, data: str) -> dict:
         }
         cache[chiave] = {"ts": time.time(), "dati": dati}
         _salva_cache(FILE_CACHE_METEO, cache)
-        return {**dati, "fonte": "open-meteo"}
-    except Exception:
-        return {**_fallback_storico(data), "fonte": "fallback"}
+        return {**dati, "fonte": "open-meteo", "disponibile": True,
+                "acquisito_il": _iso(time.time())}
+    except Exception as exc:
+        return _non_disponibile(
+            f"archivio meteo non raggiungibile ({type(exc).__name__})", data=data)
 
 
 def qualita_aria(lat: float, lon: float) -> dict:
@@ -263,7 +255,7 @@ def qualita_aria(lat: float, lon: float) -> dict:
     Ritorna: {pm10, pm2_5, aqi_europeo,
               pollini: {graminacee, olivo, ambrosia, ontano, betulla},
               rilevato_il, fonte}.
-    Stessa strategia cache/fallback di meteo_corrente (TTL 30 min).
+    Stessa strategia cache/indisponibilita' di meteo_corrente (TTL 30 min).
     """
     lat_r, lon_r = round(lat, 3), round(lon, 3)
     chiave = _chiave("aria", lat_r, lon_r)
@@ -272,7 +264,8 @@ def qualita_aria(lat: float, lon: float) -> dict:
     adesso = time.time()
 
     if voce is not None and (adesso - voce["ts"]) < TTL_ARIA_S:
-        return {**voce["dati"], "fonte": "cache"}
+        return {**voce["dati"], "fonte": "cache", "disponibile": True,
+                "acquisito_il": _iso(voce["ts"])}
 
     parametri = urllib.parse.urlencode({
         "latitude": lat_r,
@@ -301,11 +294,15 @@ def qualita_aria(lat: float, lon: float) -> dict:
         }
         cache[chiave] = {"ts": adesso, "dati": dati}
         _salva_cache(FILE_CACHE_ARIA, cache)
-        return {**dati, "fonte": "open-meteo"}
-    except Exception:
+        return {**dati, "fonte": "open-meteo", "disponibile": True,
+                "acquisito_il": _iso(time.time())}
+    except Exception as exc:
         if voce is not None:
-            return {**voce["dati"], "fonte": "cache"}
-        return {**_fallback_aria(), "fonte": "fallback"}
+            return {**voce["dati"], "fonte": "cache",
+                    "disponibile": True,
+                    "acquisito_il": _iso(voce["ts"])}
+        return _non_disponibile(
+            f"qualita' dell'aria non raggiungibile e cache vuota ({type(exc).__name__})")
 
 
 # --- Smoke test --------------------------------------------------------------
@@ -316,12 +313,12 @@ if __name__ == "__main__":
     print("=== Meteo corrente (Roma) ===")
     m1 = meteo_corrente(LAT, LON)
     print(m1)
-    assert m1["fonte"] in ("open-meteo", "cache", "fallback")
+    assert m1["fonte"] in ("open-meteo", "cache", "non disponibile")
 
     print("\n=== Meteo storico 2021-07-15 (Roma) ===")
     s1 = meteo_storico(LAT, LON, "2021-07-15")
     print(s1)
-    if s1["fonte"] != "fallback":
+    if s1.get("disponibile"):
         assert abs(s1["t_max_c"] - 28.0) < 3.0, f"t_max fuori range atteso: {s1['t_max_c']}"
         print(f"OK: t_max_c = {s1['t_max_c']} (atteso ~28.0)")
 

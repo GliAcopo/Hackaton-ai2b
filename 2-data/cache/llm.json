@@ -442,5 +442,150 @@
     "severita": "nessuna"
    }
   ]
+ },
+ "e097942729d1276416021823c27e2845": {
+  "azioni_preparatorie": [
+   "Mantenere i normali assetti operativi e di triage nei Pronto Soccorso, senza necessita' di attivazione di piani straordinari per ondate di calore o emergenze respiratorie.",
+   "Monitorare l'adeguato funzionamento degli impianti di climatizzazione e deumidificazione nelle aree di degenza e attesa (umidita' rilevata 75%).",
+   "Verificare le ordinarie scorte di liquidi per reidratazione endovenosa e presidi di base nei presidi di emergenza.",
+   "Garantire il regolare monitoraggio della centrale operativa 118 per eventuali variazioni del flusso di chiamate relative a lievi malori da afa."
+  ],
+  "gruppi_vulnerabili": [
+   {
+    "gruppo": "Anziani fragili e pazienti con patologie cardiovascolari croniche",
+    "perche": "L'elevata umidita' (75%) combinata a una temperatura percepita di 30.7 C puo' ostacolare la corretta termoregolazione e causare disidratazione o senso di spossatezza."
+   }
+  ],
+  "messaggio_cittadini": "Il clima e' caratterizzato da una moderata afa con umidita' elevata al 75% e temperatura percepita di 30.7 C, mentre la qualita' dell'aria e' buona. Si consiglia di bere regolarmente acqua ed evitare sforzi prolungati nelle ore piu' calde, in particolare per anziani e persone fragili.",
+  "rischi": [
+   {
+    "effetto_atteso": "Modesto disagio fisiologico dovuto all'elevata umidita' (75%) e temperatura percepita di 30.7 C, con possibile lieve aumento di accessi per spossatezza o lieve disidratazione nei soggetti fragili.",
+    "fenomeno": "Condizioni termoigrometriche afose (temperatura 27.7 C, percepita 30.7 C, umidita' 75%)",
+    "severita": "lieve"
+   },
+   {
+    "effetto_atteso": "Nessun impatto clinico o aumento di accessi per patologie respiratorie da inquinamento (AQI 32, PM10 7.7 ug/m3, PM2.5 6.4 ug/m3).",
+    "fenomeno": "Qualita' dell'aria (AQI 32, PM10 7.7 ug/m3, PM2.5 6.4 ug/m3)",
+    "severita": "nessuna"
+   },
+   {
+    "effetto_atteso": "Assenza di incremento di accessi o esacerbazioni per asma allergica o riniti (valori nulli o trascurabili: ambrosia 0.2, altri pollini 0.0).",
+    "fenomeno": "Concentrazione pollinica",
+    "severita": "nessuna"
+   },
+   {
+    "effetto_atteso": "Nessun impatto sulla mobilita' dei mezzi di soccorso o criticita' idrogeologiche (precipitazioni 0.2 mm, vento 16.3 km/h).",
+    "fenomeno": "Precipitazioni e vento",
+    "severita": "nessuna"
+   }
+  ]
+ },
+ "792a006144893bc7f3291c377ab133fc": {
+  "cosa_manca": [
+   "Presenza di segnali di allarme o sintomi specifici associati (es. difficolta respiratorie oggettive, letargia o convulsioni)",
+   "Temperatura corporea precisa ed eventuale mancata risposta ad antipiretici gia somministrati",
+   "Disponibilita o parere gia richiesto al pediatra di libera scelta"
+  ],
+  "opzione_id": "farmacia:SAN GIACOMO SNC DI TOMADINI GIUSEPPINA|41.89907,12.48121",
+  "spiegazione": "Per gestire la febbre di tuo figlio puoi rivolgerti alla farmacia piu vicina, raggiungibile a piedi in 1,7 minuti. Il farmacista puo fornirti subito un primo orientamento e farmaci da banco adatti all'eta senza appuntamento. In assenza di segnali di allarme o indicazione del pediatra, eviti cosi un accesso inappropriato a un pronto soccorso generalista.",
+  "titolo": "Accesso alla farmacia piu vicina per primo supporto"
+ },
+ "8218a7acc58635f14f8ba18a26f90115": {
+  "id": "evoluzione",
+  "motivo": "Capire se la situazione sta migliorando o peggiorando serve a stabilire con quale urgenza intervenire e quale struttura sanitaria sia più adatta per tuo figlio."
+ },
+ "bfde8c99ed48a85138099034f26d805a": {
+  "cosa_manca": [
+   "L'età precisa del bambino (la gestione della febbre al di sotto dei 3-6 mesi richiede immediata valutazione medica).",
+   "La presenza effettiva di segni di allarme quali respiro faticoso o affannoso, alterazione della vigilanza o letargia.",
+   "Eventuali altri sintomi associati (come convulsioni, rigidità nucale, vomito persistente o comparsa di macchie sulla pelle)."
+  ],
+  "opzione_id": "farmacia:SAN GIACOMO SNC DI TOMADINI GIUSEPPINA|41.89907,12.48121",
+  "spiegazione": "Puoi raggiungere a piedi in 1.7 minuti la farmacia SAN GIACOMO per richiedere un consiglio operativo e farmaci da banco adatti alla gestione della febbre di tuo figlio in attesa del pediatra. Trattandosi di una situazione febbrile da ieri sera senza urgenze immediate descritte, la farmacia rappresenta il punto di supporto a te più vicino e senza necessità di appuntamento. Recati invece tempestivamente in pronto soccorso se subentrano difficoltà respiratorie, sonnolenza anomala o altri segni di peggioramento.",
+  "titolo": "Accesso alla farmacia più vicina per gestione della febbre"
+ },
+ "ef97dca76ad4355c2cf205a2963e0df7": {
+  "id": "orario_disponibile",
+  "motivo": "Serve a capire se indirizzarti subito verso una struttura ad accesso diretto aperta adesso o se possiamo valutare un percorso programmabile per le prossime ore."
+ },
+ "7b9d571edc817b3445613dcf30175b1d": {
+  "cosa_manca": [
+   "Presenza di dolore a riposo o peggioramento rapido del gonfiore",
+   "Capacita' di caricare completamente il peso senza zoppicare marcatamente",
+   "Necessita' immediata di una valutazione radiografica o specialistica esclusa dal medico curante"
+  ],
+  "opzione_id": "farmacia:SAN GIACOMO SNC DI TOMADINI GIUSEPPINA|41.89907,12.48121",
+  "spiegazione": "Dato che riesci a camminare e l'evento e' recente, puoi rivolgerti a questa farmacia a 1.7 minuti per un primo consiglio e prodotti di supporto da banco senza appuntamento. Se la situazione dovesse peggiorare o se non riuscissi piu' ad appoggiare il piede, puoi considerare una struttura con pronto soccorso come San Giovanni Calibita-FBF a 4.0 minuti. In caso di dubbi sulla necessita' di accertamenti piu' approfonditi, resta indicata la valutazione del medico curante.",
+  "titolo": "Accesso consigliato per supporto iniziale in farmacia"
+ },
+ "61df2d39d33060b0a7e031a7427af2f3": {
+  "id": "mobilita",
+  "motivo": "Serve a capire quali strutture sanitarie sono concretamente raggiungibili per te per effettuare l'esame."
+ },
+ "71df51435a1a6ad699fb900ea380633f": {
+  "cosa_manca": [
+   "La classe di priorità indicata sulla prescrizione medica (U, B, D, P).",
+   "La presenza di sintomi acuti o traumatici insorti di recente rispetto alla visita del medico.",
+   "Se possiedi già un canale di prenotazione regionale (ReCUP) per fissare l'esame programmato."
+  ],
+  "opzione_id": "canale:116117",
+  "spiegazione": "Avendo già una prescrizione per un esame programmato, non ti trovi in una situazione di emergenza da pronto soccorso. Chiamando gratuitamente il 116117 puoi ricevere orientamento sui percorsi territoriali e sulle cure non urgenti senza doverti spostare. Un operatore o medico potrà indicarti i passi corretti per gestire la tua prestazione nel Servizio Sanitario Regionale.",
+  "titolo": "Contatto telefonico con il servizio 116117 per cure non urgenti"
+ },
+ "7574fc66b4c18fe23961166dd04c7d8a": {
+  "id": "evoluzione",
+  "motivo": "Capire se le condizioni di tuo figlio stanno peggiorando, migliorando o restando stabili è fondamentale per stabilire l'immediata priorità del soccorso rispetto all'inizio del disturbo."
+ },
+ "d1ff497a175ecad8e1cd3fd351a3e295": {
+  "id": "evoluzione",
+  "motivo": "Capire se la situazione sta peggiorando, migliorando o e' stabile permette di stabilire con urgenza se e' necessario l'invio immediato dei mezzi di soccorso o l'accesso tempestivo al pronto soccorso."
+ },
+ "15e32cd0d48aba8892f04998b895191a": {
+  "cosa_manca": [
+   "Dettaglio specifico sui sintomi (se si tratta di difficolta' respiratoria o alterazione dello stato di coscienza)",
+   "Eventuale disponibilita' di un Pronto Soccorso con reparto pediatrico dedicato nelle vicinanze"
+  ],
+  "opzione_id": "ps:7200",
+  "spiegazione": "Dato che sono segnalate criticita' relative a respiro o coscienza in un bambino di fascia 1-13 anni, la struttura idonea tra quelle proposte e' il Pronto Soccorso San Giovanni Calibita-FBF, raggiungibile in 4.0 minuti con accesso diretto. Le farmacie non possono gestire problemi legati a parametri vitali come respiro o coscienza. In caso di peggioramento rapido, chiama immediatamente il Numero Unico di Emergenza 112.",
+  "titolo": "Indicazione Pronto Soccorso San Giovanni Calibita-FBF"
+ },
+ "2b8233dd7d7a14f0176a75335483b6ef": {
+  "cosa_manca": [
+   "Sintomi specifici o motivo della richiesta di assistenza per il bambino",
+   "Presenza di dolore, febbre alta, traumi o altri segnali di allarme",
+   "Eventuale disponibilita' o possibilita' di contattare il pediatra di libera scelta"
+  ],
+  "opzione_id": "farmacia:SAN GIACOMO SNC DI TOMADINI GIUSEPPINA|41.89907,12.48121",
+  "spiegazione": "Dato che il bambino e' cosciente, respira normalmente e non sono descritti sintomi acuti, puoi rivolgerti alla farmacia piu' vicina a 1.7 minuti per un primo orientamento e farmaci da banco. Se i sintomi dovessero peggiorare o comparire difficolta' respiratorie, recati subito in un pronto soccorso o contatta i numeri di emergenza. In assenza di urgenza, valuta anche di consultare il tuo pediatra di libera scelta.",
+  "titolo": "Orientamento per assistenza pediatrica non urgente"
+ },
+ "487961d4e2eb3000056f4d513bef14b7": {
+  "cosa_manca": [
+   "Presenza di altri sintomi specifici o segnali di allarme (es. difficolta' respiratoria, convulsioni, disidratazione, letargia)",
+   "Reperibilita' del pediatra di libera scelta o della continuita' assistenziale (guardia medica)",
+   "Eventuali farmaci gia' assunti dal bambino per la febbre"
+  ],
+  "opzione_id": "farmacia:SAN GIACOMO SNC DI TOMADINI GIUSEPPINA|41.89907,12.48121",
+  "spiegazione": "Dato che vi muovete a piedi e il bambino e' cosciente e respira regolarmente, la farmacia piu' vicina dista 1.7 minuti e puo' offrirti subito indicazioni pratiche o farmaci da banco senza appuntamento. Se dovessero comparire difficolta' respiratorie o un rapido peggioramento dello stato generale, sara' necessario rivolgerti direttamente a un pronto soccorso o chiamare i numeri di emergenza. Nel frattempo puoi anche continuare a contattare la continuita' assistenziale per un consulto medico pediatrico.",
+  "titolo": "Accesso alla farmacia piu' vicina per primo orientamento"
+ },
+ "573b4998d13b4b48dbbf07c0491e181f": {
+  "cosa_manca": [
+   "Presenza di dolore acuto alla palpazione ossea o impossibilità a caricare il peso nei prossimi minuti/ore",
+   "Eventuale disponibilità o parere già espresso dal proprio medico di medicina generale"
+  ],
+  "opzione_id": "ps:7200",
+  "spiegazione": "Dato che la caviglia è gonfia a seguito di un trauma recente durante l'attività sportiva, è indicata una valutazione clinica con possibile accertamento radiologico, non disponibile in farmacia. Tra i pronto soccorso compatibili, il presidio San Giovanni Calibita-FBF è quello più vicino e raggiungibile in auto in 4.0 minuti.",
+  "titolo": "Accesso al Pronto Soccorso San Giovanni Calibita-FBF"
+ },
+ "27046042c1025559d6161f11fdfc1215": {
+  "cosa_manca": [
+   "La classe di priorità indicata sulla ricetta (U, B, D, P)",
+   "L'eventuale comparsa di sintomi acuti o traumi recenti al ginocchio",
+   "Il possesso del promemoria o del codice della ricetta elettronica (NRE) per la prenotazione ordinaria"
+  ],
+  "opzione_id": "canale:116117",
+  "spiegazione": "Hai già una prescrizione per un esame diagnostico programmabile, per il quale non è indicato l'accesso al pronto soccorso né il ricorso alla farmacia. Chiamando il 116117 puoi confrontarti con un medico per ricevere orientamento sui percorsi appropriati della rete sanitaria regionale per cure non urgenti. In questo modo eviti un accesso improprio alle strutture di emergenza e ottieni indicazioni chiare sui passi da seguire.",
+  "titolo": "Contattare il 116117 per orientamento sulle cure non urgenti"
  }
 }

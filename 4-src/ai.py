@@ -50,125 +50,101 @@ RED_FLAG = {
 }
 
 
-def red_flag(testo: str) -> list[str]:
-    """Sintomi tempo-dipendenti riconosciuti nel testo. Deterministico."""
+NEGAZIONI = {"non", "no", "nessun", "nessuna", "niente", "nulla", "senza",
+             "mai", "escluso", "negato", "smesso", "passato", "cessato"}
+
+# Parole che CHIUDONO la portata di una negazione: dopo di loro la frase
+# ricomincia, e il segnale che segue non e' negato.
+STOP_NEGAZIONE = {"ma", "pero", "pero'", "tuttavia", "invece", "anche", "e",
+                  "mentre", "adesso", "ora", "improvvisamente"}
+
+# Marcatori che rendono INCERTA l'attribuzione temporale o il soggetto. Non
+# spengono il segnale: lo accompagnano, perche' un elenco di parole non puo'
+# decidere di chi e di quando si sta parlando.
+MARCATORI_PASSATO = ("ieri", "settimana scorsa", "mese scorso", "anni fa",
+                     "in passato", "una volta", "da bambino", "storia di",
+                     "gia' avuto", "ha avuto")
+MARCATORI_TERZI = ("mio padre", "mia madre", "mio nonno", "mia nonna",
+                   "in famiglia", "familiare", "parente")
+
+
+def _finestra_negata(t: str, inizio: int) -> bool:
+    """C'e' una negazione che governa la parola che comincia a `inizio`?
+
+    Si guardano le sei parole precedenti. Sei perche' «non ha mai avuto dolore
+    al petto» ne ha cinque fra la negazione e il sintomo, e perche' allargando
+    ancora si finisce a negare la frase sbagliata in un testo lungo.
+
+    Se fra la negazione e il sintomo c'e' una congiunzione avversativa («non
+    respira bene ma il dolore al petto e' passato»), la negazione NON arriva
+    fino al sintomo e il segnale resta attivo. Nel dubbio si resta prudenti:
+    qui un falso positivo costa un avviso di troppo, un falso negativo costa
+    molto di piu'.
+    """
+    prima = t[:inizio].split()[-6:]
+    if not prima:
+        return False
+    for i in range(len(prima) - 1, -1, -1):
+        parola = prima[i].strip(".,;:!?")
+        if parola in STOP_NEGAZIONE:
+            return False          # l'avversativa chiude la portata della negazione
+        if parola in NEGAZIONI:
+            return True
+    return False
+
+
+def segnali_emergenza(testo: str) -> dict:
+    """Segnali tempo-dipendenti riconosciuti nel testo, con i loro limiti.
+
+    PERCHE' NON BASTA CERCARE SOTTOSTRINGHE, ed e' il motivo per cui questa
+    funzione restituisce un dict e non una lista.
+
+    La ricerca di sottostringhe non capisce:
+      - la NEGAZIONE. «non ha dolore al petto» contiene «dolore al petto».
+        Qui si guarda indietro di sei parole e si scarta il segnale se una
+        negazione lo governa (vedi _finestra_negata).
+      - il SOGGETTO. «mio padre ha avuto un infarto» parla di anamnesi
+        familiare, non di adesso. Non e' risolvibile con parole chiave: viene
+        DICHIARATO come limite, non silenziosamente ignorato.
+      - la TEMPORALITA'. «la settimana scorsa mi mancava il fiato» e «mi manca
+        il fiato» hanno lo stesso lessico ed esiti diversi. Si segnalano i
+        marcatori di passato trovati, senza decidere al posto di nessuno.
+      - i SINONIMI e il parlato. Un elenco finito non li copre tutti.
+
+    Da qui la regola che vale in tutta l'app: NESSUNA CORRISPONDENZA NON
+    SIGNIFICA ASSENZA DI RISCHIO. Il campo `limite` lo dice esplicitamente e
+    l'interfaccia lo mostra. Il percorso non si chiude mai perche' le parole
+    chiave non hanno trovato niente: si chiude solo su una risposta esplicita
+    della persona (vedi dialogo.interruzione).
+    """
     t = " " + re.sub(r"\s+", " ", (testo or "").lower()) + " "
-    return sorted({etichetta for etichetta, chiavi in RED_FLAG.items()
-                   if any(k in t for k in chiavi)})
+    attivi, negati = [], []
+    for etichetta, chiavi in RED_FLAG.items():
+        for k in chiavi:
+            pos = t.find(k)
+            if pos < 0:
+                continue
+            (negati if _finestra_negata(t, pos) else attivi).append(etichetta)
+            break
+    passato = sorted({m for m in MARCATORI_PASSATO if m in t})
+    terzi = sorted({m for m in MARCATORI_TERZI if m in t})
+    return {
+        "attivi": sorted(set(attivi)),
+        "negati": sorted(set(negati)),
+        "marcatori_passato": passato,
+        "marcatori_terzi": terzi,
+        "limite": (
+            "Riconoscimento per parole chiave: non interpreta in modo affidabile "
+            "negazioni complesse, sinonimi, chi e' il soggetto e quando e' "
+            "successo. L'assenza di segnali NON significa assenza di rischio."),
+        "incerto": bool(passato or terzi),
+    }
 
 
-# ---------------------------------------------------------------------------
-# 1. Piano di deviazione — cabina di regia
-# ---------------------------------------------------------------------------
+def red_flag(testo: str) -> list[str]:
+    """Compatibilita': solo i segnali attivi, senza il contorno."""
+    return segnali_emergenza(testo)["attivi"]
 
-SCHEMA_DEVIAZIONE = {
-    "type": "object",
-    "properties": {
-        "quota_da_deviare": {"type": "integer", "minimum": 0},
-        "codici_coinvolti": {"type": "array", "items":
-                             {"type": "string", "enum": ["bianchi", "verdi", "gialli"]}},
-        "destinazioni": {"type": "array", "items": {
-            "type": "object",
-            "properties": {
-                "nome": {"type": "string"},
-                "quota": {"type": "integer", "minimum": 0},
-                "perche": {"type": "string"},
-            },
-            "required": ["nome", "quota", "perche"],
-        }},
-        "urgenza": {"type": "integer", "minimum": 1, "maximum": 5},
-        "motivazione": {"type": "string"},
-        "azioni_operative": {"type": "array", "items": {"type": "string"}},
-        "effetto_domino": {"type": "string"},
-    },
-    "required": ["quota_da_deviare", "codici_coinvolti", "destinazioni",
-                 "urgenza", "motivazione", "azioni_operative", "effetto_domino"],
-}
-
-
-def piano_deviazione(critico, candidati: list, meteo: dict | None = None) -> dict:
-    """Come alleggerire un presidio in allarme. Numeri gia' calcolati in input."""
-    righe = "\n".join(
-        f"  - {c.nome} ({c.tipo}, {c.comune}): pressione {c.pressione_relativa}, "
-        f"capacita' residua stimata {c.posti_residui} pazienti, "
-        f"{c.in_attesa} in attesa"
-        for c in candidati[:6]
-    )
-    contesto_meteo = ""
-    if meteo:
-        contesto_meteo = (
-            f"\nCONTESTO METEO: {meteo.get('temperatura_c')} C percepiti "
-            f"{meteo.get('percepita_c')} C, umidita' {meteo.get('umidita_pct')}%.\n"
-        )
-    prompt = (
-        f"PRESIDIO IN ALLARME: {critico.nome} ({critico.tipo}, {critico.comune}, "
-        f"ASL {critico.asl})\n"
-        f"  pazienti presenti: {critico.presenti}, in attesa: {critico.in_attesa}\n"
-        f"  indice di pressione: {critico.pressione_relativa} "
-        f"(1.0 = come il presidio mediano della rete in questo istante; "
-        f"soglia di allarme 1.5)\n"
-        f"  sofferenza rispetto al proprio storico: {critico.sofferenza_relativa} "
-        f"(stessa scala: 1.0 = come la mediana della rete)\n"
-        f"  codici bianchi e verdi in attesa: {critico.deviabili_osservati}\n"
-        f"  carico deviabile stimato: {critico.carico_deviabile} pazienti\n"
-        f"  ore-paziente recuperabili: {critico.ore_paziente_recuperabili}\n"
-        f"{contesto_meteo}\n"
-        f"PRESIDI CANDIDATI AD ASSORBIRE:\n{righe}\n\n"
-        "Proponi un piano di deviazione. Vincoli assoluti:\n"
-        "- NON deviare mai codici rossi.\n"
-        "- `quota_da_deviare` non puo' superare il carico deviabile stimato.\n"
-        "- La somma delle quote nelle destinazioni deve dare `quota_da_deviare`.\n"
-        "- Non assegnare a un presidio piu' della sua capacita' residua.\n"
-        "- In `effetto_domino` di' esplicitamente se una destinazione rischia "
-        "di finire a sua volta in allarme.\n"
-        "- `azioni_operative`: massimo 4 azioni concrete e verificabili."
-    )
-    try:
-        esito = complete_json(prompt, SCHEMA_DEVIAZIONE, SISTEMA)
-    except LLMError as exc:
-        # Fallback deterministico: stessa decisione, senza prosa.
-        quota = int(critico.carico_deviabile or 0)
-        capienti = [c for c in candidati if (c.posti_residui or 0) > 0][:2]
-        esito = {
-            "quota_da_deviare": quota,
-            "codici_coinvolti": ["bianchi", "verdi"],
-            "destinazioni": [
-                {"nome": c.nome, "quota": quota // max(len(capienti), 1),
-                 "perche": f"capacita' residua stimata {c.posti_residui} pazienti"}
-                for c in capienti
-            ],
-            "urgenza": 4 if (critico.pressione or 0) >= 2 else 3,
-            "motivazione": (
-                f"Modello non disponibile ({exc}). Piano calcolato dai soli "
-                f"indici: {quota} codici a bassa intensita' deviabili da "
-                f"{critico.nome}."),
-            "azioni_operative": ["Attivare la deviazione dei codici bianchi e verdi"],
-            "effetto_domino": "Non valutato: modello non disponibile.",
-            "_fallback": True,
-        }
-    esito["presidio"] = critico.nome
-    return esito
-
-
-# ---------------------------------------------------------------------------
-# 2. Triage della chiamata — centrale 118
-# ---------------------------------------------------------------------------
-
-SCHEMA_TRIAGE = {
-    "type": "object",
-    "properties": {
-        "codice": {"type": "string", "enum": ["rosso", "giallo", "verde", "bianco"]},
-        "sintomi": {"type": "array", "items": {"type": "string"}},
-        "dea_ii_richiesto": {"type": "boolean"},
-        "paziente_pediatrico": {"type": "boolean"},
-        "red_flags": {"type": "array", "items": {"type": "string"}},
-        "sintesi": {"type": "string"},
-    },
-    "required": ["codice", "sintomi", "dea_ii_richiesto", "paziente_pediatrico",
-                 "red_flags", "sintesi"],
-}
-
-GRAVITA = {"bianco": 0, "verde": 1, "giallo": 2, "rosso": 3}
 
 # Presidi che NON accettano il paziente generico adulto. Il dato regionale non
 # lo dice: `TIPO` per il Bambino Gesu' vale "DEA II", che e' vero ma solo per
@@ -180,86 +156,6 @@ SPECIALISTICI = {                            # PS SPEC.: accesso per patologia
     "6602": "ortopedia e traumatologia",
     "3000": "oculistica",
 }
-
-
-def triage_chiamata(testo: str) -> dict:
-    """Da testo libero della chiamata a codice colore strutturato.
-
-    La regola red-flag di Python NON e' un suggerimento al modello: se scatta,
-    il codice non puo' scendere sotto il giallo qualunque cosa dica il modello.
-    """
-    bandiere = red_flag(testo)
-    prompt = (
-        f"CHIAMATA ALLA CENTRALE OPERATIVA 118:\n\"{testo}\"\n\n"
-        "Classifica secondo il triage italiano:\n"
-        "  rosso  = emergenza, pericolo di vita imminente\n"
-        "  giallo = urgenza, rischio evolutivo\n"
-        "  verde  = urgenza differibile\n"
-        "  bianco = non urgente\n"
-        "`dea_ii_richiesto` vale true solo se servono alta specialita' "
-        "(emodinamica, neurochirurgia, trauma center, rianimazione pediatrica).\n"
-        "`paziente_pediatrico` vale true se il paziente ha meno di 18 anni "
-        "(bambino, neonato, eta' dichiarata sotto i 18).\n"
-        "`sintesi`: massimo 2 frasi, per l'operatore che deve decidere subito."
-    )
-    try:
-        esito = complete_json(prompt, SCHEMA_TRIAGE, SISTEMA)
-    except LLMError as exc:
-        esito = {
-            "codice": "giallo" if bandiere else "verde",
-            "sintomi": [],
-            "dea_ii_richiesto": bool(bandiere),
-            "paziente_pediatrico": False,
-            "red_flags": bandiere,
-            "sintesi": f"Modello non disponibile ({exc}). "
-                       f"Classificazione prudenziale dalle sole parole chiave.",
-            "_fallback": True,
-        }
-
-    # --- la regola di sicurezza vince sul modello ---------------------------
-    esito["red_flags_rilevate_da_regola"] = bandiere
-    if bandiere and GRAVITA.get(esito.get("codice", "verde"), 1) < GRAVITA["giallo"]:
-        esito["codice_modello"] = esito["codice"]
-        esito["codice"] = "giallo"
-        esito["corretto_da_regola"] = True
-    esito["chiama_118"] = bool(bandiere) or esito.get("codice") == "rosso"
-    return esito
-
-
-def destinazioni_per_chiamata(triage: dict, vicini: list) -> list[dict]:
-    """Ordina i presidi per la chiamata. Ordinamento DETERMINISTICO, in Python.
-
-    Criteri, in ordine: idoneita' (un DEA II serve se richiesto), poi coda
-    osservata, poi tempo di percorrenza. Il modello non tocca questa lista.
-    """
-    serve_dea_ii = bool(triage.get("dea_ii_richiesto"))
-    pediatrico = bool(triage.get("paziente_pediatrico"))
-    esito = []
-    for v in vicini:
-        cod = str(v.get("codice"))
-        idoneo, motivo = True, "livello adeguato al codice"
-
-        # L'incompatibilita' di popolazione viene PRIMA del livello di cura:
-        # un DEA II pediatrico resta inadatto a un adulto per quanto attrezzato.
-        if cod in SOLO_PEDIATRICI and not pediatrico:
-            idoneo, motivo = False, "presidio pediatrico: non accetta adulti"
-        elif pediatrico and cod in SOLO_PEDIATRICI:
-            idoneo, motivo = True, "presidio pediatrico specializzato"
-        elif cod in SPECIALISTICI:
-            idoneo = False
-            motivo = f"pronto soccorso specialistico ({SPECIALISTICI[cod]}): non generalista"
-        elif serve_dea_ii and v.get("tipo") != "DEA II":
-            idoneo, motivo = False, "non e' un DEA II: alta specialita' non disponibile"
-        elif serve_dea_ii:
-            motivo = "DEA II richiesto per alta specialita'"
-
-        esito.append({**v, "idoneo": idoneo, "motivo_idoneita": motivo})
-    esito.sort(key=lambda d: (
-        not d["idoneo"],
-        d.get("durata_min") or 999,
-        d.get("pressione") or 0,
-    ))
-    return esito
 
 
 # ---------------------------------------------------------------------------
@@ -341,90 +237,215 @@ def bollettino_sanitario(meteo: dict, aria: dict | None = None) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# 4. Consiglio al cittadino
+# 3. Quale domanda fare adesso (dialogo adattivo)
 # ---------------------------------------------------------------------------
+#
+# Il modello sceglie un ID da un elenco CHIUSO che gli passa `dialogo.py`, e
+# motiva la scelta. Non puo' inventare domande, non puo' introdurre regole
+# cliniche, non decide se il percorso si interrompe. Se propone un ID fuori
+# elenco, `dialogo.passo()` scarta la proposta e lo dichiara.
 
-SCHEMA_CITTADINO = {
+SCHEMA_DOMANDA = {
     "type": "object",
     "properties": {
-        "dove": {"type": "string",
-                 "enum": ["118", "pronto_soccorso", "struttura_territoriale",
-                          "farmacia", "medico_di_base"]},
-        "motivazione": {"type": "string"},
-        "alternative": {"type": "array", "items": {"type": "string"}},
-        "cosa_fare_subito": {"type": "string"},
+        "id": {"type": "string"},
+        "motivo": {"type": "string"},
     },
-    "required": ["dove", "motivazione", "alternative", "cosa_fare_subito"],
+    "required": ["id", "motivo"],
 }
 
 
-def consiglio_cittadino(sintomo: str, vicini: list,
-                        territoriali: list | None = None) -> dict:
-    """Dove conviene andare. Se scatta una red flag, il 118 vince e basta."""
-    bandiere = red_flag(sintomo)
-    if bandiere:
-        # Non si interpella nemmeno il modello: e' una decisione che non gli
-        # compete e ogni secondo di latenza sarebbe tempo sottratto.
+def prossima_domanda(testo: str, ammessi: list[dict], fatti: dict) -> dict | None:
+    """Quale fra le domande gia' dichiarate applicabili conviene fare adesso."""
+    if not ammessi:
+        return None
+    righe = "\n".join(
+        f"  - id: {d['id']}\n    domanda: {d['testo']}\n    chiarisce: {d.get('chiarisce','')}"
+        for d in ammessi)
+    noti = fatti if isinstance(fatti, str) else (
+        ", ".join(f"{k}={v}" for k, v in (fatti or {}).items()) or "niente")
+    prompt = (
+        "Una persona sta cercando di capire a quale servizio sanitario "
+        "rivolgersi. Ha scritto:\n"
+        f"\"{(testo or '(nessuna descrizione)')[:600]}\"\n\n"
+        f"GIA' NOTO: {noti}\n\n"
+        f"DOMANDE CHE E' AMMESSO FARE ADESSO:\n{righe}\n\n"
+        "Scegli l'UNICA domanda la cui risposta puo' cambiare di piu' il "
+        "percorso di questa persona.\n"
+        "- `id` DEVE essere uno degli id elencati sopra, copiato esattamente.\n"
+        "- Non proporre domande diverse da queste e non aggiungere criteri "
+        "clinici tuoi.\n"
+        "- `motivo`: una frase, rivolta alla persona, che spiega a cosa serve.")
+    try:
+        return complete_json(prompt, SCHEMA_DOMANDA, SISTEMA)
+    except LLMError:
+        return None      # nessuna proposta: decide l'ordine del catalogo
+
+
+# ---------------------------------------------------------------------------
+# 4. Orientamento del cittadino
+# ---------------------------------------------------------------------------
+
+SCHEMA_ORIENTAMENTO = {
+    "type": "object",
+    "properties": {
+        "opzione_id": {"type": "string"},
+        "titolo": {"type": "string"},
+        "spiegazione": {"type": "string"},
+        "cosa_manca": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["opzione_id", "titolo", "spiegazione", "cosa_manca"],
+}
+
+CANALE_PER_GENERE = {
+    "pronto_soccorso": "pronto_soccorso",
+    "farmacia": "farmacia",
+    "struttura_accreditata": "struttura_territoriale",
+    "canale_telefonico": "continuita_assistenziale_116117",
+    "medico_di_famiglia": "medico_di_famiglia",
+}
+
+AVVERTENZE = [
+    "Questo strumento non fa diagnosi e non attribuisce un codice di triage: "
+    "aiuta a capire quale canale puo' essere appropriato e raggiungibile.",
+    "Se la situazione peggiora, o se hai un dubbio, chiama il 112.",
+    "Un dato mancante non significa che un servizio sia assente: significa che "
+    "va verificato sul canale ufficiale indicato.",
+]
+
+
+def orientamento(testo: str, confronto: dict, fatti: dict,
+                 segnali: dict | None = None,
+                 fatti_leggibili: str = "") -> dict:
+    """Sceglie e spiega UNA opzione fra quelle gia' calcolate in Python.
+
+    DUE COSE CHE QUESTA FUNZIONE NON FA, e sono deliberate.
+
+    1. Non inventa destinazioni. Il modello restituisce un `opzione_id`, e
+       quell'id viene cercato fra gli id realmente esistenti. Se non c'e' - se
+       il modello ha scritto un nome di ospedale che gli e' venuto in mente -
+       la scelta viene scartata e si ripiega sulla prima opzione compatibile
+       calcolata dalle regole. Nessun nome mostrato all'utente puo' provenire
+       dal modello.
+
+    2. Non quantifica il tempo risparmiato. Il prompt lo vieta esplicitamente,
+       perche' non abbiamo dati comparabili: la coda di un pronto soccorso non
+       si converte nel tempo di attesa di chi arriva adesso.
+
+    IL FALLBACK NON E' RASSICURANTE. Se il modello non risponde, la vecchia
+    versione ripiegava su «vai in una struttura territoriale», che e' un
+    consiglio sanitario dato da un `except`. Adesso il fallback dichiara di non
+    poter concludere e indirizza al 116117, che e' il canale fatto apposta per
+    ricevere una domanda a cui questa app non sa rispondere.
+    """
+    compatibili = confronto.get("opzioni") or []
+    validi = {o["id"]: o for gruppo in ("opzioni", "non_verificabili", "escluse")
+              for o in confronto.get(gruppo, []) for _ in (0,)}
+    validi = {o["id"]: o
+              for gruppo in ("opzioni", "non_verificabili", "escluse")
+              for o in confronto.get(gruppo, [])}
+
+    def esito(opzione, deciso_da, certezza, titolo, spiegazione, manca):
         return {
-            "dove": "118",
-            "motivazione": ("Nella descrizione compaiono sintomi che richiedono "
-                            "soccorso immediato: " + ", ".join(bandiere) + "."),
-            "alternative": [],
-            "cosa_fare_subito": "Chiama subito il 118. Non metterti in viaggio da solo.",
-            "red_flags_rilevate_da_regola": bandiere,
-            "chiama_118": True,
-            "deciso_da": "regola di sicurezza (nessuna chiamata al modello)",
+            "canale": CANALE_PER_GENERE.get((opzione or {}).get("genere"),
+                                            "non_determinabile"),
+            "opzione_id": (opzione or {}).get("id"),
+            "titolo": titolo,
+            "spiegazione": spiegazione,
+            "deciso_da": deciso_da,
+            "certezza": certezza,
+            "cosa_manca": manca,
         }
 
+    if not compatibili:
+        return esito(
+            next((o for o in confronto.get("non_verificabili", [])
+                  if o["genere"] == "canale_telefonico"), None),
+            "regole deterministiche", "dichiaratamente_incerta",
+            "Non riusciamo a indicarti un'opzione compatibile",
+            "Con le informazioni disponibili nessuna delle alternative che "
+            "conosciamo risulta compatibile con il tuo percorso. Il 116117 e' "
+            "il canale giusto per farsi indicare cosa fare da un medico.",
+            ["nessuna opzione compatibile fra quelle note"])
+
     righe = "\n".join(
-        f"  - {v.get('nome')} ({v.get('tipo', 'presidio')}), "
-        f"{v.get('durata_min', '?')} minuti, "
-        f"{v.get('in_attesa', '?')} persone in attesa"
-        for v in vicini[:6]
-    )
-    # La medicina di prossimita' e' il punto della traccia: senza queste righe
-    # il modello puo' solo scegliere fra ospedali, e consiglierebbe il pronto
-    # soccorso anche quando basta una farmacia sotto casa.
-    righe_terr = "\n".join(
-        f"  - {t.get('nome')} ({t.get('genere')}), {t.get('indirizzo')}, "
-        f"{t.get('distanza_km')} km"
-        for t in (territoriali or [])[:6]
-    ) or "  (nessun presidio territoriale geolocalizzato nel raggio)"
+        f"  - id: {o['id']}\n    nome: {o['nome']} ({o['genere']})\n"
+        f"    perche' compatibile: {o['motivo']}"
+        + (f"\n    viaggio: {o['viaggio']['durata_min']} minuti"
+           if o.get("viaggio") else "")
+        + (f"\n    persone in coda adesso: {o['coda']['in_attesa']}"
+           if (o.get("coda") or {}).get("in_attesa") is not None else "")
+        for o in compatibili[:6])
+    # `fatti` puo' essere gia' la descrizione leggibile costruita da
+    # dialogo.descrivi(): in quel caso si usa cosi' com'e'.
+    noti = fatti_leggibili if fatti_leggibili else (
+        "\n".join(f"  - {k}: {v}" for k, v in (fatti or {}).items()) or "  niente")
+    nota_segnali = ""
+    if segnali and segnali.get("incerto"):
+        nota_segnali = ("\nATTENZIONE: nel testo ci sono riferimenti al passato o "
+                        "a un'altra persona. Non dare per scontato che i sintomi "
+                        "siano attuali e di chi scrive.\n")
+
     prompt = (
-        f"UNA PERSONA DESCRIVE COSI' IL PROPRIO PROBLEMA:\n\"{sintomo}\"\n\n"
-        f"PRONTO SOCCORSO VICINI (dati reali, gia' calcolati):\n{righe}\n\n"
-        f"PRESIDI TERRITORIALI VICINI:\n{righe_terr}\n\n"
-        "Consiglia dove conviene rivolgersi. Regole:\n"
-        "- Non fare diagnosi: indica solo il livello di assistenza adeguato.\n"
-        "- Se il caso e' minore, indirizza a una farmacia o struttura "
-        "territoriale NOMINANDOLA fra quelle elencate, e spiega quanto tempo "
-        "si risparmia rispetto alla coda del pronto soccorso.\n"
-        "- `cosa_fare_subito`: una frase pratica.\n"
-        "- Chiudi sempre ricordando che in caso di peggioramento si chiama il 118."
-    )
+        f"UNA PERSONA HA DESCRITTO COSI' LA SUA SITUAZIONE:\n"
+        f"\"{(testo or '(nessuna descrizione)')[:600]}\"\n\n"
+        f"INFORMAZIONI RACCOLTE (domanda -> risposta della persona):\n{noti}\n"
+        f"{nota_segnali}\n"
+        f"OPZIONI GIA' VERIFICATE COMPATIBILI (scegline UNA):\n{righe}\n\n"
+        "Indica quale conviene e spiega perche' a questa persona.\n"
+        "VINCOLI ASSOLUTI:\n"
+        "- `opzione_id` DEVE essere uno degli id elencati sopra, copiato "
+        "esattamente. Non nominare strutture che non compaiono in questo elenco.\n"
+        "- NON fare diagnosi e non ipotizzare la causa del problema.\n"
+        "- NON stimare quanto tempo si risparmia ne' quanto si aspettera': non "
+        "abbiamo dati per dirlo, e la coda non e' il tempo di attesa personale.\n"
+        "- NON dire che una struttura e' migliore perche' ha meno gente in "
+        "attesa: dice solo che in quel momento c'era meno fila.\n"
+        "- `cosa_manca`: le informazioni che, se le sapessimo, potrebbero far "
+        "cambiare questa indicazione.\n"
+        "- `spiegazione`: massimo 3 frasi, in seconda persona, concrete.")
+
     try:
-        esito = complete_json(prompt, SCHEMA_CITTADINO, SISTEMA)
-        esito["deciso_da"] = "modello, entro le opzioni calcolate"
+        r = complete_json(prompt, SCHEMA_ORIENTAMENTO, SISTEMA)
     except LLMError as exc:
-        esito = {
-            "dove": "struttura_territoriale",
-            "motivazione": f"Modello non disponibile ({exc}).",
-            "alternative": [v.get("nome") for v in vicini[:3]],
-            "cosa_fare_subito": "Contatta il tuo medico di base o una farmacia.",
-            "_fallback": True,
-            "deciso_da": "fallback deterministico",
-        }
-    esito["red_flags_rilevate_da_regola"] = []
-    esito["chiama_118"] = False
-    esito["avvertenza"] = ("Questo strumento non sostituisce un parere medico. "
-                           "In caso di peggioramento chiama il 118.")
-    return esito
+        primo = compatibili[0]
+        return esito(
+            primo, "regole deterministiche (modello non disponibile)", "media",
+            f"Opzione piu' vicina fra quelle compatibili: {primo['nome']}",
+            f"Il modello non e' disponibile ({exc}), quindi questa non e' una "
+            f"scelta motivata sul tuo caso: e' la prima opzione compatibile per "
+            f"distanza. {primo['motivo']} Se hai un dubbio, chiama il 116117.",
+            ["motivazione personalizzata non disponibile"])
+
+    scelto = validi.get(str(r.get("opzione_id") or ""))
+    if scelto is None or scelto["compatibilita"] != "compatibile":
+        # Il modello ha nominato qualcosa che non esiste o che le regole hanno
+        # gia' escluso. Si scarta e lo si dichiara.
+        primo = compatibili[0]
+        return esito(
+            primo, "regole deterministiche (proposta del modello scartata)",
+            "media",
+            f"Opzione compatibile piu' vicina: {primo['nome']}",
+            f"{primo['motivo']} La proposta del modello e' stata scartata perche' "
+            f"indicava una destinazione non presente fra le opzioni verificate.",
+            ["motivazione personalizzata non disponibile"]) | {
+            "scarto_modello": {"opzione_id_proposto": r.get("opzione_id"),
+                               "motivo": "identificativo inesistente o gia' escluso"}}
+
+    return esito(scelto, "modello, entro le opzioni verificate", "media",
+                 str(r.get("titolo") or scelto["nome"]),
+                 str(r.get("spiegazione") or scelto["motivo"]),
+                 [str(x) for x in (r.get("cosa_manca") or [])])
 
 
 if __name__ == "__main__":
-    print("--- regola red-flag, deterministica, nessun modello coinvolto ---")
-    for t in ["mio figlio ha 38.5 di febbre da ieri sera",
-              "uomo 62 anni con forte dolore al petto che si irradia al braccio",
-              "caviglia gonfia dopo una storta giocando a calcetto",
-              "mia madre non parla piu' e ha la bocca storta"]:
-        print(f"  {red_flag(t) or '(nessuna)'}  <- {t[:52]}")
+    print("--- riconoscimento dei segnali: deterministico, nessun modello ---")
+    for frase in ["mio figlio ha 38.5 di febbre da ieri sera",
+                  "uomo 62 anni con forte dolore al petto che si irradia al braccio",
+                  "non ha dolore al petto e respira bene",
+                  "mio padre ha avuto un infarto dieci anni fa",
+                  "mia madre non parla piu' e ha la bocca storta"]:
+        s = segnali_emergenza(frase)
+        print(f"  attivi={s['attivi'] or '—'} negati={s['negati'] or '—'} "
+              f"incerto={s['incerto']}  <- {frase[:46]}")
+    print("\n  " + segnali_emergenza("")["limite"])

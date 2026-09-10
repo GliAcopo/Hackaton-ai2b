@@ -17,17 +17,33 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-# Casi che verranno mostrati alla giuria. Se cambia la scaletta, cambia qui.
-CHIAMATE_118 = [
-    "uomo 62 anni, dolore al petto che si irradia al braccio sinistro, "
-    "suda freddo, cosciente, zona Torre Angela",
-    "donna 34 anni, caviglia gonfia dopo caduta, cammina con difficolta', "
-    "zona Tuscolana",
-    "bambino 6 anni, febbre 38.5 da ieri sera, beve e gioca, zona Centocelle",
-]
-SINTOMI_CITTADINO = [
-    "mio figlio ha 38.5 di febbre da ieri sera e non trovo il pediatra",
-    "mi sono storto la caviglia giocando a calcetto, e' gonfia ma cammino",
+# I percorsi che verranno mostrati alla giuria. Se cambia la scaletta, cambia
+# qui. Ogni voce e' un dialogo gia' concluso: testo iniziale piu' le risposte.
+PERCORSI_CITTADINO = [
+    {
+        "nome": "bambino con febbre, a piedi",
+        "ingresso": "problema",
+        "testo": "mio figlio ha 38.5 di febbre da ieri sera e non trovo il pediatra",
+        "risposte": [("respiro_o_coscienza", "si"), ("destinatario", "figlio"),
+                     ("eta_fascia", "1_13"), ("durata", "oggi"),
+                     ("gia_valutato", "no"), ("mobilita", "piedi")],
+    },
+    {
+        "nome": "caviglia, adulto con auto",
+        "ingresso": "problema",
+        "testo": "mi sono storto la caviglia giocando a calcetto, e' gonfia ma cammino",
+        "risposte": [("respiro_o_coscienza", "si"), ("destinatario", "me"),
+                     ("eta_fascia", "18_64"), ("durata", "oggi"),
+                     ("gia_valutato", "no"), ("mobilita", "auto")],
+    },
+    {
+        "nome": "prestazione gia' indicata: RMN",
+        "ingresso": "prestazione",
+        "testo": "il medico mi ha prescritto una risonanza al ginocchio",
+        "risposte": [("destinatario", "me"), ("eta_fascia", "18_64"),
+                     ("prestazione_cercata", "rmn"), ("prescrizione", "si"),
+                     ("mobilita", "auto")],
+    },
 ]
 ROMA = (41.8933, 12.4829)
 
@@ -38,7 +54,7 @@ def main() -> int:
         # nessun backend interpellato: se qualcosa manca in cache, si vede
         os.environ["LLM_SOLO_CACHE"] = "1"
 
-    import ai, indici, meteo, percorsi  # noqa: E402  (dopo l'env)
+    import ai, dialogo, indici, meteo, opzioni, percorsi  # noqa: E402  (dopo l'env)
 
     esiti, mancanti = [], []
 
@@ -59,7 +75,7 @@ def main() -> int:
     for chiave in indici.ORDINAMENTI:
         passo(f"rete/{chiave}", lambda c=chiave: indici.rete(c))
 
-    lista, _ = indici.rete("deviabile")
+    lista, meta_rete = indici.rete("attesa")
     critico = lista[0]
 
     # 2. meteo e aria: della citta' e di ogni presidio che la demo tocca
@@ -67,6 +83,7 @@ def main() -> int:
     passo("aria/roma", lambda: meteo.qualita_aria(*ROMA))
     passo("meteo/2021-07-15", lambda: meteo.meteo_storico(*ROMA, "2021-07-15"))
     passo("meteo/critico", lambda: meteo.meteo_corrente(critico.lat, critico.lon))
+    passo("copertura/territorio", lambda: opzioni._apparecchiature().get("riepilogo"))
 
     # 3. percorsi dai punti della demo verso i presidi piu' vicini
     vicini = sorted((i for i in lista if i.lat),
@@ -76,21 +93,41 @@ def main() -> int:
               lambda v=v: percorsi.percorso(*ROMA, v.lat, v.lon))
 
     # 4. le chiamate al modello: la parte cara
-    m = meteo.meteo_corrente(critico.lat, critico.lon)
-    escludi = ai.SOLO_PEDIATRICI | set(ai.SPECIALISTICI)
-    cand = sorted((i for i in lista
-                   if i.codice != critico.codice and i.codice not in escludi
-                   and (i.posti_residui or 0) > 0),
-                  key=lambda i: -(i.posti_residui or 0))
-    passo("ia/piano_deviazione", lambda: ai.piano_deviazione(critico, cand, m))
-    passo("ia/bollettino", lambda: ai.bollettino_sanitario(
-        meteo.meteo_corrente(*ROMA), meteo.qualita_aria(*ROMA)))
-    for t in CHIAMATE_118:
-        passo(f"ia/triage: {t[:34]}", lambda t=t: ai.triage_chiamata(t))
-    vicini_d = [{"nome": v.nome, "tipo": v.tipo, "codice": v.codice,
-                 "in_attesa": v.in_attesa, "durata_min": 10} for v in vicini[:5]]
-    for s in SINTOMI_CITTADINO:
-        passo(f"ia/cittadino: {s[:32]}", lambda s=s: ai.consiglio_cittadino(s, vicini_d))
+    m = meteo.meteo_corrente(*ROMA)
+    if m.get("disponibile"):
+        a = meteo.qualita_aria(*ROMA)
+        passo("ia/bollettino", lambda: ai.bollettino_sanitario(
+            m, a if a.get("disponibile") else None))
+    else:
+        # Nessun meteo misurato: il bollettino non si genera, e non e' un
+        # errore da segnare come mancante. E' il comportamento corretto.
+        esiti.append(("ia/bollettino", 0.0, "saltato: meteo non disponibile"))
+
+    # 5. i percorsi del cittadino, dal dialogo fino al confronto delle opzioni
+    for caso in PERCORSI_CITTADINO:
+        risposte = [{"id": i, "valore": v} for i, v in caso["risposte"]]
+
+        # ogni passo intermedio del dialogo: la proposta della prossima domanda
+        # e' una chiamata al modello, e in demo deve arrivare dalla cache
+        def _dialoghi(caso=caso, risposte=risposte):
+            for k in range(len(risposte)):
+                parziali = risposte[:k]
+                stato = dialogo.passo(caso["ingresso"], parziali)
+                if not stato.get("domanda") or stato.get("proposta_da") == "regola_obbligatoria":
+                    continue
+                ammessi = [dialogo.per_id(x) for x in stato.get("id_ammessi", [])]
+                ai.prossima_domanda(caso["testo"], [d for d in ammessi if d],
+                                    stato.get("fatti", {}))
+            return {"passi": len(risposte)}
+        passo(f"dialogo/{caso['nome'][:26]}", _dialoghi)
+
+        def _orienta(caso=caso, risposte=risposte):
+            fatti = {r["id"]: r["valore"] for r in risposte}
+            confronto = opzioni.confronta(caso["ingresso"], fatti, lista, meta_rete,
+                                          *ROMA)
+            return ai.orientamento(caso["testo"], confronto, fatti,
+                                   ai.segnali_emergenza(caso["testo"]))
+        passo(f"ia/orientamento: {caso['nome'][:24]}", _orienta)
 
     larghezza = max(len(n) for n, _, _ in esiti)
     for nome, secondi, stato in esiti:

@@ -42,7 +42,10 @@ import llm  # noqa: E402
 import meteo  # noqa: E402
 import percorsi  # noqa: E402
 import territorio  # noqa: E402
-from indici import ORDINAMENTI, rete, simula  # noqa: E402
+import dialogo  # noqa: E402
+import opzioni  # noqa: E402
+import voce  # noqa: E402
+from indici import ORDINAMENTI, rete  # noqa: E402
 
 WEB = Path(__file__).resolve().parent.parent / "5-web"
 ROMA = (41.8933, 12.4829)
@@ -74,6 +77,274 @@ def _vicini(lat: float, lon: float, indici: list, quanti: int = 5) -> list[dict]
     return esito
 
 
+# Tetto al corpo di una richiesta. L'audio ha il suo limite dentro voce.py.
+MAX_CORPO = 12 * 1024 * 1024
+
+
+def _copertura() -> dict:
+    """Che dati abbiamo davvero, quanto coprono e cosa NON dicono.
+
+    E' la risposta a «quanto e' solida questa scelta» a livello di sistema: chi
+    guarda deve poter vedere dove i dati finiscono, senza doverlo dedurre da
+    una risposta che sembra completa.
+    """
+    sorgenti = []
+    try:
+        _, meta = rete("attesa", "live")
+        sorgenti.append({
+            "nome": "Pronto soccorso — stato in tempo reale",
+            "stato": "attiva",
+            "copertura": f"{meta.get('con_dato')}/{meta.get('presidi')} presidi trasmettono",
+            "non_coperti": meta.get("senza_dato") or [],
+            "istante_fonte": meta.get("istante_fonte"),
+            "istante_fonte_pubblicato": meta.get("istante_fonte_pubblicato"),
+            "acquisito_il": meta.get("acquisito_il"),
+            "da_cache": meta.get("da_cache"),
+            "fonte_url": meta.get("fonte_url"),
+            "limiti": meta.get("limiti") or [],
+        })
+    except Exception as exc:  # noqa: BLE001
+        sorgenti.append({"nome": "Pronto soccorso — stato in tempo reale",
+                         "stato": "non raggiungibile", "motivo": str(exc)})
+
+    st = territorio.statistiche()
+    for chiave, etichetta, fonte in (
+            ("farmacie", "Farmacie", "Anagrafe regionale delle farmacie"),
+            ("strutture_accreditate", "Strutture private accreditate",
+             "Anagrafe regionale delle strutture accreditate")):
+        v = st.get(chiave, {})
+        sorgenti.append({
+            "nome": etichetta, "stato": "parziale",
+            "copertura": (f"{v.get('con_posizione_attendibile')}/{v.get('totale')} "
+                          "con posizione attendibile"),
+            "fonte_url": "https://dati.lazio.it/",
+            "limiti": [
+                "Le coordinate ripetute o coincidenti col centro del comune sono "
+                "marcate come non attendibili ed escluse dalla ricerca per prossimita'.",
+                "Orari, turni e prestazioni erogate per sede non sono nel dataset: "
+                "vanno verificati sul canale ufficiale.",
+            ],
+        })
+        sorgenti[-1]["fonte"] = fonte
+
+    app = opzioni._apparecchiature()
+    r = app.get("riepilogo") or {}
+    sorgenti.append({
+        "nome": "Grandi apparecchiature sanitarie",
+        "stato": "attiva" if r else "assente",
+        "copertura": (f"{r.get('righe_lette', 0)} righe, {r.get('strutture', 0)} sedi, "
+                      f"{r.get('abbinate_a_un_presidio', 0)} abbinate a un pronto soccorso"),
+        "fonte": (app.get("provenienza") or {}).get("fonte"),
+        "fonte_url": (app.get("provenienza") or {}).get("pagina"),
+        "istante_fonte": (app.get("provenienza") or {}).get("data_dataset"),
+        "acquisito_il": (app.get("provenienza") or {}).get("data_download"),
+        "limiti": app.get("limiti") or [],
+    })
+
+    return {
+        "sorgenti": sorgenti,
+        "catalogo_domande": dialogo.intestazione(),
+        "voce": voce.stato(),
+        "non_risolti": {
+            "apparecchiature_senza_abbinamento": len(app.get("non_risolti") or []),
+            "nota": ("Le associazioni non risolte sono elencate nel file derivato e "
+                     "non influenzano alcun consiglio: un abbinamento incerto vale "
+                     "come nessun abbinamento."),
+        },
+    }
+
+
+def _bollettino(lat: float, lon: float) -> dict:
+    """Contesto ambientale, con i tre livelli di prova tenuti separati.
+
+    Se il dato misurato non c'e', NON si genera alcuna interpretazione. Prima
+    esisteva un meteo di ripiego con numeri plausibili, e il bollettino usciva
+    lo stesso: un'allerta costruita su un dato che nessuno aveva misurato e'
+    indistinguibile da una vera, ed e' il motivo per cui e' stata tolta.
+    """
+    m = meteo.meteo_corrente(lat, lon)
+    a = meteo.qualita_aria(lat, lon)
+    misurato = bool(m.get("disponibile"))
+
+    esito = {
+        "disponibile": misurato,
+        "meteo": m,
+        "aria": a,
+        # Nessun bollettino ufficiale e' integrato: dirlo e' parte del punto.
+        "bollettino_ufficiale": {
+            "presente": False,
+            "nota": ("Il bollettino ufficiale sulle ondate di calore della Regione "
+                     "non e' integrato in questo prototipo: quanto segue e' un dato "
+                     "meteo da modello e la sua interpretazione, non un'allerta "
+                     "ufficiale."),
+            "fonte_url": "https://salutelazio.it/it/salute-lazio-comunica/ondate-di-calore-2026",
+        },
+        "livelli_di_prova": {
+            "misurato": (["temperatura_c", "percepita_c", "umidita_pct",
+                          "precipitazione_mm", "vento_kmh"] if misurato else []),
+            "ufficiale": [],
+            "interpretazione": ["rischi", "gruppi_vulnerabili",
+                                "azioni_preparatorie", "messaggio_cittadini"],
+        },
+        "limite": ("Il meteo non spiega la causa di un sintomo. Serve a dare "
+                   "contesto territoriale, non a dedurre diagnosi."),
+    }
+    if misurato:
+        esito["interpretazione"] = ai.bollettino_sanitario(m, a if a.get("disponibile") else None)
+    else:
+        esito["motivo"] = m.get("motivo", "dato ambientale non disponibile")
+    return esito
+
+
+def _voce(grezzo: bytes, tipo_contenuto: str) -> dict:
+    """Trascrizione di un audio caricato dal browser.
+
+    Il file arriva come multipart. Si estrae la sola parte binaria e la si
+    passa a `voce.py`, che genera un nome temporaneo lato server, applica i
+    limiti e ripulisce sempre. Il nome originale scelto dal client non viene
+    usato per costruire alcun percorso: solo l'estensione, e solo se ammessa.
+    """
+    if "multipart/form-data" not in tipo_contenuto or "boundary=" not in tipo_contenuto:
+        return {"testo": None, "backend": None, "tentativi": [],
+                "errore": "atteso multipart/form-data con un campo `audio`"}
+    confine = tipo_contenuto.split("boundary=", 1)[1].strip().strip('"')
+    sep = ("--" + confine).encode()
+    nome_originale = ""
+    for parte in grezzo.split(sep):
+        if b"\r\n\r\n" not in parte:
+            continue
+        intestazioni, corpo_parte = parte.split(b"\r\n\r\n", 1)
+        testa = intestazioni.decode("utf-8", "replace")
+        if 'name="audio"' not in testa:
+            continue
+        if "filename=" in testa:
+            nome_originale = testa.split("filename=", 1)[1].split('"')[1] \
+                if '"' in testa.split("filename=", 1)[1] else ""
+        dati = corpo_parte.rstrip(b"\r\n-")
+        if not dati:
+            break
+        percorso = None
+        try:
+            percorso = voce.salva_temporaneo(dati, nome_originale)
+            return voce.trascrivi(percorso)
+        except Exception as exc:  # noqa: BLE001
+            return {"testo": None, "backend": None, "tentativi": [],
+                    "errore": f"{type(exc).__name__}: {exc}"}
+        finally:
+            if percorso:
+                try:
+                    os.unlink(percorso)
+                except OSError:
+                    pass
+    return {"testo": None, "backend": None, "tentativi": [],
+            "errore": "nessun campo `audio` nel corpo della richiesta"}
+
+
+def _dialogo(corpo: dict) -> dict:
+    """Un giro del dialogo adattivo. Nessuno stato conservato sul server."""
+    ingresso = str(corpo.get("ingresso") or "problema")
+    testo = str(corpo.get("testo") or "")
+    risposte = dialogo.normalizza_risposte(corpo.get("risposte"))
+
+    # Il modello propone solo se ci sono candidate e se non e' stato disattivato.
+    provvisorio = dialogo.passo(ingresso, risposte)
+    scelta = None
+    if (corpo.get("usa_modello", True) and provvisorio.get("domanda")
+            and provvisorio.get("proposta_da") != "regola_obbligatoria"):
+        ammessi = [dialogo.per_id(i) for i in provvisorio.get("id_ammessi", [])]
+        scelta = ai.prossima_domanda(testo, [d for d in ammessi if d],
+                                     dialogo.descrivi(risposte))
+
+    esito = dialogo.passo(ingresso, risposte, scelta)
+    segnali = ai.segnali_emergenza(testo)
+    esito["emergenza"] = {
+        "attiva": bool(segnali["attivi"]),
+        "segnali": segnali["attivi"],
+        "negati": segnali["negati"],
+        "incerto": segnali["incerto"],
+        "avviso": ("Nella descrizione compaiono segnali che richiedono soccorso "
+                   "immediato: chiama il 112." if segnali["attivi"] else ""),
+        "limite": segnali["limite"],
+    }
+    esito["catalogo"] = dialogo.intestazione()
+    esito["risposte_registrate"] = risposte
+    corretto = corpo.get("corretto")
+    esito["risposte_invalidate"] = (
+        dialogo.invalidate_da(str(corretto), {r["id"]: r["valore"] for r in risposte})
+        if corretto else [])
+    return esito
+
+
+def _orientamento(corpo: dict, fonte: str) -> dict:
+    """Il confronto fra le opzioni, piu' la spiegazione della scelta."""
+    ingresso = str(corpo.get("ingresso") or "problema")
+    testo = str(corpo.get("testo") or "")
+    risposte = dialogo.normalizza_risposte(corpo.get("risposte"))
+    fatti = {r["id"]: r["valore"] for r in risposte}
+    pos = corpo.get("posizione") or {}
+    lat = float(pos.get("lat") or ROMA[0])
+    lon = float(pos.get("lon") or ROMA[1])
+
+    segnali = ai.segnali_emergenza(testo)
+    stop = dialogo.interruzione(risposte)
+    if segnali["attivi"] or stop:
+        # La regola di sicurezza viene prima e non interpella il modello.
+        return {
+            "meta": {"fonte_tipo": fonte},
+            "esito": {
+                "canale": "emergenza_112_118",
+                "titolo": "Chiama il 112",
+                "spiegazione": (stop or {}).get("motivo") or
+                    ("Nella descrizione compaiono segnali che richiedono soccorso "
+                     "immediato: " + ", ".join(segnali["attivi"]) + "."),
+                "deciso_da": "regola di sicurezza (nessuna chiamata al modello)",
+                "certezza": "alta",
+                "cosa_manca": [],
+            },
+            "opzioni": [], "non_verificabili": [], "escluse": [],
+            "cambiamenti": [],
+            "emergenza": {"attiva": True, "segnali": segnali["attivi"],
+                          "limite": segnali["limite"]},
+            "avvertenze": ai.AVVERTENZE,
+        }
+
+    lista, meta = rete("attesa", fonte)
+    confronto = opzioni.confronta(ingresso, fatti, lista, meta, lat, lon,
+                                  corpo.get("precedenti"))
+    esito = ai.orientamento(testo, confronto, fatti, segnali,
+                            fatti_leggibili=dialogo.descrivi(risposte))
+    return {
+        "meta": meta,
+        "esito": esito,
+        **confronto,
+        "emergenza": {"attiva": False, "segnali": [], "limite": segnali["limite"]},
+        "scheda_professionista": _scheda(ingresso, testo, risposte, esito),
+        "avvertenze": ai.AVVERTENZE,
+    }
+
+
+def _scheda(ingresso: str, testo: str, risposte: list, esito: dict) -> dict:
+    """La scheda da portare al professionista: fatti riferiti, non conclusioni.
+
+    Contiene solo cio' che la persona ha detto e le risposte che ha dato. Non
+    aggiunge diagnosi, ipotesi o codici: e' un promemoria per non dimenticare
+    nulla davanti al medico, e resta modificabile dal client.
+    """
+    return {
+        "titolo": "Scheda da portare al professionista",
+        "modificabile": True,
+        "riferito_dalla_persona": testo,
+        "risposte": [
+            {"domanda": (dialogo.per_id(r["id"]) or {}).get("testo", r["id"]),
+             "risposta": r["valore"]}
+            for r in risposte],
+        "motivo_del_contatto": esito.get("titolo"),
+        "avvertenza": ("Questa scheda riporta quanto dichiarato dalla persona. "
+                       "Non contiene una diagnosi ne' una valutazione clinica."),
+    }
+
+
+
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(WEB), **kwargs)
@@ -102,6 +373,44 @@ class Handler(SimpleHTTPRequestHandler):
             traceback.print_exc()
             return self._json({"errore": f"{type(exc).__name__}: {exc}"}, 500)
 
+    # ------------------------------------------------------------------
+    # POST. Tutto cio' che contiene testo scritto da una persona passa di qui.
+    #
+    # Non e' formalismo: una query string finisce nei log del server, nella
+    # cronologia del browser, nel campo Referer verso terzi e negli strumenti
+    # di sviluppo. Una descrizione di un problema di salute non deve stare in
+    # nessuno di quei posti. Il corpo di una POST non ci finisce.
+    # ------------------------------------------------------------------
+    def do_POST(self) -> None:  # noqa: N802
+        url = urlparse(self.path)
+        if not url.path.startswith("/api/"):
+            return self._json({"errore": "endpoint sconosciuto"}, 404)
+        try:
+            lunghezza = int(self.headers.get("Content-Length") or 0)
+        except ValueError:
+            lunghezza = 0
+        if lunghezza > MAX_CORPO:
+            return self._json({"errore": "corpo troppo grande"}, 413)
+        grezzo = self.rfile.read(lunghezza) if lunghezza else b""
+
+        try:
+            if url.path == "/api/voce":
+                return self._json(_voce(grezzo, self.headers.get("Content-Type", "")))
+            corpo = json.loads(grezzo or b"{}")
+            if not isinstance(corpo, dict):
+                return self._json({"errore": "corpo non valido"}, 400)
+            self.fonte = str(corpo.get("fonte") or FONTE_DEFAULT)
+            if url.path == "/api/dialogo":
+                return self._json(_dialogo(corpo))
+            if url.path == "/api/orientamento":
+                return self._json(_orientamento(corpo, self.fonte))
+            return self._json({"errore": "endpoint sconosciuto"}, 404)
+        except json.JSONDecodeError:
+            return self._json({"errore": "corpo non e' JSON valido"}, 400)
+        except Exception as exc:  # noqa: BLE001
+            traceback.print_exc()
+            return self._json({"errore": f"{type(exc).__name__}: {exc}"}, 500)
+
     def _instrada(self, percorso_url: str, q: dict, uno) -> None:
         # ---- stato della rete, con l'ordinamento scelto --------------------
         if percorso_url == "/api/rete":
@@ -118,91 +427,22 @@ class Handler(SimpleHTTPRequestHandler):
                 "presidi": [i.to_dict() for i in indici],
             })
 
-        # ---- piano di deviazione IA per un presidio ------------------------
-        if percorso_url == "/api/piano":
-            codice = uno("codice")
-            indici, meta = rete("pressione", self.fonte)
-            critico = next((i for i in indici if i.codice == codice), None)
-            if critico is None:
-                return self._json({"errore": f"presidio {codice} sconosciuto"}, 404)
-            # Un presidio specialistico o pediatrico non assorbe il carico
-            # generico a bassa intensita': la deviazione dei codici bianchi e
-            # verdi ha senso solo verso pronto soccorso generalisti.
-            escludi = ai.SOLO_PEDIATRICI | set(ai.SPECIALISTICI)
-            candidati = [i for i in indici
-                         if i.codice != codice
-                         and i.codice not in escludi
-                         and (i.posti_residui or 0) > 0]
-            candidati.sort(key=lambda i: -(i.posti_residui or 0))
-            m = meteo.meteo_corrente(critico.lat or ROMA[0], critico.lon or ROMA[1])
-            return self._json({
-                "presidio": critico.to_dict(),
-                "candidati": [c.to_dict() for c in candidati[:6]],
-                "meteo": m,
-                "piano": ai.piano_deviazione(critico, candidati, m),
-            })
+        # ---- copertura e qualita' delle sorgenti ---------------------------
+        if percorso_url == "/api/copertura":
+            return self._json(_copertura())
 
-        # ---- centrale 118: chiamata -> codice -> destinazioni --------------
-        if percorso_url == "/api/triage":
-            testo = uno("testo")
-            if not testo:
-                return self._json({"errore": "parametro `testo` mancante"}, 400)
-            lat = float(uno("lat", ROMA[0]))
-            lon = float(uno("lon", ROMA[1]))
-            indici, meta = rete("pressione", self.fonte)
-            t = ai.triage_chiamata(testo)
-            vicini = _vicini(lat, lon, indici, quanti=6)
-            return self._json({
-                "meta": meta,
-                "triage": t,
-                "destinazioni": ai.destinazioni_per_chiamata(t, vicini),
-            })
-
-        # ---- cittadino ----------------------------------------------------
-        if percorso_url == "/api/cittadino":
-            sintomo = uno("sintomo")
-            if not sintomo:
-                return self._json({"errore": "parametro `sintomo` mancante"}, 400)
-            lat = float(uno("lat", ROMA[0]))
-            lon = float(uno("lon", ROMA[1]))
-            indici, meta = rete("pressione", self.fonte)
-            vicini = _vicini(lat, lon, indici, quanti=5)
-            terr = territorio.vicini(lat, lon, raggio_km=3.0, quanti=6)
-            return self._json({
-                "meta": meta,
-                "vicini": vicini,
-                "territoriali": terr,
-                "assorbimento": territorio.assorbimento(lat, lon),
-                "qualita_territorio": territorio.statistiche(),
-                "consiglio": ai.consiglio_cittadino(sintomo, vicini, terr),
-            })
-
-        # ---- bollettino meteo-sanitario -----------------------------------
+        # ---- bollettino ambientale (scheda Rete) ---------------------------
         if percorso_url == "/api/bollettino":
             lat = float(uno("lat", ROMA[0]))
             lon = float(uno("lon", ROMA[1]))
-            m = meteo.meteo_corrente(lat, lon)
-            a = meteo.qualita_aria(lat, lon)
-            return self._json({
-                "meteo": m, "aria": a,
-                "storico_snapshot": meteo.meteo_storico(lat, lon, "2021-07-15"),
-                "bollettino": ai.bollettino_sanitario(m, a),
-            })
-
-        # ---- simulazione controfattuale (deterministica, nessun modello) ---
-        if percorso_url == "/api/simula":
-            codice = uno("codice")
-            quota = int(uno("quota", "0"))
-            # destinazioni passate come "codice:quota,codice:quota"
-            dest = {}
-            for pezzo in uno("destinazioni").split(","):
-                if ":" in pezzo:
-                    c, n = pezzo.split(":", 1)
-                    dest[c.strip()] = int(n)
-            return self._json(simula(codice, quota, dest))
+            return self._json(_bollettino(lat, lon))
 
         if percorso_url == "/api/health":
-            return self._json({"llm": llm.health()})
+            return self._json({
+                "llm": llm.health(),
+                "voce": voce.stato(),
+                "catalogo": dialogo.intestazione(),
+            })
 
         return self._json({"errore": "endpoint sconosciuto"}, 404)
 

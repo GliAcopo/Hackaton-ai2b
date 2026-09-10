@@ -1,0 +1,256 @@
+{
+  "versione": "1.0.0",
+  "aggiornato_il": "2026-09-10",
+  "licenza": "uso dimostrativo",
+  "avvertenza_generale": "Questo catalogo NON e' un protocollo di triage validato. Le domande servono a capire quale canale di assistenza puo' essere appropriato e concretamente accessibile, non a formulare una diagnosi ne' ad attribuire un codice di priorita'. La validazione clinica del catalogo e dei percorsi e' un lavoro separato dalla validazione del software e non e' stata eseguita.",
+  "stati_revisione_ammessi": ["bozza", "rivista_internamente", "validata_clinicamente"],
+  "domande": [
+    {
+      "id": "destinatario",
+      "testo": "Per chi stai cercando assistenza?",
+      "tipo": "scelta",
+      "opzioni": [
+        {"valore": "me", "etichetta": "Per me"},
+        {"valore": "figlio", "etichetta": "Per un bambino o una bambina"},
+        {"valore": "anziano", "etichetta": "Per una persona anziana"},
+        {"valore": "altro_adulto", "etichetta": "Per un'altra persona adulta"}
+      ],
+      "ammette_non_so": false,
+      "obbligatoria": true,
+      "applicabile_se": [],
+      "dipende_da": [],
+      "priorita": 1,
+      "chiarisce": "Se il percorso deve essere pediatrico e se chi risponde e' la persona assistita o un caregiver.",
+      "perche": "Alcune strutture non accettano pazienti pediatrici e altre accettano solo loro. Senza questa risposta le opzioni proposte potrebbero essere inaccessibili.",
+      "fonte": "Organizzazione della rete regionale: presidi pediatrici dedicati (Bambino Gesu' Roma e Palidoro).",
+      "revisione": "bozza",
+      "ingressi": ["problema", "prestazione"]
+    },
+    {
+      "id": "eta_fascia",
+      "testo": "In quale fascia di eta' rientra la persona?",
+      "tipo": "scelta",
+      "opzioni": [
+        {"valore": "0_1", "etichetta": "Meno di 1 anno"},
+        {"valore": "1_13", "etichetta": "Da 1 a 13 anni"},
+        {"valore": "14_17", "etichetta": "Da 14 a 17 anni"},
+        {"valore": "18_64", "etichetta": "Da 18 a 64 anni"},
+        {"valore": "65_piu", "etichetta": "65 anni o piu'"}
+      ],
+      "ammette_non_so": true,
+      "obbligatoria": true,
+      "applicabile_se": [],
+      "dipende_da": ["destinatario"],
+      "priorita": 2,
+      "chiarisce": "La fascia di eta', che determina l'idoneita' delle strutture pediatriche e di alcuni servizi territoriali.",
+      "perche": "Sotto i 14 anni molte strutture per adulti non sono la destinazione corretta, e viceversa un presidio pediatrico non accetta adulti.",
+      "fonte": "Criteri di accesso dichiarati dai presidi pediatrici regionali.",
+      "revisione": "bozza",
+      "ingressi": ["problema", "prestazione"]
+    },
+    {
+      "id": "durata",
+      "testo": "Da quanto tempo dura il problema?",
+      "tipo": "scelta",
+      "opzioni": [
+        {"valore": "meno_ora", "etichetta": "Da meno di un'ora"},
+        {"valore": "oggi", "etichetta": "Da oggi"},
+        {"valore": "giorni", "etichetta": "Da qualche giorno"},
+        {"valore": "settimane", "etichetta": "Da settimane o piu'"}
+      ],
+      "ammette_non_so": true,
+      "obbligatoria": true,
+      "applicabile_se": [{"campo": "ingresso", "uguale": "problema"}],
+      "dipende_da": [],
+      "priorita": 3,
+      "chiarisce": "Se il problema e' insorto da poco, il che rende piu' probabile che serva una valutazione non differibile.",
+      "perche": "Un disturbo comparso da un'ora e uno che dura da settimane portano a canali diversi, anche a parita' di descrizione.",
+      "fonte": "Distinzione fra assistenza non differibile e programmabile, prevista dall'organizzazione dei servizi.",
+      "revisione": "bozza",
+      "ingressi": ["problema"]
+    },
+    {
+      "id": "evoluzione",
+      "testo": "Come sta andando rispetto a quando e' iniziato?",
+      "tipo": "scelta",
+      "opzioni": [
+        {"valore": "peggiora", "etichetta": "Sta peggiorando"},
+        {"valore": "stabile", "etichetta": "E' uguale"},
+        {"valore": "migliora", "etichetta": "Sta migliorando"}
+      ],
+      "ammette_non_so": true,
+      "obbligatoria": false,
+      "applicabile_se": [{"campo": "ingresso", "uguale": "problema"}],
+      "dipende_da": ["durata"],
+      "priorita": 4,
+      "chiarisce": "L'andamento nel tempo, che cambia l'urgenza a parita' di sintomo iniziale.",
+      "perche": "Un peggioramento rapido e' una ragione per rivolgersi subito a un canale sanitario invece di aspettare.",
+      "fonte": "Criterio generale di valutazione dell'evolutivita', non un protocollo validato.",
+      "revisione": "bozza",
+      "ingressi": ["problema"]
+    },
+    {
+      "id": "gia_valutato",
+      "testo": "Un medico ha gia' visto questo problema?",
+      "tipo": "scelta",
+      "opzioni": [
+        {"valore": "no", "etichetta": "No, non ancora"},
+        {"valore": "si_indicazione", "etichetta": "Si', e mi ha dato un'indicazione da seguire"},
+        {"valore": "si_peggiorato", "etichetta": "Si', ma da allora e' peggiorato"}
+      ],
+      "ammette_non_so": true,
+      "obbligatoria": true,
+      "applicabile_se": [{"campo": "ingresso", "uguale": "problema"}],
+      "dipende_da": [],
+      "priorita": 5,
+      "chiarisce": "Se esiste gia' un'indicazione professionale da seguire, oppure se il percorso e' ancora tutto da impostare.",
+      "perche": "Se un professionista ha gia' indicato cosa fare, il compito dell'app cambia: non orientare, ma aiutare a trovare dove si fa quella cosa.",
+      "fonte": "Distinzione fra orientamento e scelta logistica della struttura.",
+      "revisione": "bozza",
+      "ingressi": ["problema"]
+    },
+    {
+      "id": "prestazione_cercata",
+      "testo": "Quale prestazione ti e' stata indicata?",
+      "tipo": "scelta",
+      "opzioni": [
+        {"valore": "tac", "etichetta": "TAC"},
+        {"valore": "rmn", "etichetta": "Risonanza magnetica"},
+        {"valore": "ecografia", "etichetta": "Ecografia"},
+        {"valore": "visita_specialistica", "etichetta": "Visita specialistica"},
+        {"valore": "esami_sangue", "etichetta": "Esami del sangue"},
+        {"valore": "altro", "etichetta": "Altro"}
+      ],
+      "ammette_non_so": true,
+      "obbligatoria": true,
+      "applicabile_se": [{"campo": "ingresso", "uguale": "prestazione"}],
+      "dipende_da": [],
+      "priorita": 1,
+      "chiarisce": "Quale prestazione cercare, e quindi quale dotazione documentata deve avere la struttura.",
+      "perche": "Serve a confrontare la richiesta con l'inventario ministeriale delle grandi apparecchiature: senza, non si puo' dire se una struttura sia compatibile.",
+      "fonte": "Ministero della Salute, dataset Apparecchiature Sanitarie, versione 2026-09-07, IODL 2.0.",
+      "revisione": "bozza",
+      "ingressi": ["prestazione"]
+    },
+    {
+      "id": "prescrizione",
+      "testo": "Hai gia' la ricetta o l'impegnativa?",
+      "tipo": "scelta",
+      "opzioni": [
+        {"valore": "si", "etichetta": "Si'"},
+        {"valore": "no", "etichetta": "No"},
+        {"valore": "privato", "etichetta": "Voglio andare privatamente"}
+      ],
+      "ammette_non_so": true,
+      "obbligatoria": true,
+      "applicabile_se": [{"campo": "ingresso", "uguale": "prestazione"}],
+      "dipende_da": [],
+      "priorita": 2,
+      "chiarisce": "Se il percorso SSN e' gia' attivabile o se manca ancora il documento che lo apre.",
+      "perche": "Senza prescrizione la prenotazione SSN non e' possibile: e' il requisito che piu' spesso fa fare un viaggio a vuoto.",
+      "fonte": "Requisiti di accesso alle prestazioni ambulatoriali in SSN.",
+      "revisione": "bozza",
+      "ingressi": ["prestazione", "problema"]
+    },
+    {
+      "id": "mobilita",
+      "testo": "Come puoi spostarti?",
+      "tipo": "scelta",
+      "opzioni": [
+        {"valore": "auto", "etichetta": "Ho un'auto"},
+        {"valore": "mezzi", "etichetta": "Solo mezzi pubblici"},
+        {"valore": "piedi", "etichetta": "Solo a piedi, poca distanza"},
+        {"valore": "ridotta", "etichetta": "Ho difficolta' a muovermi"}
+      ],
+      "ammette_non_so": true,
+      "obbligatoria": false,
+      "applicabile_se": [],
+      "dipende_da": [],
+      "priorita": 6,
+      "chiarisce": "Quali destinazioni sono concretamente raggiungibili, non solo vicine in linea d'aria.",
+      "perche": "Una struttura a 12 km e' un'opzione diversa a seconda che ci sia un'auto o no. Cambia l'ordine, non l'appropriatezza.",
+      "fonte": "Nessuna fonte GTFS integrata: la raggiungibilita' senza auto resta non verificabile in questo prototipo.",
+      "revisione": "bozza",
+      "ingressi": ["problema", "prestazione"]
+    },
+    {
+      "id": "accompagnatore",
+      "testo": "C'e' qualcuno che puo' accompagnarti?",
+      "tipo": "scelta",
+      "opzioni": [
+        {"valore": "si", "etichetta": "Si'"},
+        {"valore": "no", "etichetta": "No, sono solo"}
+      ],
+      "ammette_non_so": true,
+      "obbligatoria": false,
+      "applicabile_se": [{"campo": "risposta", "id": "mobilita", "in": ["ridotta", "piedi"]}],
+      "dipende_da": ["mobilita"],
+      "priorita": 7,
+      "chiarisce": "Se la persona puo' raggiungere da sola una struttura piu' lontana.",
+      "perche": "Con mobilita' ridotta e nessun accompagnatore, le opzioni lontane smettono di essere praticabili anche se sono le piu' adatte.",
+      "fonte": "Vincolo logistico dichiarato dall'utente, non da un dataset.",
+      "revisione": "bozza",
+      "ingressi": ["problema", "prestazione"]
+    },
+    {
+      "id": "lingua",
+      "testo": "In quale lingua preferisci essere assistito?",
+      "tipo": "scelta",
+      "opzioni": [
+        {"valore": "it", "etichetta": "Italiano"},
+        {"valore": "en", "etichetta": "Inglese"},
+        {"valore": "altra", "etichetta": "Un'altra lingua"}
+      ],
+      "ammette_non_so": true,
+      "obbligatoria": false,
+      "applicabile_se": [],
+      "dipende_da": [],
+      "priorita": 9,
+      "chiarisce": "Se serve segnalare il bisogno di mediazione linguistica.",
+      "perche": "Il prototipo non dispone di dati sulla mediazione linguistica per sede: la risposta viene riportata nella scheda per il professionista, non usata per filtrare.",
+      "fonte": "Nessuna: nessun dataset regionale sulla mediazione linguistica per sede e' stato integrato.",
+      "revisione": "bozza",
+      "ingressi": ["problema", "prestazione"]
+    },
+    {
+      "id": "orario_disponibile",
+      "testo": "Quando potresti andarci?",
+      "tipo": "scelta",
+      "opzioni": [
+        {"valore": "adesso", "etichetta": "Adesso"},
+        {"valore": "oggi", "etichetta": "Oggi, piu' tardi"},
+        {"valore": "giorni", "etichetta": "Nei prossimi giorni"}
+      ],
+      "ammette_non_so": true,
+      "obbligatoria": false,
+      "applicabile_se": [],
+      "dipende_da": [],
+      "priorita": 8,
+      "chiarisce": "Se il canale proposto deve essere aperto in questo momento o se il percorso e' programmabile.",
+      "perche": "La continuita' assistenziale e i servizi territoriali hanno orari: proporli fuori orario significherebbe mandare qualcuno davanti a una porta chiusa.",
+      "fonte": "Orari per sede non integrati in questo prototipo: l'app indica come verificarli sul canale ufficiale.",
+      "revisione": "bozza",
+      "ingressi": ["problema", "prestazione"]
+    },
+    {
+      "id": "respiro_o_coscienza",
+      "testo": "La persona respira normalmente ed e' cosciente?",
+      "tipo": "scelta",
+      "opzioni": [
+        {"valore": "si", "etichetta": "Si'"},
+        {"valore": "no", "etichetta": "No"}
+      ],
+      "ammette_non_so": true,
+      "obbligatoria": true,
+      "applicabile_se": [{"campo": "ingresso", "uguale": "problema"}],
+      "dipende_da": [],
+      "priorita": 0,
+      "chiarisce": "Se la situazione richiede il numero unico di emergenza invece di qualunque orientamento.",
+      "perche": "E' l'unica domanda che puo' interrompere il percorso: se la risposta e' no, o e' incerta, l'unica indicazione corretta e' chiamare il 112.",
+      "fonte": "Indicazione generale sui numeri di emergenza. Non sostituisce una valutazione sanitaria.",
+      "revisione": "bozza",
+      "ingressi": ["problema"],
+      "interrompe_se": {"valore_in": ["no", "non_so"], "canale": "emergenza_112_118"}
+    }
+  ]
+}

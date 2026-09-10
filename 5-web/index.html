@@ -3,1044 +3,170 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>REGIA — Rete Emergenza-urgenza Lazio</title>
-<link rel="stylesheet" href="vendor/leaflet.css">
+<title>REGIA — Rete e orientamento alla cura</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
   :root{
-    --bg:#eef1f4; --bg-elev:#ffffff; --bg-elev-2:#f6f8fa;
-    --fg:#161a20; --muted:#5b6472; --border:#d7dce2;
-    --accent:#0a5c8a; --accent-fg:#ffffff;
-    --ok:#1e7d34; --warn:#b6720a; --warn2:#d2691e; --bad:#c02626;
-    --shadow:0 1px 3px rgba(20,25,35,.12), 0 1px 2px rgba(20,25,35,.08);
-    --radius:.6rem;
-    color-scheme: light;
+    --bg:#eef1f4; --surface:#fff; --surface-2:#f6f8fa; --fg:#161a20;
+    --muted:#5b6472; --border:#d7dce2; --accent:#0a5c8a; --accent-fg:#fff;
+    --ok:#1e7d34; --warn:#a86600; --bad:#b42323; --info:#145ea8;
+    --shadow:0 1px 3px rgba(20,25,35,.12),0 1px 2px rgba(20,25,35,.08);
+    --radius:.6rem; color-scheme:light;
   }
-  @media (prefers-color-scheme: dark){
+  @media (prefers-color-scheme:dark){
     :root{
-      --bg:#11151b; --bg-elev:#1a1f27; --bg-elev-2:#20262f;
-      --fg:#e7ebef; --muted:#9aa4b2; --border:#2b323d;
-      --accent:#5fb2e3; --accent-fg:#0a1620;
-      --ok:#4caf5f; --warn:#e0a13a; --warn2:#e08a4a; --bad:#e85c5c;
-      --shadow:0 1px 3px rgba(0,0,0,.5), 0 1px 2px rgba(0,0,0,.4);
-      color-scheme: dark;
+      --bg:#11151b; --surface:#1a1f27; --surface-2:#20262f; --fg:#e7ebef;
+      --muted:#9aa4b2; --border:#2b323d; --accent:#5fb2e3; --accent-fg:#0a1620;
+      --ok:#4caf5f; --warn:#e0a13a; --bad:#e85c5c; --info:#73b7ee;
+      --shadow:0 1px 3px rgba(0,0,0,.5),0 1px 2px rgba(0,0,0,.4); color-scheme:dark;
     }
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:var(--bg); color:var(--fg);
-    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  }
-  button, select, input, textarea{ font:inherit; color:inherit; }
-  a{ color:var(--accent); }
-
-  /* ---------- layout generale ---------- */
-  header.topbar{
-    position:sticky; top:0; z-index:1000;
-    background:var(--bg-elev); border-bottom:1px solid var(--border);
-    display:flex; flex-wrap:wrap; align-items:center; gap:.75rem;
-    padding:.6rem 1rem;
-  }
-  .brand{ display:flex; align-items:baseline; gap:.5rem; margin-right:auto; }
-  .brand .logo{ font-size:1.3rem; }
-  .brand h1{ font-size:1.15rem; margin:0; letter-spacing:.02em; }
-  .brand .sottotitolo{ color:var(--muted); font-size:.8rem; }
-  nav.tabs{ display:flex; gap:.25rem; flex-wrap:wrap; }
-  .tab-btn{
-    background:transparent; border:1px solid transparent; border-radius:999px;
-    padding:.45rem 1rem; cursor:pointer; color:var(--muted); font-weight:600;
-  }
-  .tab-btn:hover{ background:var(--bg-elev-2); }
-  .tab-btn.active{ background:var(--accent); color:var(--accent-fg); }
-
-  main{ max-width:1400px; margin:0 auto; padding:1rem; }
-  .tab-pane{ display:none; }
-  .tab-pane.active{ display:block; }
-
-  section.card{
-    background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius);
-    padding:1rem; box-shadow:var(--shadow); margin-bottom:1rem;
-  }
-
-  h2{ font-size:1.05rem; margin:0 0 .6rem; }
-  h3{ font-size:.95rem; margin:0 0 .4rem; }
-
-  /* ---------- meta / fonte ---------- */
-  .meta-bar{
-    display:flex; flex-wrap:wrap; gap:.4rem .9rem; align-items:baseline;
-    font-size:.78rem; color:var(--muted); margin-bottom:.8rem;
-  }
-  .meta-bar .meta-avviso{ font-style:italic; }
-  .pill{
-    display:inline-flex; align-items:center; gap:.3rem;
-    font-size:.72rem; font-weight:600; padding:.15rem .55rem; border-radius:999px;
-    background:var(--bg-elev-2); border:1px solid var(--border); color:var(--muted);
-  }
-  .pill.pill-warn{ color:var(--warn); border-color:var(--warn); }
-
-  /* ---------- statistiche in evidenza ---------- */
-  .stat-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:.75rem; margin-bottom:.9rem; }
-  .stat{
-    background:var(--bg-elev-2); border:1px solid var(--border); border-radius:var(--radius);
-    padding:.75rem .9rem;
-  }
-  .stat .num{ font-size:1.6rem; font-weight:700; line-height:1.1; }
-  .stat .lbl{ color:var(--muted); font-size:.78rem; }
-  .stat.bad .num{ color:var(--bad); }
-
-  /* ---------- rete: griglia mappa+tabella ---------- */
-  .rete-controls{ display:flex; flex-wrap:wrap; gap:.6rem; align-items:center; margin-bottom:.8rem; }
-  .rete-controls label{ color:var(--muted); font-size:.85rem; }
-  select, input[type=text], input[type=number], textarea{
-    background:var(--bg-elev); color:var(--fg); border:1px solid var(--border);
-    border-radius:.4rem; padding:.4rem .6rem;
-  }
-  .rete-grid{ display:grid; grid-template-columns:1.15fr 1fr; gap:.9rem; align-items:start; }
-  @media (max-width:900px){ .rete-grid{ grid-template-columns:1fr; } }
-
-  #mappa-rete, #mappa-118{ height:440px; width:100%; border-radius:var(--radius); border:1px solid var(--border); background:var(--bg-elev-2); }
-  @media (max-width:900px){ #mappa-rete, #mappa-118{ height:300px; } }
-
-  .table-wrap{ overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius); max-height:440px; overflow-y:auto; }
-  table{ width:100%; border-collapse:collapse; font-size:.82rem; white-space:nowrap; }
-  thead th{
-    position:sticky; top:0; background:var(--bg-elev-2); text-align:left;
-    padding:.5rem .6rem; border-bottom:1px solid var(--border); color:var(--muted); font-weight:600;
-  }
-  tbody td{ padding:.45rem .6rem; border-bottom:1px solid var(--border); }
-  tbody tr{ cursor:pointer; }
-  tbody tr:hover{ background:var(--bg-elev-2); }
-  tbody tr.selezionata{ background:color-mix(in srgb, var(--accent) 18%, transparent); }
-  .dot-allarme{ display:inline-block; width:.5rem; height:.5rem; border-radius:50%; background:var(--bad); margin-right:.35rem; }
-
-  .press-tag{ font-weight:700; }
-  .press-verde{ color:var(--ok); }
-  .press-giallo{ color:var(--warn); }
-  .press-arancione{ color:var(--warn2); }
-  .press-rosso{ color:var(--bad); }
-  .press-null{ color:var(--muted); }
-
-  /* ---------- pannello presidio ---------- */
-  .panel-presidio{ margin-top:.9rem; }
-  .grid-campi{ display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:.5rem .9rem; margin:.6rem 0; }
-  .campo{ background:var(--bg-elev-2); border:1px solid var(--border); border-radius:.4rem; padding:.4rem .55rem; }
-  .campo .v{ font-weight:700; font-size:1.05rem; }
-  .campo .k{ color:var(--muted); font-size:.72rem; }
-  .note-list{ font-size:.8rem; color:var(--muted); margin:.3rem 0 0; padding-left:1.1rem; }
-
-  button.azione{
-    background:var(--accent); color:var(--accent-fg); border:none; border-radius:.5rem;
-    padding:.55rem 1rem; font-weight:600; cursor:pointer;
-  }
-  button.azione:hover{ filter:brightness(1.08); }
-  button.azione:disabled{ opacity:.6; cursor:progress; }
-  button.secondaria{
-    background:transparent; color:var(--accent); border:1px solid var(--accent); border-radius:.5rem;
-    padding:.45rem .9rem; cursor:pointer; font-weight:600;
-  }
-
-  .caricamento{ display:flex; align-items:center; gap:.5rem; color:var(--muted); padding:.6rem 0; }
-  .spinner{ width:1rem; height:1rem; border-radius:50%; border:2px solid var(--border); border-top-color:var(--accent); animation:girare .8s linear infinite; }
-  @keyframes girare{ to{ transform:rotate(360deg); } }
-
-  .errore-box{ background:color-mix(in srgb, var(--bad) 12%, transparent); border:1px solid var(--bad); color:var(--bad); border-radius:.5rem; padding:.6rem .8rem; font-size:.88rem; }
-
-  /* ---------- piano di deviazione ---------- */
-  .piano-box{ margin-top:.8rem; border-top:1px dashed var(--border); padding-top:.8rem; }
-  .badge-codice-colore{ display:inline-block; padding:.15rem .5rem; border-radius:.35rem; font-size:.75rem; font-weight:700; margin:.1rem .2rem .1rem 0; background:var(--bg-elev-2); border:1px solid var(--border); }
-  .destinazione-item{ background:var(--bg-elev-2); border:1px solid var(--border); border-radius:.5rem; padding:.5rem .7rem; margin-bottom:.4rem; }
-  .destinazione-item .nome{ font-weight:700; }
-  .destinazione-item .quota{ color:var(--accent); font-weight:700; }
-  ul.azioni-list{ margin:.3rem 0; padding-left:1.2rem; }
-
-  /* ---------- codice colore triage ---------- */
-  .badge-colore{ display:inline-block; font-weight:800; text-transform:uppercase; letter-spacing:.03em; padding:.35rem 1rem; border-radius:.5rem; font-size:1.1rem; }
-  .colore-rosso{ background:var(--bad); color:#fff; }
-  .colore-giallo{ background:var(--warn); color:#1a1400; }
-  .colore-verde{ background:var(--ok); color:#fff; }
-  .colore-bianco{ background:var(--bg-elev-2); color:var(--fg); border:2px solid var(--muted); }
-
-  .banner-118{
-    background:var(--bad); color:#fff; border-radius:var(--radius);
-    padding:1rem 1.2rem; font-size:1.4rem; font-weight:800; text-align:center;
-    margin-bottom:1rem; letter-spacing:.02em; box-shadow:var(--shadow);
-    animation: pulsare 1.6s ease-in-out infinite;
-  }
-  @keyframes pulsare{ 0%,100%{ box-shadow:0 0 0 0 rgba(192,38,38,.55);} 50%{ box-shadow:0 0 0 .5rem rgba(192,38,38,0);} }
-
-  .box-regola{
-    background:color-mix(in srgb, var(--warn2) 15%, transparent); border:1px solid var(--warn2);
-    border-radius:.5rem; padding:.6rem .8rem; font-size:.88rem; margin:.6rem 0;
-  }
-  .box-fallback{
-    background:color-mix(in srgb, var(--muted) 15%, transparent); border:1px dashed var(--muted);
-    border-radius:.5rem; padding:.5rem .7rem; font-size:.8rem; color:var(--muted); margin:.6rem 0;
-  }
-
-  /* ---------- centrale 118: form ---------- */
-  .form-chiamata textarea{ width:100%; min-height:5.5rem; resize:vertical; }
-  .riga-esempi{ display:flex; flex-wrap:wrap; gap:.4rem; margin:.5rem 0; }
-  .esempio-btn{
-    background:var(--bg-elev-2); border:1px solid var(--border); border-radius:999px;
-    padding:.3rem .7rem; font-size:.78rem; cursor:pointer; color:var(--fg); text-align:left;
-  }
-  .esempio-btn:hover{ border-color:var(--accent); }
-  .riga-form{ display:flex; flex-wrap:wrap; gap:.6rem; align-items:center; margin-top:.6rem; }
-  .campo-coord{ width:8rem; }
-  .mic-btn{
-    background:var(--bg-elev-2); border:1px solid var(--border); border-radius:50%;
-    width:2.2rem; height:2.2rem; cursor:pointer; font-size:1.05rem; line-height:1;
-  }
-  .mic-btn.attivo{ background:var(--bad); color:#fff; border-color:var(--bad); }
-
-  .destinazione-riga{
-    display:flex; flex-wrap:wrap; gap:.4rem 1rem; align-items:center;
-    background:var(--bg-elev-2); border:1px solid var(--border); border-radius:.5rem;
-    padding:.55rem .8rem; margin-bottom:.4rem; cursor:pointer;
-  }
-  .destinazione-riga:hover{ border-color:var(--accent); }
-  .destinazione-riga.non-idoneo{ opacity:.5; }
-  .destinazione-riga .nome-dest{ font-weight:700; flex:1 1 auto; min-width:10rem; }
-  .destinazione-riga .tag-idoneo{ font-size:.72rem; font-weight:700; color:var(--ok); }
-  .destinazione-riga .tag-non-idoneo{ font-size:.72rem; font-weight:700; color:var(--muted); }
-
-  /* ---------- cittadino ---------- */
-  .cittadino-wrap{ max-width:560px; margin:0 auto; }
-  .esito-card{ border-radius:var(--radius); padding:1rem; margin-top:.8rem; }
-  .esito-118{ background:var(--bad); color:#fff; }
-  .esito-ps{ background:color-mix(in srgb, var(--warn2) 20%, transparent); border:1px solid var(--warn2); }
-  .esito-terr{ background:color-mix(in srgb, var(--accent) 15%, transparent); border:1px solid var(--accent); }
-  .esito-farmacia{ background:color-mix(in srgb, var(--ok) 15%, transparent); border:1px solid var(--ok); }
-  .esito-medico{ background:var(--bg-elev-2); border:1px solid var(--border); }
-  .esito-dove{ font-size:1.3rem; font-weight:800; display:flex; align-items:center; gap:.5rem; }
-  .vicino-riga{ display:flex; justify-content:space-between; gap:.6rem; padding:.4rem 0; border-bottom:1px solid var(--border); font-size:.88rem; }
-  .vicino-riga:last-child{ border-bottom:none; }
-  .avvertenza{ margin-top:1rem; font-size:.8rem; color:var(--muted); font-style:italic; border-top:1px solid var(--border); padding-top:.6rem; }
-
-  .severita-tag{ font-weight:700; padding:.15rem .5rem; border-radius:.35rem; font-size:.75rem; display:inline-block; }
-  .sev-nessuna{ background:var(--bg-elev-2); color:var(--muted); }
-  .sev-lieve{ background:color-mix(in srgb, var(--ok) 25%, transparent); color:var(--ok); }
-  .sev-moderata{ background:color-mix(in srgb, var(--warn) 25%, transparent); color:var(--warn); }
-  .sev-grave{ background:color-mix(in srgb, var(--bad) 25%, transparent); color:var(--bad); }
-  .sev-estrema{ background:var(--bad); color:#fff; }
-  .rischio-item{ padding:.4rem 0; border-bottom:1px solid var(--border); }
-  .rischio-item:last-child{ border-bottom:none; }
-
-  footer{ text-align:center; color:var(--muted); font-size:.75rem; padding:1.5rem 1rem 2rem; }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  button,select,input,textarea{font:inherit;color:inherit} button{cursor:pointer} a{color:var(--accent)}
+  header.topbar{position:sticky;top:0;z-index:1000;background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;padding:.65rem 1rem}
+  .brand{display:flex;align-items:baseline;gap:.5rem;margin-right:auto}.brand .logo{font-size:1.3rem}.brand h1{font-size:1.15rem;margin:0;letter-spacing:.02em}.brand .sottotitolo{color:var(--muted);font-size:.8rem}
+  nav.tabs{display:flex;gap:.25rem;flex-wrap:wrap}.tab-btn{background:transparent;border:1px solid transparent;border-radius:999px;padding:.45rem 1rem;color:var(--muted);font-weight:600}.tab-btn:hover{background:var(--surface-2)}.tab-btn.active{background:var(--accent);color:var(--accent-fg)}
+  main{max-width:1450px;margin:0 auto;padding:1rem}.tab-pane{display:none}.tab-pane.active{display:block}
+  section.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow);margin-bottom:1rem}
+  h2{font-size:1.08rem;margin:0 0 .6rem} h3{font-size:.98rem;margin:.8rem 0 .4rem} h4{font-size:.9rem;margin:.55rem 0 .25rem}
+  p{margin:.45rem 0}.muted{color:var(--muted)}.small{font-size:.8rem}.center{text-align:center}
+  .pill,.badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.72rem;font-weight:650;padding:.15rem .55rem;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);color:var(--muted)}
+  .pill-warn{color:var(--warn);border-color:var(--warn)}.pill-info{color:var(--info);border-color:var(--info)}.pill-bad{color:var(--bad);border-color:var(--bad)}
+  .meta-bar{display:flex;flex-wrap:wrap;gap:.45rem .8rem;align-items:center;font-size:.78rem;color:var(--muted);margin-bottom:.8rem}.meta-avviso{font-style:italic}
+  .tempi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;margin:.7rem 0;padding:.65rem;background:var(--surface-2);border:1px solid var(--border);border-radius:.5rem}.tempo{min-width:0}.tempo .etichetta{display:block;color:var(--muted);font-size:.7rem}.tempo strong{display:block;font-size:.79rem;font-weight:650;overflow-wrap:anywhere}.tempi .pill{grid-column:1/-1;justify-self:start}
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.7rem;margin-bottom:.85rem}.stat{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:.7rem .85rem}.stat .num{font-size:1.45rem;font-weight:700;line-height:1.1}.stat .lbl{color:var(--muted);font-size:.77rem}.stat.bad .num{color:var(--bad)}
+  .rete-controls{display:flex;flex-wrap:wrap;gap:.55rem .7rem;align-items:center;margin-bottom:.8rem}.rete-controls label{color:var(--muted);font-size:.85rem}
+  select,input[type=text],input[type=number],textarea{background:var(--surface);color:var(--fg);border:1px solid var(--border);border-radius:.4rem;padding:.45rem .6rem}select:focus,input:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .rete-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:.9rem;align-items:start}.mappa{height:440px;width:100%;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface-2)}
+  @media(max-width:900px){.rete-grid{grid-template-columns:1fr}.mappa{height:300px}}
+  .table-wrap{overflow:auto;border:1px solid var(--border);border-radius:var(--radius);max-height:440px}table{width:100%;border-collapse:collapse;font-size:.82rem;white-space:nowrap}thead th{position:sticky;top:0;background:var(--surface-2);text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--muted);font-weight:650}tbody td{padding:.45rem .6rem;border-bottom:1px solid var(--border)}tbody tr{cursor:pointer}tbody tr:hover{background:var(--surface-2)}tbody tr.selezionata{background:color-mix(in srgb,var(--accent) 18%,transparent)}.dot-allarme{display:inline-block;width:.5rem;height:.5rem;border-radius:50%;background:var(--bad);margin-right:.35rem}.cella-vuota{color:var(--muted)}
+  .panel-presidio{margin-top:.9rem}.grid-campi{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:.5rem .75rem;margin:.6rem 0}.campo{background:var(--surface-2);border:1px solid var(--border);border-radius:.4rem;padding:.42rem .55rem}.campo .v{font-weight:700;font-size:1rem}.campo .k{color:var(--muted);font-size:.72rem}.note-list{font-size:.8rem;color:var(--muted);margin:.3rem 0;padding-left:1.1rem}
+  .livelli-table{width:100%;white-space:normal;font-size:.8rem}.livelli-table th,.livelli-table td{padding:.4rem .45rem;border-bottom:1px solid var(--border);text-align:left}.livelli-table th{color:var(--muted);font-weight:650}.nota-coda{font-size:.78rem;color:var(--muted);font-style:italic}
+  button.azione{background:var(--accent);color:var(--accent-fg);border:0;border-radius:.5rem;padding:.58rem 1rem;font-weight:650}button.azione:hover{filter:brightness(1.08)}button.azione:disabled{opacity:.6;cursor:progress}button.secondaria{background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:.5rem;padding:.48rem .85rem;font-weight:600}.link-btn{background:none;border:0;color:var(--accent);padding:0;text-decoration:underline;text-align:left}
+  .caricamento{display:flex;align-items:center;gap:.5rem;color:var(--muted);padding:.6rem 0}.spinner{width:1rem;height:1rem;border-radius:50%;border:2px solid var(--border);border-top-color:var(--accent);animation:girare .8s linear infinite}@keyframes girare{to{transform:rotate(360deg)}}
+  .errore-box{background:color-mix(in srgb,var(--bad) 12%,transparent);border:1px solid var(--bad);color:var(--bad);border-radius:.5rem;padding:.6rem .8rem;font-size:.88rem}.box-avviso{background:color-mix(in srgb,var(--warn) 14%,transparent);border:1px solid var(--warn);border-radius:.5rem;padding:.65rem .8rem;margin:.65rem 0}.box-emergenza{background:var(--bad);color:#fff;border-radius:var(--radius);padding:1rem;margin-bottom:1rem}.box-emergenza h2{font-size:1.15rem}.box-emergenza strong{font-weight:800}.box-nondeterminabile{background:var(--surface-2);border:1px dashed var(--muted);border-radius:.5rem;padding:.8rem}.box-contatto{background:color-mix(in srgb,var(--accent) 14%,transparent);border:1px solid var(--accent);border-radius:.5rem;padding:.8rem}
+  .copertura-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.7rem}.sorgente{background:var(--surface-2);border:1px solid var(--border);border-radius:.5rem;padding:.7rem}.sorgente-header{display:flex;justify-content:space-between;gap:.5rem;align-items:flex-start}.sorgente .stato{font-size:.72rem;font-weight:700}.stato-attiva{color:var(--ok)}.stato-parziale{color:var(--warn)}.stato-inattiva{color:var(--bad)}
+  .prova-section{border:1px solid var(--border);border-radius:.5rem;padding:.7rem;margin:.7rem 0}.prova-section h3{margin:0 0 .45rem;display:flex;align-items:center;gap:.45rem}.badge-misurato{background:#6b7280;color:#fff;border-color:#6b7280}.badge-ufficiale{background:var(--info);color:#fff;border-color:var(--info)}.badge-interpretazione{background:#e8b52c;color:#2d2100;border-color:#c79400}.dato-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.45rem}.dato{background:var(--surface-2);border-radius:.35rem;padding:.4rem .5rem}.dato .k{display:block;color:var(--muted);font-size:.72rem}.dato .v{font-weight:650}.fonte-link{overflow-wrap:anywhere}.bollettino-interpretazione{border-left:3px solid #d39d00;padding-left:.7rem}.bollettino-interpretazione .etichetta{font-size:.72rem;color:var(--warn);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+  .cittadino-wrap{max-width:760px;margin:0 auto}.ingressi{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}.ingresso-btn{background:var(--surface-2);border:2px solid var(--border);border-radius:.65rem;text-align:left;padding:.8rem;font-weight:700;min-height:4.5rem}.ingresso-btn:hover,.ingresso-btn.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface-2))}.ingresso-btn small{display:block;color:var(--muted);font-weight:400;margin-top:.2rem}
+  .cittadino-textarea{width:100%;min-height:5rem;resize:vertical}.riga-form{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;margin-top:.65rem}.posizione-stato{font-size:.8rem;color:var(--muted)}.voce-riga{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin-top:.45rem}.mic-btn{background:var(--surface-2);border:1px solid var(--border);border-radius:50%;width:2.4rem;height:2.4rem;font-size:1.1rem}.mic-btn.attivo{background:var(--bad);color:#fff;border-color:var(--bad)}.voce-backend{font-size:.76rem;color:var(--muted)}.voce-avviso{font-size:.78rem;color:var(--warn);margin:.35rem 0 0}.dialogo-card{border-left:4px solid var(--accent)}.progressione{font-size:.8rem;color:var(--muted);margin-bottom:.65rem}.opzioni-dialogo{display:grid;gap:.5rem;margin:.75rem 0}.opzione-btn{width:100%;text-align:left;background:var(--surface-2);border:1px solid var(--border);border-radius:.55rem;padding:.75rem .8rem;font-weight:650;min-height:3rem}.opzione-btn:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--surface-2))}.domanda-input{width:100%;min-height:2.8rem}.dialogo-azioni{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem}.spiegazione{background:var(--surface-2);border:1px solid var(--border);border-radius:.45rem;padding:.65rem;font-size:.86rem}.risposte-date{margin-top:.9rem;border-top:1px solid var(--border);padding-top:.65rem}.risposta-riga{display:flex;justify-content:space-between;align-items:center;gap:.5rem;border-bottom:1px solid var(--border);padding:.42rem 0;font-size:.82rem}.risposta-riga:last-child{border-bottom:0}.risposta-valore{color:var(--muted);text-align:right}.invalidate{background:color-mix(in srgb,var(--warn) 16%,transparent);border:1px solid var(--warn);border-radius:.45rem;padding:.55rem .7rem;margin:.6rem 0;font-size:.84rem}
+  .esito-orientamento{background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid var(--accent);border-radius:.5rem;padding:.75rem;margin-bottom:.8rem}.gruppo-opzioni{margin:.9rem 0}.gruppo-opzioni h3{display:flex;align-items:center;gap:.45rem;margin-bottom:.55rem}.gruppo-opzioni.non-verificabili{background:color-mix(in srgb,var(--warn) 12%,transparent);border:1px solid var(--warn);border-radius:.6rem;padding:.7rem}.gruppo-opzioni.escluse{opacity:.78}.opzione-card{background:var(--surface);border:1px solid var(--border);border-radius:.6rem;padding:.8rem;margin:.6rem 0}.opzione-card.esclusa{background:var(--surface-2)}.opzione-header{display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem .6rem}.opzione-header h4{font-size:1rem;margin:0}.compatibile{color:var(--ok);border-color:var(--ok)}.incompatibile{color:var(--bad);border-color:var(--bad)}.non-verificabile{color:var(--warn);border-color:var(--warn)}.motivo{font-size:.94rem;font-weight:650;margin:.55rem 0}.requisiti{margin:.55rem 0;padding-left:0;list-style:none}.requisiti li{display:flex;gap:.45rem;align-items:flex-start;padding:.28rem 0;border-bottom:1px solid var(--border);font-size:.84rem}.requisiti li:last-child{border-bottom:0}.req-icona{font-weight:800;min-width:1.1rem}.req-necessario{color:var(--bad)}.req-non-necessario{color:var(--ok)}.req-non-verificabile{color:var(--warn)}.viaggio,.coda,.dotazione{background:var(--surface-2);border-radius:.4rem;padding:.5rem .6rem;margin-top:.5rem;font-size:.82rem}.fonti{margin-top:.65rem;border-top:1px solid var(--border);padding-top:.45rem}.fonti summary{cursor:pointer;color:var(--accent);font-weight:650}.fonte-item{padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.79rem}.fonte-item:last-child{border-bottom:0}.vincoli-rapidi{display:flex;flex-wrap:wrap;gap:.45rem;margin:.7rem 0}.vincolo-btn{background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:.42rem .7rem;font-size:.8rem}.vincolo-btn.attivo{border-color:var(--accent);color:var(--accent);font-weight:700;background:color-mix(in srgb,var(--accent) 10%,var(--surface-2))}
+  footer{text-align:center;color:var(--muted);font-size:.75rem;padding:1.5rem 1rem 2rem}
+  @media(max-width:520px){main{padding:.65rem}.brand{width:100%}.brand .sottotitolo{display:none}header.topbar{padding:.55rem .65rem}.tempi{grid-template-columns:1fr}.tempi .pill{grid-column:1}.ingressi{grid-template-columns:1fr}.riga-form button.azione{width:100%}.opzione-header{display:block}.opzione-header .badge{margin-top:.25rem}}
 </style>
 </head>
 <body>
-
 <header class="topbar">
-  <div class="brand">
-    <span class="logo">🚑</span>
-    <h1>REGIA</h1>
-    <span class="sottotitolo">Rete Emergenza-urgenza Lazio</span>
-  </div>
-  <nav class="tabs" role="tablist">
+  <div class="brand"><span class="logo">🏥</span><h1>REGIA</h1><span class="sottotitolo">Rete e orientamento alla cura — Lazio</span></div>
+  <nav class="tabs" role="tablist" aria-label="Sezioni principali">
     <button class="tab-btn active" data-tab="rete" type="button">Rete</button>
-    <button class="tab-btn" data-tab="centrale" type="button">Centrale 118</button>
     <button class="tab-btn" data-tab="cittadino" type="button">Cittadino</button>
   </nav>
 </header>
-
 <main>
-
-  <!-- ============================= TAB 1: RETE ============================= -->
-  <section id="tab-rete" class="tab-pane active">
+  <section id="tab-rete" class="tab-pane active" role="tabpanel">
     <section class="card">
-      <div id="rete-stat-row" class="stat-row">
-        <div class="stat"><div class="num">—</div><div class="lbl">presidi in allarme</div></div>
-        <div class="stat"><div class="num">—</div><div class="lbl">carico deviabile totale</div></div>
-        <div class="stat"><div class="num">—</div><div class="lbl">ore-paziente recuperabili</div></div>
-      </div>
-      <div id="rete-meta" class="meta-bar"></div>
-      <div class="rete-controls">
-        <label for="fonte-select">Fonte:</label>
-        <select id="fonte-select">
-          <option value="snapshot">Open data (snapshot 15/07/2021)</option>
-          <option value="live">Tempo reale (API Salute Lazio)</option>
-        </select>
-        <label for="ordine-select">Ordina per:</label>
-        <select id="ordine-select"></select>
-        <span id="rete-stato-caricamento"></span>
-      </div>
-      <div id="rete-errore"></div>
-      <div class="rete-grid">
-        <div id="mappa-rete"></div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Presidio</th><th>Tipo</th>
-                <th><span id="col-guida">Pressione</span><br><small>× mediana rete</small></th>
-                <th><span id="col-seconda">Sofferenza</span><br><small><span id="col-seconda-sub">× mediana rete</span></small></th>
-                <th>In attesa</th><th>Carico deviabile</th>
-              </tr>
-            </thead>
-            <tbody id="rete-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-      <div id="rete-panel" class="panel-presidio"></div>
+      <h2>Cabina di regia</h2><div id="rete-stat-row" class="stat-row"></div><div id="rete-meta"></div>
+      <div class="rete-controls"><label for="fonte-select">Fonte rete:</label><select id="fonte-select"><option value="snapshot">Snapshot</option><option value="live">Tempo reale</option></select><label for="ordine-select">Ordina per:</label><select id="ordine-select" aria-label="Ordinamento dei presidi"></select><span id="rete-stato-caricamento"></span></div>
+      <div id="rete-errore"></div><div class="rete-grid"><div id="mappa-rete" class="mappa" aria-label="Mappa dei presidi"></div><div class="table-wrap"><table><thead><tr><th>Presidio</th><th>Tipo</th><th>Attesa</th><th>Pressione</th><th>Sofferenza</th><th>Carico deviabile</th></tr></thead><tbody id="rete-tbody"></tbody></table></div></div><div id="rete-panel" class="panel-presidio"></div>
     </section>
+    <section class="card"><h2>Copertura e qualità delle sorgenti</h2><div id="copertura-corpo"><p class="muted">Caricamento…</p></div></section>
+    <section class="card"><div class="sorgente-header"><h2>Bollettino ambientale</h2><button type="button" class="secondaria" id="rete-posizione">📍 Usa la mia posizione</button></div><p id="rete-posizione-stato" class="posizione-stato">posizione non condivisa</p><div id="bollettino-corpo"><p class="muted">Caricamento…</p></div></section>
   </section>
-
-  <!-- ========================= TAB 2: CENTRALE 118 ========================= -->
-  <section id="tab-centrale" class="tab-pane">
-    <section class="card form-chiamata">
-      <h2>Analisi chiamata</h2>
-      <p style="color:var(--muted); font-size:.85rem; margin-top:-.3rem;">
-        Incolla o detta la sintesi della chiamata: il sistema propone codice colore e destinazioni.
-      </p>
-      <div class="riga-esempi" id="esempi-chiamata"></div>
-      <textarea id="chiamata-testo" placeholder="Es: uomo 62 anni, dolore al petto che si irradia al braccio sinistro, suda freddo, cosciente, zona Torre Angela"></textarea>
-      <div class="riga-form">
-        <button type="button" id="mic-btn" class="mic-btn" title="Detta il testo" hidden>🎙️</button>
-        <label>lat <input type="number" step="0.0001" id="chiamata-lat" class="campo-coord" value="41.8933"></label>
-        <label>lon <input type="number" step="0.0001" id="chiamata-lon" class="campo-coord" value="12.4829"></label>
-        <button type="button" class="azione" id="chiamata-analizza">Analizza chiamata</button>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Mappa e percorsi</h2>
-      <div id="mappa-118"></div>
-    </section>
-
-    <div id="chiamata-esito"></div>
-  </section>
-
-  <!-- =========================== TAB 3: CITTADINO =========================== -->
-  <section id="tab-cittadino" class="tab-pane">
+  <section id="tab-cittadino" class="tab-pane" role="tabpanel">
     <div class="cittadino-wrap">
-      <section class="card">
-        <h2>Dove devo andare?</h2>
-        <label for="cittadino-sintomo" style="color:var(--muted); font-size:.85rem;">Descrivi il sintomo</label>
-        <textarea id="cittadino-sintomo" style="width:100%; min-height:4rem; margin-top:.3rem;"
-                  placeholder="Es: mal di gola e febbre da due giorni"></textarea>
-        <div class="riga-form">
-          <button type="button" class="secondaria" id="cittadino-posizione">📍 Usa la mia posizione</button>
-          <span id="cittadino-posizione-stato" style="color:var(--muted); font-size:.8rem;">posizione: Roma (predefinita)</span>
-        </div>
-        <div class="riga-form">
-          <button type="button" class="azione" id="cittadino-cerca">Cosa devo fare?</button>
-        </div>
-        <div id="cittadino-errore" style="margin-top:.6rem;"></div>
-      </section>
-
-      <div id="cittadino-esito"></div>
-
-      <section class="card" id="bollettino-card">
-        <h2>Bollettino meteo-sanitario</h2>
-        <div id="bollettino-corpo"><p style="color:var(--muted);">Caricamento…</p></div>
-      </section>
+      <section class="card"><h2>Come posso aiutarti?</h2><p class="muted small">Scegli il punto di partenza. Le risposte restano nello stato del percorso e vengono inviate di nuovo a ogni passo.</p><div class="ingressi"><button type="button" class="ingresso-btn" data-ingresso="problema">Descrivo un problema<small>Racconto cosa sta succedendo.</small></button><button type="button" class="ingresso-btn" data-ingresso="prestazione">Cerco una prestazione già indicata<small>Parto da una prestazione già prescritta o indicata.</small></button></div><label for="cittadino-testo" class="muted small" style="display:block;margin-top:.85rem">Testo libero, facoltativo</label><textarea id="cittadino-testo" class="cittadino-textarea" placeholder="Puoi descrivere il problema o indicare la prestazione."></textarea><div class="voce-riga"><button type="button" id="cittadino-mic" class="mic-btn" title="Registra o detta" aria-label="Registra o detta">🎙️</button><span id="voce-backend" class="voce-backend"></span></div><p class="voce-avviso">Controlla negazioni, numeri ed età prima di continuare.</p><div class="riga-form"><button type="button" class="secondaria" id="cittadino-posizione">📍 Usa la mia posizione</button><span id="cittadino-posizione-stato" class="posizione-stato">posizione non condivisa</span></div><div id="cittadino-errore" style="margin-top:.6rem"></div></section>
+      <div id="dialogo-corpo"></div><div id="orientamento-corpo"></div>
     </div>
   </section>
-
 </main>
-
-<footer id="piede">REGIA — cruscotto dimostrativo.</footer>
-
-<script src="vendor/leaflet.js"></script>
+<footer>REGIA — orientamento e informazioni con fonti e limiti espliciti.</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 "use strict";
+const mappe={};const statoApp={posizione:null};
+function esc(s){if(s===null||s===undefined)return "";return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;", "'":"&#39;"}[c]));}
+function valore(v,fallback="—"){return v===null||v===undefined||v===""?fallback:v;}
+function fmt(v,d){if(v===null||v===undefined||(typeof v==="number"&&Number.isNaN(v)))return "—";return typeof v==="number"?v.toFixed(d===undefined?1:d):esc(v);}
+function fmtInt(v){return v===null||v===undefined?"—":esc(v);}
+function fmtDataOra(iso){if(!iso)return "—";const m=String(iso).match(/(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);return m?`${m[3]}/${m[2]}/${m[1]} alle ${m[4]}:${m[5]}`:esc(iso);}
+function caricamentoHtml(msg){return `<div class="caricamento"><span class="spinner"></span><span>${esc(msg)}</span></div>`;}
+function erroreHtml(msg){return `<div class="errore-box">Errore: ${esc(msg)}</div>`;}
+function arrayOf(v){return Array.isArray(v)?v:[];} function objOf(v){return v&&typeof v==="object"?v:{};}
+function urlSicuro(url){return typeof url==="string"&&/^https?:\/\//i.test(url)?url:"";}
+async function chiamaApi(percorso,opzioni={}){const r=await fetch(percorso,opzioni);let dati;try{dati=await r.json();}catch(e){throw new Error("risposta non valida dal server");}if(!r.ok||dati.errore)throw new Error(dati.errore||`errore HTTP ${r.status}`);return dati;}
+async function postApi(percorso,corpo){return chiamaApi(percorso,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(corpo)});}
+function tempiHtml(meta={}){return `<div class="tempi" aria-label="Tempi del dato"><div class="tempo"><span class="etichetta">Dato della fonte</span><strong>${meta.istante_fonte?fmtDataOra(meta.istante_fonte):"non pubblicato dalla fonte"}</strong></div><div class="tempo"><span class="etichetta">Acquisito</span><strong>${fmtDataOra(meta.acquisito_il)}</strong></div><div class="tempo"><span class="etichetta">Letto</span><strong>${fmtDataOra(meta.letto_il)}</strong></div>${meta.da_cache?'<span class="pill pill-warn">da cache</span>':""}</div>`;}
+function metaHtml(meta){meta=objOf(meta);let html=tempiHtml(meta);if(meta.eta_dato_s!==null&&meta.eta_dato_s!==undefined)html+=`<div class="meta-bar"><span>Freschezza del dato: <strong>${fmtInt(meta.eta_dato_s)} s</strong></span></div>`;if(meta.fonte)html+=`<div class="meta-bar"><span>Fonte: <strong>${esc(meta.fonte)}</strong></span>${meta.fonte_tipo?`<span class="pill">${esc(meta.fonte_tipo)}</span>`:""}${meta.avviso?`<span class="meta-avviso">⚠ ${esc(meta.avviso)}</span>`:""}</div>`;return html;}
+function posizioneQuery(pos){if(!pos||pos.lat===null||pos.lon===null||pos.lat===undefined||pos.lon===undefined)return "";return `?lat=${encodeURIComponent(pos.lat)}&lon=${encodeURIComponent(pos.lon)}`;}
+function setErrore(id,msg){const el=document.getElementById(id);if(el)el.innerHTML=msg?erroreHtml(msg):"";}
+function attivaTab(nome){document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active",b.dataset.tab===nome));document.querySelectorAll(".tab-pane").forEach(p=>p.classList.toggle("active",p.id===`tab-${nome}`));setTimeout(()=>{if(nome==="rete"&&mappe.rete)mappe.rete.invalidateSize();},30);}
+document.querySelectorAll(".tab-btn").forEach(b=>b.addEventListener("click",()=>attivaTab(b.dataset.tab)));
 
-/* =========================================================================
-   Utilita' condivise
-   ========================================================================= */
-const ROMA = { lat: 41.8933, lon: 12.4829 };
-
-function esc(s){
-  if (s === null || s === undefined) return "";
-  return String(s).replace(/[&<>"']/g, c => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
-  }[c]));
-}
-
-function fmt(v, decimali){
-  if (v === null || v === undefined || (typeof v === "number" && Number.isNaN(v))) return "—";
-  if (typeof v === "number") return v.toFixed(decimali === undefined ? 1 : decimali);
-  return esc(v);
-}
-
-function fmtInt(v){
-  if (v === null || v === undefined) return "—";
-  return String(v);
-}
-
-function fmtDataOra(iso){
-  if (!iso) return "—";
-  const m = String(iso).match(/(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);
-  if (!m) return esc(iso);
-  const [, yyyy, mm, gg, hh, mi] = m;
-  return `${gg}/${mm}/${yyyy} alle ${hh}:${mi}`;
-}
-
-async function chiamaApi(percorso){
-  const r = await fetch(percorso);
-  let dati;
-  try { dati = await r.json(); }
-  catch (e) { throw new Error("risposta non valida dal server"); }
-  if (!r.ok || dati.errore) throw new Error(dati.errore || `errore HTTP ${r.status}`);
-  return dati;
-}
-
-// Sorgente dei dati scelta nell'interfaccia. Vive qui e non dentro la vista
-// Rete perche' la useranno anche gli altri due tab: la centrale 118 e il
-// cittadino devono vedere la stessa rete che vede la cabina di regia.
-const FONTE = {
-  valore: "snapshot",
-  corrente(){ return this.valore; },
-  init(alCambio){
-    const sel = document.getElementById("fonte-select");
-    if (!sel) return;
-    sel.value = this.valore;
-    sel.addEventListener("change", () => { this.valore = sel.value; alCambio(); });
+const Rete={
+  ultima:null,selezionato:null,marker:{},fonte:"snapshot",ordine:null,
+  initMappa(){if(mappe.rete)return mappe.rete;const m=L.map("mappa-rete").setView([41.9,12.6],8);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"&copy; contributori OpenStreetMap"}).addTo(m);mappe.rete=m;return m;},
+  async carica(ordine){const stato=document.getElementById("rete-stato-caricamento");stato.innerHTML=caricamentoHtml("Caricamento rete…");setErrore("rete-errore","");const params=new URLSearchParams({fonte:this.fonte});if(ordine)params.set("ordine",ordine);try{const dati=await chiamaApi(`/api/rete?${params.toString()}`);this.ultima=dati;stato.innerHTML="";this.render(dati);}catch(e){stato.innerHTML="";setErrore("rete-errore",e.message);}},
+  popolaOrdinamenti(ordinamenti){const sel=document.getElementById("ordine-select");const entries=Object.entries(objOf(ordinamenti));const scelto=this.ultima&&this.ultima.meta&&this.ultima.meta.ordine?this.ultima.meta.ordine.chiave:(this.ordine||(entries[0]&&entries[0][0]));sel.innerHTML=entries.map(([k,v])=>`<option value="${esc(k)}" ${k===scelto?"selected":""}>${esc(v)}</option>`).join("");this.ordine=sel.value||null;if(!sel.dataset.collegato){sel.dataset.collegato="1";sel.addEventListener("change",()=>{this.ordine=sel.value;this.carica(this.ordine);});}},
+  indicatore(p){const v=p.pressione_relativa;if(v===null||v===undefined)return "#8b929b";return v<1?"#1e7d34":v<1.5?"#c9a227":v<2?"#d2691e":"#c02626";},
+  render(dati){const meta=objOf(dati.meta),presidi=arrayOf(dati.presidi);this.popolaOrdinamenti(dati.ordinamenti);document.getElementById("rete-meta").innerHTML=metaHtml(meta);const senzaDato=Array.isArray(meta.senza_dato)?meta.senza_dato.length:null;const stats=[[meta.presidi,"presidi"],[meta.con_dato,"con dato"],[senzaDato,"senza dato"]];document.getElementById("rete-stat-row").innerHTML=stats.map(([n,l])=>`<div class="stat"><div class="num">${fmtInt(n)}</div><div class="lbl">${esc(l)}</div></div>`).join("");
+    const tbody=document.getElementById("rete-tbody");tbody.innerHTML=presidi.map(p=>{const senza=!!p.senza_dato;return `<tr data-codice="${esc(p.codice)}" class="${p.codice===this.selezionato?"selezionata":""}"><td>${p.in_allarme?'<span class="dot-allarme" title="in allarme"></span>':""}${esc(valore(p.nome))}${senza?' <span class="pill pill-warn">non trasmette</span>':""}</td><td>${esc(valore(p.tipo))}</td><td class="${senza?"cella-vuota":""}">${senza?"—":fmt(p.in_attesa,0)}</td><td class="${senza?"cella-vuota":""}">${senza?"—":fmt(p.pressione_relativa,2)}</td><td class="${senza?"cella-vuota":""}">${senza?"—":fmt(p.sofferenza_relativa,2)}</td><td class="${senza?"cella-vuota":""}">${senza?"—":fmt(p.carico_deviabile,1)}</td></tr>`;}).join("");tbody.querySelectorAll("tr").forEach(tr=>tr.addEventListener("click",()=>this.seleziona(tr.dataset.codice)));
+    const map=this.initMappa();Object.values(this.marker).forEach(m=>map.removeLayer(m));this.marker={};const bounds=[];presidi.forEach(p=>{if(p.lat===null||p.lon===null||p.lat===undefined||p.lon===undefined)return;const mk=L.circleMarker([p.lat,p.lon],{radius:p.in_allarme?10:7,color:p.in_allarme?"#c02626":this.indicatore(p),weight:p.in_allarme?3:1.5,fillColor:this.indicatore(p),fillOpacity:.85}).addTo(map);mk.bindTooltip(`${esc(valore(p.nome))}${p.senza_dato?" — non trasmette":""}`);mk.on("click",()=>this.seleziona(p.codice));this.marker[p.codice]=mk;bounds.push([p.lat,p.lon]);});if(bounds.length&&!this.centrata){map.fitBounds(bounds,{padding:[20,20]});this.centrata=true;}if(this.selezionato){const p=presidi.find(x=>x.codice===this.selezionato);if(p)this.renderDettaglio(p);}
   },
+  seleziona(codice){this.selezionato=codice;const presidi=arrayOf(this.ultima&&this.ultima.presidi),p=presidi.find(x=>x.codice===codice);if(!p)return;document.querySelectorAll("#rete-tbody tr").forEach(tr=>tr.classList.toggle("selezionata",tr.dataset.codice===codice));if(p.lat!==null&&p.lon!==null&&mappe.rete){mappe.rete.setView([p.lat,p.lon],Math.max(mappe.rete.getZoom(),11),{animate:true});if(this.marker[codice])this.marker[codice].openTooltip();}this.renderDettaglio(p);},
+  renderDettaglio(p){const senza=!!p.senza_dato;const campi=[["Comune",p.comune],["ASL",p.asl],["Presenti",p.presenti],["In attesa",p.in_attesa],["Pressione relativa",p.pressione_relativa],["Sofferenza relativa",p.sofferenza_relativa],["Attesa media pubblicata",p.attesa_h===null||p.attesa_h===undefined?null:`${fmt(p.attesa_h,2)} h`],["Attesa misurata",p.attesa_misurata===null||p.attesa_misurata===undefined?null:(p.attesa_misurata?"sì":"no")],["Posti residui",p.posti_residui],["Carico deviabile",p.carico_deviabile]];const livelli=arrayOf(p.attesa_livelli);const righe=livelli.map(l=>`<tr><td>${esc(valore(l.livello))}</td><td>${esc(valore(l.etichetta))}</td><td>${fmt(l.in_attesa,0)}</td><td>${fmt(l.attesa_media_h,2)} h</td><td>${fmt(l.attesa_max_h,2)} h</td></tr>`).join("");const livelliHtml=`<h4>Livelli di attesa</h4><div class="table-wrap"><table class="livelli-table"><thead><tr><th>Livello</th><th>Etichetta</th><th>In attesa</th><th>Attesa media</th><th>Attesa max</th></tr></thead><tbody>${righe||'<tr><td colspan="5" class="muted">non disponibile</td></tr>'}</tbody></table></div><p class="nota-coda">La lunghezza della coda non è il tempo di attesa personale.</p>`;const note=arrayOf(p.note);const noteHtml=note.length?`<ul class="note-list">${note.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>`:"";document.getElementById("rete-panel").innerHTML=`<section class="card"><h3>${esc(valore(p.nome))} <span class="muted" style="font-weight:400">— ${esc(valore(p.tipo))}</span>${p.in_allarme?' <span class="pill pill-bad">in allarme</span>':''}${senza?' <span class="pill pill-warn">non trasmette</span>':''}</h3><div class="grid-campi">${campi.map(([k,v])=>`<div class="campo"><div class="v">${senza&&k!=="Comune"&&k!=="ASL"?"—":(typeof v==="number"?fmt(v,1):esc(valore(v)))}</div><div class="k">${esc(k)}</div></div>`).join("")}</div>${livelliHtml}${noteHtml}</section>`;}
 };
 
-function metaBarHtml(meta){
-  if (!meta) return "";
-  let html = `<span>Fonte: <strong>${esc(meta.fonte)}</strong> — rilevazione del ${fmtDataOra(meta.rilevato_il)}</span>`;
-  // Se il feed live non ha risposto, si mostra l'ultima lettura riuscita: va
-  // detto, altrimenti un numero vecchio si spaccia per attuale.
-  if (meta.da_cache) html += `<span class="pill pill-warn">ultima lettura disponibile: la fonte non ha risposto ora</span>`;
-  if (meta.senza_dato_live && meta.senza_dato_live.length)
-    html += `<span class="pill">${meta.senza_dato_live.length} presidi non trasmettono: ${esc(meta.senza_dato_live.join(", "))}</span>`;
-  if (meta.avviso) html += `<span class="meta-avviso">⚠ ${esc(meta.avviso)}</span>`;
-  return html;
-}
-
-function fontePill(fonte, primaria){
-  if (!fonte || fonte === primaria) return "";
-  const cls = fonte === "fallback" ? "pill pill-warn" : "pill";
-  const etichetta = fonte === "cache" ? "dato da cache" : fonte === "fallback" ? "dato di fallback" : esc(fonte);
-  return `<span class="${cls}">${etichetta}</span>`;
-}
-
-function fallbackNoteHtml(oggetto){
-  if (!oggetto || !oggetto._fallback) return "";
-  return `<div class="box-fallback">⚠ risposta calcolata senza il modello (fallback): i soli indici deterministici sono stati usati.</div>`;
-}
-
-function erroreHtml(msg){
-  return `<div class="errore-box">Errore: ${esc(msg)}</div>`;
-}
-
-function caricamentoHtml(msg){
-  return `<div class="caricamento"><span class="spinner"></span><span>${esc(msg)}</span></div>`;
-}
-
-/* =========================================================================
-   Tab switching
-   ========================================================================= */
-const mappe = {}; // nome -> istanza Leaflet, creata pigramente
-
-function attivaTab(nome){
-  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === nome));
-  document.querySelectorAll(".tab-pane").forEach(p => p.classList.toggle("active", p.id === "tab-" + nome));
-  // Leaflet ha bisogno che il contenitore sia visibile per calcolare le dimensioni.
-  setTimeout(() => {
-    if (nome === "rete" && mappe.rete) mappe.rete.invalidateSize();
-    if (nome === "centrale" && mappe.centrale) mappe.centrale.invalidateSize();
-  }, 30);
-}
-document.querySelectorAll(".tab-btn").forEach(b => b.addEventListener("click", () => attivaTab(b.dataset.tab)));
-
-/* =========================================================================
-   TAB 1 — RETE
-   ========================================================================= */
-const Rete = {
-  ultimaRisposta: null,
-  codiceSelezionato: null,
-  layerMarker: {},   // codice -> L.CircleMarker
-  layerPiano: [],     // linee del piano corrente, da ripulire ad ogni piano nuovo
-
-  initMappa(){
-    if (mappe.rete) return mappe.rete;
-    const m = L.map("mappa-rete").setView([41.9, 12.6], 8);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 18, attribution: "&copy; contributori OpenStreetMap"
-    }).addTo(m);
-    mappe.rete = m;
-    return m;
-  },
-
-  // QUALE INDICATORE GUIDA LA VISTA. Dipende dalla fonte, e non e' un
-  // dettaglio estetico: lo snapshot open data dice chi c'e' DENTRO il pronto
-  // soccorso (attesa + trattamento + osservazione) e quindi permette di
-  // calcolare la pressione; il feed in tempo reale della Regione pubblica solo
-  // la CODA e i tempi di attesa veri, quindi la pressione non esiste e la
-  // colonna resterebbe vuota. In quel caso la vista si regge sulla sofferenza,
-  // che in live e' anzi misurata invece che stimata.
-  guida(meta){
-    return (meta && meta.solo_coda)
-      ? { campo: "sofferenza_relativa", titolo: "Sofferenza", sub: "× mediana rete" }
-      : { campo: "pressione_relativa", titolo: "Pressione", sub: "× mediana rete" };
-  },
-
-  // NB: si usa SEMPRE pressione_relativa, mai la pressione grezza.
-  // La grezza vale 3-15 al picco delle 16:58 (e' il rapporto con la media
-  // annua), quindi con queste soglie sarebbe tutto rosso e indistinguibile.
-  // La relativa e' calibrata sulla mediana della rete: 1.0 = come il presidio
-  // mediano adesso, ed e' la scala a cui si riferisce la soglia di allarme.
-  coloreMarker(p, campo){
-    const v = p[campo || "pressione_relativa"];
-    if (v === null || v === undefined) return "#9e9e9e";
-    if (v < 1.0) return "#1e7d34";
-    if (v < 1.5) return "#c9a227";
-    if (v < 2.0) return "#d2691e";
-    return "#c02626";
-  },
-
-  async carica(ordine){
-    const stato = document.getElementById("rete-stato-caricamento");
-    const errBox = document.getElementById("rete-errore");
-    stato.innerHTML = caricamentoHtml("Caricamento rete…");
-    errBox.innerHTML = "";
-    try {
-      const dati = await chiamaApi(
-        `/api/rete?ordine=${encodeURIComponent(ordine)}&fonte=${encodeURIComponent(FONTE.corrente())}`);
-      this.ultimaRisposta = dati;
-      stato.innerHTML = "";
-      this.render(dati);
-    } catch (e) {
-      stato.innerHTML = "";
-      errBox.innerHTML = erroreHtml(e.message);
-    }
-  },
-
-  popolaSelect(ordinamenti, ordineCorrente){
-    const sel = document.getElementById("ordine-select");
-    // Ripopolare quando cambia la fonte: il tempo reale offre meno
-    // ordinamenti, e un'opzione rimasta li' dalla fonte precedente
-    // chiederebbe al server un campo che in questa modalita' non esiste.
-    if (sel.dataset.popolato === FONTE.corrente()) return;
-    sel.innerHTML = Object.entries(ordinamenti).map(([chiave, etichetta]) =>
-      `<option value="${esc(chiave)}" ${chiave === ordineCorrente ? "selected" : ""}>${esc(etichetta)}</option>`
-    ).join("");
-    sel.dataset.popolato = FONTE.corrente();
-    if (!sel.dataset.collegato) {
-      sel.dataset.collegato = "1";
-      sel.addEventListener("change", () => this.carica(sel.value));
-    }
-  },
-
-  render(dati){
-    const { meta, ordinamenti, presidi } = dati;
-    const guida = this.guida(meta);
-    document.getElementById("col-guida").textContent = guida.titolo;
-    // Con il feed live la seconda colonna smette di essere un rapporto e
-    // diventa il tempo di attesa vero: e' un dato migliore, va detto.
-    document.getElementById("col-seconda").textContent =
-      meta.solo_coda ? "Attesa media reale" : "Sofferenza";
-    document.getElementById("col-seconda-sub").textContent =
-      meta.solo_coda ? "pubblicata dalla Regione" : "× mediana rete";
-    this.popolaSelect(ordinamenti, meta.ordine ? meta.ordine.chiave : "pressione");
-    document.getElementById("rete-meta").innerHTML = metaBarHtml(meta);
-    // Il piede pagina dichiara la fonte: cambiarla e lasciare scritto
-    // "snapshot" sarebbe la bugia piu' facile da fare e da farsi scoprire.
-    document.getElementById("piede").textContent = meta.solo_coda
-      ? "REGIA — cruscotto dimostrativo. Stato dei pronto soccorso in tempo reale dall'API di Salute Lazio."
-      : "REGIA — cruscotto dimostrativo. I dati di rete provengono da uno snapshot regionale del 15/07/2021, non dal tempo reale.";
-
-    const righe = [
-      { num: fmtInt(meta.in_allarme), lbl: "presidi in allarme", bad: meta.in_allarme > 0 },
-      { num: fmt(meta.carico_deviabile_totale, 1), lbl: "carico deviabile totale (pazienti equivalenti)" },
-      { num: fmt(meta.ore_paziente_recuperabili, 1), lbl: "ore-paziente recuperabili" },
-    ];
-    document.getElementById("rete-stat-row").innerHTML = righe.map(r =>
-      `<div class="stat ${r.bad ? "bad" : ""}"><div class="num">${r.num}</div><div class="lbl">${esc(r.lbl)}</div></div>`
-    ).join("");
-
-    // tabella, nell'ordine gia' fornito dal server
-    const tbody = document.getElementById("rete-tbody");
-    tbody.innerHTML = presidi.map(p => {
-      const vp = p[guida.campo];
-      const classePress = (vp === null || vp === undefined) ? "press-null"
-        : vp < 1.0 ? "press-verde"
-        : vp < 1.5 ? "press-giallo"
-        : vp < 2.0 ? "press-arancione" : "press-rosso";
-      return `<tr data-codice="${esc(p.codice)}" class="${p.codice === this.codiceSelezionato ? "selezionata" : ""}">
-        <td>${p.in_allarme ? '<span class="dot-allarme" title="in allarme"></span>' : ""}${esc(p.nome)}</td>
-        <td>${esc(p.tipo)}</td>
-        <td class="press-tag ${classePress}">${fmt(vp, 2)}</td>
-        <td>${meta.solo_coda ? (p.attesa_h === null || p.attesa_h === undefined ? "—" : fmt(p.attesa_h, 2) + " h") : fmt(p.sofferenza_relativa, 2)}</td>
-        <td>${fmtInt(p.in_attesa)}${p.senza_dato ? ' <span class="pill pill-warn">non trasmette</span>' : ""}</td>
-        <td>${fmt(p.carico_deviabile, 1)}</td>
-      </tr>`;
-    }).join("");
-    tbody.querySelectorAll("tr").forEach(tr => {
-      tr.addEventListener("click", () => this.seleziona(tr.dataset.codice));
-    });
-
-    // marker sulla mappa
-    const map = this.initMappa();
-    Object.values(this.layerMarker).forEach(mk => map.removeLayer(mk));
-    this.layerMarker = {};
-    const puntiValidi = [];
-    presidi.forEach(p => {
-      if (p.lat === null || p.lon === null || p.lat === undefined || p.lon === undefined) return;
-      const colore = this.coloreMarker(p, guida.campo);
-      const marker = L.circleMarker([p.lat, p.lon], {
-        radius: p.in_allarme ? 10 : 7,
-        color: p.in_allarme ? "#c02626" : colore,
-        weight: p.in_allarme ? 3 : 1.5,
-        fillColor: colore, fillOpacity: .85,
-      }).addTo(map);
-      marker.bindTooltip(`${esc(p.nome)} — ${guida.titolo.toLowerCase()} ${fmt(p[guida.campo], 2)}× la mediana della rete`
-        + (meta.solo_coda && p.attesa_h != null ? ` · attesa reale ${fmt(p.attesa_h, 2)} h` : ""));
-      marker.on("click", () => this.seleziona(p.codice));
-      this.layerMarker[p.codice] = marker;
-      puntiValidi.push([p.lat, p.lon]);
-    });
-    if (puntiValidi.length && !this._centrato) {
-      map.fitBounds(puntiValidi, { padding: [20, 20] });
-      this._centrato = true;
-    }
-
-    // se un presidio era selezionato, aggiorna il pannello con i dati freschi
-    if (this.codiceSelezionato) {
-      const ancora = presidi.find(p => p.codice === this.codiceSelezionato);
-      if (ancora) this.renderPannello(ancora); else this.codiceSelezionato = null;
-    }
-  },
-
-  seleziona(codice){
-    this.codiceSelezionato = codice;
-    if (!this.ultimaRisposta) return;
-    const p = this.ultimaRisposta.presidi.find(x => x.codice === codice);
-    if (!p) return;
-    document.querySelectorAll("#rete-tbody tr").forEach(tr =>
-      tr.classList.toggle("selezionata", tr.dataset.codice === codice));
-    if (p.lat !== null && p.lon !== null && mappe.rete) {
-      mappe.rete.setView([p.lat, p.lon], Math.max(mappe.rete.getZoom(), 11), { animate: true });
-      if (this.layerMarker[codice]) this.layerMarker[codice].openTooltip();
-    }
-    this.renderPannello(p);
-  },
-
-  renderPannello(p){
-    const meta = (this.ultimaRisposta && this.ultimaRisposta.meta) || {};
-    const soloCoda = !!meta.solo_coda;
-    const campi = [
-      // In tempo reale la fonte pubblica solo la coda: dire "presenti" un
-      // numero che conta i soli pazienti in attesa sarebbe falso.
-      [soloCoda ? "Presenti (non pubblicato)" : "Presenti",
-       soloCoda ? "—" : fmtInt(p.presenti)],
-      ["In attesa", fmtInt(p.in_attesa)],
-      ["Carico pesato", fmt(p.carico_pesato, 1)], ["Occupazione attesa", fmt(p.occupazione_attesa, 1)],
-      ["Pressione (× mediana rete)", fmt(p.pressione_relativa, 2)],
-      ["Sofferenza (× mediana rete)", fmt(p.sofferenza_relativa, 2)],
-      [p.attesa_misurata ? "Attesa media PUBBLICATA dalla Regione"
-                         : "Attesa stimata dalla coda", p.attesa_h == null ? "—" : fmt(p.attesa_h, 2) + " h"],
-      ["Posti residui", fmt(p.posti_residui, 1)],
-      ["Throughput (paz/h)", fmt(p.throughput_h, 2)], ["Attesa implicita (h)", fmt(p.attesa_implicita_h, 2)],
-      ["Deviabili osservati", fmtInt(p.deviabili_osservati)],
-      ["Pressione grezza (× media annua)", fmt(p.pressione, 2)],
-      ["Sofferenza grezza (× attesa storica)", fmt(p.sofferenza, 2)],
-      ["Quota strutturale", p.quota_strutturale === null ? "—" : (p.quota_strutturale * 100).toFixed(1) + "%"],
-      ["Carico deviabile", fmt(p.carico_deviabile, 1)], ["Ore-paziente recuperabili", fmt(p.ore_paziente_recuperabili, 1)],
-    ];
-    const note = (p.note && p.note.length) ? `<ul class="note-list">${p.note.map(n => `<li>${esc(n)}</li>`).join("")}</ul>` : "";
-    document.getElementById("rete-panel").innerHTML = `
-      <h3>${esc(p.nome)} <span style="color:var(--muted); font-weight:400;">— ${esc(p.tipo)}, ${esc(p.comune)} (${esc(p.asl)})</span>
-        ${p.in_allarme ? '<span class="dot-allarme"></span><strong style="color:var(--bad);">in allarme</strong>' : ""}
-      </h3>
-      <div class="grid-campi">${campi.map(([k, v]) => `<div class="campo"><div class="v">${v}</div><div class="k">${esc(k)}</div></div>`).join("")}</div>
-      ${note}
-      <button type="button" class="azione" id="btn-genera-piano">Genera piano di deviazione</button>
-      <div id="piano-esito"></div>
-    `;
-    document.getElementById("btn-genera-piano").addEventListener("click", () => this.generaPiano(p.codice));
-  },
-
-  async generaPiano(codice){
-    const box = document.getElementById("piano-esito");
-    const btn = document.getElementById("btn-genera-piano");
-    btn.disabled = true;
-    box.innerHTML = caricamentoHtml("Generazione del piano in corso (può richiedere fino a 10 secondi la prima volta)…");
-    try {
-      const dati = await chiamaApi(`/api/piano?codice=${encodeURIComponent(codice)}&fonte=${encodeURIComponent(FONTE.corrente())}`);
-      this.renderPiano(dati);
-    } catch (e) {
-      box.innerHTML = erroreHtml(e.message);
-    } finally {
-      btn.disabled = false;
-    }
-  },
-
-  renderPiano(dati){
-    const { presidio, candidati, meteo, piano } = dati;
-    const box = document.getElementById("piano-esito");
-    const destinazioniHtml = (piano.destinazioni || []).map(d =>
-      `<div class="destinazione-item">
-        <span class="nome">${esc(d.nome)}</span> — <span class="quota">${fmtInt(d.quota)} pazienti</span>
-        <div style="color:var(--muted); font-size:.82rem;">${esc(d.perche)}</div>
-      </div>`
-    ).join("") || `<p style="color:var(--muted);">Nessuna destinazione esterna proposta.</p>`;
-
-    box.innerHTML = `
-      <div class="piano-box">
-        ${fallbackNoteHtml(piano)}
-        <div class="meta-bar" style="margin-bottom:.5rem;">
-          <span>Meteo sul presidio: ${fmt(meteo.temperatura_c, 1)}°C (percepita ${fmt(meteo.percepita_c, 1)}°C), umidità ${fmtInt(meteo.umidita_pct)}%, vento ${fmt(meteo.vento_kmh, 1)} km/h</span>
-          ${fontePill(meteo.fonte, "open-meteo")}
-        </div>
-        <div class="grid-campi" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr));">
-          <div class="campo"><div class="v">${fmtInt(piano.quota_da_deviare)}</div><div class="k">pazienti da deviare</div></div>
-          <div class="campo"><div class="v">${fmtInt(piano.urgenza)}/5</div><div class="k">urgenza del piano</div></div>
-        </div>
-        ${(piano.codici_coinvolti || []).map(c => `<span class="badge-codice-colore">${esc(c)}</span>`).join("")}
-        <h3 style="margin-top:.7rem;">Destinazioni proposte</h3>
-        ${destinazioniHtml}
-        <h3>Motivazione</h3>
-        <p>${esc(piano.motivazione)}</p>
-        ${(piano.azioni_operative && piano.azioni_operative.length) ? `<h3>Azioni operative</h3><ul class="azioni-list">${piano.azioni_operative.map(a => `<li>${esc(a)}</li>`).join("")}</ul>` : ""}
-        ${piano.effetto_domino ? `<h3>Effetto domino</h3><p>${esc(piano.effetto_domino)}</p>` : ""}
-      </div>
-    `;
-
-    // disegna le linee dal presidio critico verso ogni destinazione trovata in candidati
-    const map = this.initMappa();
-    this.layerPiano.forEach(l => map.removeLayer(l));
-    this.layerPiano = [];
-    if (presidio.lat !== null && presidio.lon !== null) {
-      const puntiRotta = [[presidio.lat, presidio.lon]];
-      (piano.destinazioni || []).forEach(d => {
-        const cand = (candidati || []).find(c => c.nome === d.nome);
-        if (cand && cand.lat !== null && cand.lon !== null) {
-          const linea = L.polyline([[presidio.lat, presidio.lon], [cand.lat, cand.lon]], {
-            color: "#0a5c8a", weight: 3, dashArray: "6 6"
-          }).addTo(map);
-          linea.bindTooltip(`${esc(presidio.nome)} → ${esc(d.nome)} (${fmtInt(d.quota)} pazienti)`);
-          this.layerPiano.push(linea);
-          puntiRotta.push([cand.lat, cand.lon]);
-        }
-      });
-      if (puntiRotta.length > 1) map.fitBounds(puntiRotta, { padding: [30, 30] });
-    }
-  },
+const Copertura={
+  async carica(){const box=document.getElementById("copertura-corpo");box.innerHTML=caricamentoHtml("Caricamento copertura…");try{this.render(await chiamaApi("/api/copertura"));}catch(e){box.innerHTML=erroreHtml(e.message);}},
+  render(dati){const box=document.getElementById("copertura-corpo"),sorgenti=arrayOf(dati.sorgenti),nonRisolti=objOf(dati.non_risolti);let html=`<div class="copertura-grid">${sorgenti.map(s=>{const stato=String(valore(s.stato,"non disponibile")).toLowerCase();return `<article class="sorgente"><div class="sorgente-header"><strong>${esc(valore(s.nome))}</strong><span class="stato stato-${esc(stato)}">${esc(valore(s.stato))}</span></div><p>${esc(valore(s.copertura))}</p>${s.limite?`<p class="small muted">Limite: ${esc(s.limite)}</p>`:""}${s.fonte_url?`<a class="small fonte-link" href="${esc(urlSicuro(s.fonte_url))}" target="_blank" rel="noopener">Fonte</a>`:""}${tempiHtml(s)}</article>`;}).join("")}</div>`;if(Object.keys(nonRisolti).length)html+=`<h3>Elementi non risolti</h3><div class="grid-campi">${Object.entries(nonRisolti).map(([k,v])=>`<div class="campo"><div class="v">${fmtInt(v)}</div><div class="k">${esc(k)}</div></div>`).join("")}</div>`;box.innerHTML=html||'<p class="muted">Copertura non disponibile.</p>';}
 };
 
-/* =========================================================================
-   TAB 2 — CENTRALE 118
-   ========================================================================= */
-const Centrale = {
-  ultimeDestinazioni: [],
-
-  initMappa(){
-    if (mappe.centrale) return mappe.centrale;
-    const m = L.map("mappa-118").setView([41.9, 12.6], 9);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 18, attribution: "&copy; contributori OpenStreetMap"
-    }).addTo(m);
-    mappe.centrale = m;
-    return m;
-  },
-
-  ESEMPI: [
-    "uomo 62 anni, dolore al petto che si irradia al braccio sinistro, suda freddo, cosciente, zona Torre Angela",
-    "donna 34 anni, caviglia gonfia dopo caduta, cammina con difficoltà, zona Tuscolana",
-    "bambino 6 anni, febbre 38.5 da ieri sera, beve e gioca, zona Centocelle",
-  ],
-
-  initUi(){
-    document.getElementById("esempi-chiamata").innerHTML = this.ESEMPI.map((testo, i) =>
-      `<button type="button" class="esempio-btn" data-i="${i}">${esc(testo.slice(0, 46))}…</button>`
-    ).join("");
-    document.querySelectorAll("#esempi-chiamata .esempio-btn").forEach(b =>
-      b.addEventListener("click", () => { document.getElementById("chiamata-testo").value = this.ESEMPI[+b.dataset.i]; }));
-
-    document.getElementById("chiamata-analizza").addEventListener("click", () => this.analizza());
-
-    // dettatura vocale, solo se disponibile nel browser
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SR) {
-      const micBtn = document.getElementById("mic-btn");
-      micBtn.hidden = false;
-      const riconoscimento = new SR();
-      riconoscimento.lang = "it-IT";
-      riconoscimento.interimResults = false;
-      let attivo = false;
-      riconoscimento.onresult = (ev) => {
-        const testo = Array.from(ev.results).map(r => r[0].transcript).join(" ");
-        const area = document.getElementById("chiamata-testo");
-        area.value = (area.value ? area.value + " " : "") + testo;
-      };
-      riconoscimento.onend = () => { attivo = false; micBtn.classList.remove("attivo"); };
-      riconoscimento.onerror = () => { attivo = false; micBtn.classList.remove("attivo"); };
-      micBtn.addEventListener("click", () => {
-        if (attivo) { riconoscimento.stop(); return; }
-        attivo = true; micBtn.classList.add("attivo");
-        try { riconoscimento.start(); } catch (e) { attivo = false; micBtn.classList.remove("attivo"); }
-      });
-    }
-  },
-
-  async analizza(){
-    const testo = document.getElementById("chiamata-testo").value.trim();
-    const esito = document.getElementById("chiamata-esito");
-    if (!testo) { esito.innerHTML = erroreHtml("scrivi o detta prima la sintesi della chiamata"); return; }
-    const lat = document.getElementById("chiamata-lat").value || ROMA.lat;
-    const lon = document.getElementById("chiamata-lon").value || ROMA.lon;
-    esito.innerHTML = caricamentoHtml("Analisi della chiamata in corso (può richiedere fino a 10 secondi)…");
-    try {
-      const dati = await chiamaApi(`/api/triage?testo=${encodeURIComponent(testo)}&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&fonte=${encodeURIComponent(FONTE.corrente())}`);
-      this.render(dati);
-    } catch (e) {
-      esito.innerHTML = erroreHtml(e.message);
-    }
-  },
-
-  render(dati){
-    const { meta, triage, destinazioni } = dati;
-    const esito = document.getElementById("chiamata-esito");
-    this.ultimeDestinazioni = destinazioni || [];
-
-    let html = "";
-    if (triage.chiama_118) {
-      html += `<div class="banner-118">🚨 CHIAMA IL 118</div>`;
-    }
-    html += `<section class="card">`;
-    html += `<div class="meta-bar">${metaBarHtml(meta)}</div>`;
-    html += fallbackNoteHtml(triage);
-    html += `<span class="badge-colore colore-${esc(triage.codice)}">${esc(triage.codice)}</span>`;
-    if (triage.dea_ii_richiesto) html += ` <span class="pill">DEA II richiesto</span>`;
-    if (triage.corretto_da_regola) {
-      html += `<div class="box-regola">⚠ Il modello aveva classificato <strong>${esc(triage.codice_modello)}</strong>;
-        una regola di sicurezza deterministica ha innalzato il codice a <strong>${esc(triage.codice)}</strong>.</div>`;
-    }
-    html += `<h3 style="margin-top:.8rem;">Sintesi</h3><p>${esc(triage.sintesi)}</p>`;
-    if (triage.sintomi && triage.sintomi.length) {
-      html += `<h3>Sintomi</h3><p>${triage.sintomi.map(s => `<span class="pill">${esc(s)}</span>`).join(" ")}</p>`;
-    }
-    if (triage.red_flags && triage.red_flags.length) {
-      html += `<h3>Red flag</h3><p>${triage.red_flags.map(s => `<span class="pill pill-warn">${esc(s)}</span>`).join(" ")}</p>`;
-    }
-    if (triage.red_flags_rilevate_da_regola && triage.red_flags_rilevate_da_regola.length) {
-      html += `<p style="color:var(--muted); font-size:.8rem;">Rilevate anche dalla regola deterministica: ${triage.red_flags_rilevate_da_regola.map(esc).join(", ")}</p>`;
-    }
-    html += `</section>`;
-
-    html += `<section class="card"><h2>Destinazioni proposte</h2>`;
-    if (!destinazioni || !destinazioni.length) {
-      html += `<p style="color:var(--muted);">Nessuna destinazione disponibile (coordinate dei presidi non ancora note nel dataset).</p>`;
-    } else {
-      html += destinazioni.map((d, i) => `
-        <div class="destinazione-riga ${d.idoneo ? "" : "non-idoneo"}" data-i="${i}">
-          <span class="nome-dest">${esc(d.nome)} <span style="color:var(--muted); font-weight:400;">(${esc(d.tipo)}, ${esc(d.comune)})</span></span>
-          <span>${fmt(d.durata_min, 1)} min</span>
-          <span>${fmt(d.distanza_km, 1)} km</span>
-          <span>in attesa: ${fmtInt(d.in_attesa)}</span>
-          ${fontePill(d.fonte_percorso, "osrm")}
-          <span class="${d.idoneo ? "tag-idoneo" : "tag-non-idoneo"}">${d.idoneo ? "✓ idoneo" : "✗ " + esc(d.motivo_idoneita)}</span>
-        </div>
-      `).join("");
-    }
-    html += `</section>`;
-
-    esito.innerHTML = html;
-
-    const map = this.initMappa();
-    map.invalidateSize();
-    esito.querySelectorAll(".destinazione-riga").forEach(riga => {
-      riga.addEventListener("click", () => this.mostraPercorso(this.ultimeDestinazioni[+riga.dataset.i]));
-    });
-    // mostra subito il percorso della prima destinazione, se c'e'
-    if (this.ultimeDestinazioni.length) this.mostraPercorso(this.ultimeDestinazioni[0]);
-  },
-
-  layerPercorso: [],
-  mostraPercorso(dest){
-    if (!dest) return;
-    const map = this.initMappa();
-    this.layerPercorso.forEach(l => map.removeLayer(l));
-    this.layerPercorso = [];
-    if (dest.geometria && dest.geometria.length) {
-      const linea = L.polyline(dest.geometria, { color: "#0a5c8a", weight: 4 }).addTo(map);
-      this.layerPercorso.push(linea);
-      map.fitBounds(linea.getBounds(), { padding: [24, 24] });
-    }
-    if (dest.lat !== null && dest.lon !== null) {
-      const marker = L.circleMarker([dest.lat, dest.lon], { radius: 8, color: "#0a5c8a", fillColor: "#0a5c8a", fillOpacity: .9 }).addTo(map);
-      marker.bindTooltip(esc(dest.nome));
-      this.layerPercorso.push(marker);
-    }
-  },
+const Bollettino={
+  posizione:null,
+  async carica(){const box=document.getElementById("bollettino-corpo");box.innerHTML=caricamentoHtml("Caricamento bollettino…");try{this.render(await chiamaApi(`/api/bollettino${posizioneQuery(this.posizione)}`));}catch(e){box.innerHTML=erroreHtml(e.message);}},
+  label(k){return {temperatura_c:"Temperatura",percepita_c:"Temperatura percepita",pm10:"PM10",pm2_5:"PM2.5",pollini:"Pollini",umidita_pct:"Umidità",vento_kmh:"Vento",aqi_europeo:"AQI europeo"}[k]||k.replaceAll("_"," ");},
+  valoreMisurato(k,meteo,aria){return meteo[k]!==undefined?meteo[k]:aria[k];},
+  render(dati){const box=document.getElementById("bollettino-corpo");if(dati.disponibile===false){box.innerHTML="<p class=\"box-avviso\">dato ambientale non disponibile</p>";return;}const meteo=objOf(dati.meteo),aria=objOf(dati.aria),ufficiale=objOf(dati.bollettino_ufficiale),interp=objOf(dati.interpretazione),livelli=objOf(dati.livelli_di_prova),meta=objOf(dati.meta);let html=tempiHtml({ ...meta, istante_fonte:meta.istante_fonte||meteo.istante_fonte||aria.istante_fonte, acquisito_il:meta.acquisito_il||dati.acquisito_il, letto_il:meta.letto_il||dati.letto_il, da_cache:meta.da_cache||meteo.fonte==="cache"||aria.fonte==="cache" });html+=`<div class="prova-section"><h3><span class="badge badge-misurato">misurato</span></h3><div class="dato-list">${arrayOf(livelli.misurato).map(k=>`<div class="dato"><span class="k">${esc(this.label(k))}</span><span class="v">${fmt(this.valoreMisurato(k,meteo,aria),1)}</span></div>`).join("")||'<span class="muted">nessun dato misurato dichiarato</span>'}</div><p class="small muted">Meteo: ${esc(valore(meteo.fonte,"non disponibile"))}; aria: ${esc(valore(aria.fonte,"non disponibile"))}.</p></div>`;html+=`<div class="prova-section"><h3><span class="badge badge-ufficiale">bollettino ufficiale</span></h3>`;if(ufficiale.presente===false)html+="<p>Non è presente un bollettino ufficiale per questo dato.</p>";else if(ufficiale.presente===true)html+=`<p>${esc(valore(ufficiale.nota,"Bollettino ufficiale presente."))}</p>`;else html+="<p class=\"muted\">Presenza del bollettino ufficiale non disponibile.</p>";if(urlSicuro(ufficiale.fonte_url))html+=`<a class="small fonte-link" href="${esc(urlSicuro(ufficiale.fonte_url))}" target="_blank" rel="noopener">Fonte del bollettino ufficiale</a>`;html+="</div>";html+=`<div class="prova-section bollettino-interpretazione"><h3><span class="badge badge-interpretazione">interpretazione IA</span></h3>${this.interpretazioneHtml(interp,livelli.interpretazione)}</div>`;box.innerHTML=html;},
+  interpretazioneHtml(interp,chiavi){const keys=arrayOf(chiavi),out=[];const labels={rischi:"Rischi",gruppi_vulnerabili:"Gruppi vulnerabili — interpretazione",azioni_pratiche:"Azioni pratiche — interpretazione",azioni_preparatorie:"Azioni pratiche — interpretazione",messaggio:"Messaggio"};keys.forEach(k=>{let v=interp[k];if(v===undefined&&k==="azioni_pratiche")v=interp.azioni_preparatorie;if(v===undefined)return;const titolo=labels[k]||this.label(k);if(Array.isArray(v))out.push(`<h4>${esc(titolo)}</h4><ul>${v.map(x=>`<li>${esc(typeof x==="object"?(x.testo||x.messaggio||(x.gruppo?`${x.gruppo}${x.perche?` — ${x.perche}`:""}`:JSON.stringify(x))):x)}</li>`).join("")}</ul>`);else if(typeof v==="object")out.push(`<h4>${esc(titolo)}</h4><p>${esc(v.testo||v.messaggio||JSON.stringify(v))}</p>`);else out.push(`<h4>${esc(titolo)}</h4><p>${esc(v)}</p>`);});return out.join("")||'<p class="muted">interpretazione non disponibile.</p>';}
 };
 
-/* =========================================================================
-   TAB 3 — CITTADINO
-   ========================================================================= */
-const Cittadino = {
-  posizione: { lat: ROMA.lat, lon: ROMA.lon },
-
-  initUi(){
-    document.getElementById("cittadino-posizione").addEventListener("click", () => this.usaPosizione());
-    document.getElementById("cittadino-cerca").addEventListener("click", () => this.cerca());
-    this.caricaBollettino();
-  },
-
-  usaPosizione(){
-    const stato = document.getElementById("cittadino-posizione-stato");
-    if (!navigator.geolocation) {
-      stato.textContent = "geolocalizzazione non disponibile — resto su Roma (predefinita)";
-      return;
-    }
-    stato.textContent = "individuazione della posizione…";
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        this.posizione = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-        stato.textContent = `posizione: ${this.posizione.lat.toFixed(4)}, ${this.posizione.lon.toFixed(4)}`;
-        this.caricaBollettino();
-      },
-      () => {
-        stato.textContent = "posizione negata — resto su Roma (predefinita)";
-      },
-      { timeout: 8000 }
-    );
-  },
-
-  async cerca(){
-    const sintomo = document.getElementById("cittadino-sintomo").value.trim();
-    const esito = document.getElementById("cittadino-esito");
-    const err = document.getElementById("cittadino-errore");
-    err.innerHTML = "";
-    if (!sintomo) { err.innerHTML = erroreHtml("descrivi prima il sintomo"); return; }
-    esito.innerHTML = caricamentoHtml("Analisi in corso (può richiedere fino a 10 secondi)…");
-    try {
-      const { lat, lon } = this.posizione;
-      const dati = await chiamaApi(`/api/cittadino?sintomo=${encodeURIComponent(sintomo)}&lat=${lat}&lon=${lon}&fonte=${encodeURIComponent(FONTE.corrente())}`);
-      this.render(dati);
-    } catch (e) {
-      esito.innerHTML = "";
-      err.innerHTML = erroreHtml(e.message);
-    }
-  },
-
-  DOVE_INFO: {
-    "118": { icona: "🚑", etichetta: "Chiama il 118", classe: "esito-118" },
-    "pronto_soccorso": { icona: "🏥", etichetta: "Vai al Pronto Soccorso", classe: "esito-ps" },
-    "struttura_territoriale": { icona: "🏥", etichetta: "Struttura territoriale", classe: "esito-terr" },
-    "farmacia": { icona: "💊", etichetta: "Farmacia", classe: "esito-farmacia" },
-    "medico_di_base": { icona: "🩺", etichetta: "Medico di base", classe: "esito-medico" },
-  },
-
-  render(dati){
-    const { meta, vicini, consiglio } = dati;
-    const esito = document.getElementById("cittadino-esito");
-    const info = this.DOVE_INFO[consiglio.dove] || { icona: "❓", etichetta: consiglio.dove, classe: "esito-medico" };
-
-    let html = "";
-    if (consiglio.chiama_118) html += `<div class="banner-118">🚨 CHIAMA IL 118</div>`;
-    html += `<div class="esito-card card ${info.classe}">`;
-    html += fallbackNoteHtml(consiglio);
-    html += `<div class="esito-dove">${info.icona} ${esc(info.etichetta)}</div>`;
-    html += `<p>${esc(consiglio.motivazione)}</p>`;
-    if (consiglio.cosa_fare_subito) html += `<p><strong>Cosa fare subito:</strong> ${esc(consiglio.cosa_fare_subito)}</p>`;
-    if (consiglio.alternative && consiglio.alternative.length) {
-      html += `<p><strong>Alternative:</strong> ${consiglio.alternative.map(esc).join(", ")}</p>`;
-    }
-    if (consiglio.red_flags_rilevate_da_regola && consiglio.red_flags_rilevate_da_regola.length) {
-      html += `<p style="font-size:.82rem;">Segnali rilevati dalla regola di sicurezza: ${consiglio.red_flags_rilevate_da_regola.map(esc).join(", ")}</p>`;
-    }
-    html += `<p style="font-size:.75rem; opacity:.8;">Deciso da: ${esc(consiglio.deciso_da)}</p>`;
-    html += `</div>`;
-
-    html += `<section class="card"><h2>Presidi vicini</h2>`;
-    html += `<div class="meta-bar">${metaBarHtml(meta)}</div>`;
-    if (!vicini || !vicini.length) {
-      html += `<p style="color:var(--muted);">Nessun presidio nelle vicinanze disponibile (coordinate non ancora note nel dataset).</p>`;
-    } else {
-      html += vicini.map(v => `
-        <div class="vicino-riga">
-          <span>${esc(v.nome)} <span style="color:var(--muted);">(${esc(v.tipo)})</span></span>
-          <span>${fmt(v.durata_min, 1)} min — coda: ${fmtInt(v.in_attesa)}</span>
-        </div>
-      `).join("");
-    }
-    html += `</section>`;
-
-    if (consiglio.avvertenza) {
-      html += `<div class="avvertenza">${esc(consiglio.avvertenza)}</div>`;
-    }
-
-    esito.innerHTML = html;
-  },
-
-  SEV_ORDINE: { estrema: 4, grave: 3, moderata: 2, lieve: 1, nessuna: 0 },
-
-  async caricaBollettino(){
-    const box = document.getElementById("bollettino-corpo");
-    box.innerHTML = caricamentoHtml("Caricamento bollettino…");
-    try {
-      const { lat, lon } = this.posizione;
-      const dati = await chiamaApi(`/api/bollettino?lat=${lat}&lon=${lon}`);
-      this.renderBollettino(dati);
-    } catch (e) {
-      box.innerHTML = erroreHtml(e.message);
-    }
-  },
-
-  renderBollettino(dati){
-    const { meteo, aria, storico_snapshot, bollettino } = dati;
-    const box = document.getElementById("bollettino-corpo");
-    let html = "";
-    html += `<div class="meta-bar">
-      <span>Meteo: ${fmt(meteo.temperatura_c,1)}°C (percepita ${fmt(meteo.percepita_c,1)}°C), umidità ${fmtInt(meteo.umidita_pct)}%, vento ${fmt(meteo.vento_kmh,1)} km/h ${fontePill(meteo.fonte, "open-meteo")}</span>
-      <span>Qualità aria: PM10 ${fmt(aria.pm10,1)}, PM2.5 ${fmt(aria.pm2_5,1)}, AQI europeo ${fmtInt(aria.aqi_europeo)} ${fontePill(aria.fonte, "open-meteo")}</span>
-    </div>`;
-    if (storico_snapshot) {
-      html += `<p style="color:var(--muted); font-size:.8rem;">Snapshot storico del ${esc(storico_snapshot.data)}: max ${fmt(storico_snapshot.t_max_c,1)}°C, min ${fmt(storico_snapshot.t_min_c,1)}°C.</p>`;
-    }
-    html += fallbackNoteHtml(bollettino);
-
-    if (bollettino.rischi && bollettino.rischi.length) {
-      const ordinati = [...bollettino.rischi].sort((a, b) => (this.SEV_ORDINE[b.severita] || 0) - (this.SEV_ORDINE[a.severita] || 0));
-      html += `<h3>Rischi</h3>` + ordinati.map(r => `
-        <div class="rischio-item">
-          <span class="severita-tag sev-${esc(r.severita)}">${esc(r.severita)}</span>
-          <strong>${esc(r.fenomeno)}</strong>
-          <p style="margin:.2rem 0 0;">${esc(r.effetto_atteso)}</p>
-        </div>
-      `).join("");
-    }
-    if (bollettino.gruppi_vulnerabili && bollettino.gruppi_vulnerabili.length) {
-      html += `<h3>Gruppi vulnerabili</h3>` + bollettino.gruppi_vulnerabili.map(g => `
-        <p><strong>${esc(g.gruppo)}</strong> — ${esc(g.perche)}</p>
-      `).join("");
-    }
-    if (bollettino.azioni_preparatorie && bollettino.azioni_preparatorie.length) {
-      html += `<h3>Azioni preparatorie</h3><ul class="azioni-list">${bollettino.azioni_preparatorie.map(a => `<li>${esc(a)}</li>`).join("")}</ul>`;
-    }
-    if (bollettino.messaggio_cittadini) {
-      html += `<h3>Messaggio ai cittadini</h3><p>${esc(bollettino.messaggio_cittadini)}</p>`;
-    }
-    box.innerHTML = html;
-  },
+const Voce={
+  media:null,chunks:[],
+  init(){document.getElementById("cittadino-mic").addEventListener("click",()=>this.avvia());},
+  aggiornaBackend(testo){document.getElementById("voce-backend").textContent=testo?`backend usato: ${testo}`:"";},
+  avvia(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(SR){this.avviaRiconoscimento(SR);return;}this.avviaRegistrazione();},
+  avviaRiconoscimento(SR){const btn=document.getElementById("cittadino-mic");if(btn.dataset.attivo==="1"){if(this.riconoscimento)this.riconoscimento.stop();return;}const r=new SR();this.riconoscimento=r;r.lang="it-IT";r.interimResults=false;r.continuous=false;btn.dataset.attivo="1";btn.classList.add("attivo");r.onresult=ev=>{const testo=Array.from(ev.results).map(x=>x[0].transcript).join(" ");const area=document.getElementById("cittadino-testo");area.value=(area.value?area.value+" ":"")+testo;this.aggiornaBackend("browser — SpeechRecognition");};r.onerror=()=>setErrore("cittadino-errore","dettatura non disponibile: puoi scrivere il testo manualmente");r.onend=()=>{btn.dataset.attivo="0";btn.classList.remove("attivo");};try{r.start();}catch(e){btn.dataset.attivo="0";btn.classList.remove("attivo");setErrore("cittadino-errore","dettatura non disponibile");}},
+  async avviaRegistrazione(){const btn=document.getElementById("cittadino-mic");if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder){setErrore("cittadino-errore","il browser non supporta la registrazione audio");return;}if(this.media){this.media.stop();return;}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});this.chunks=[];this.media=new MediaRecorder(stream);btn.classList.add("attivo");btn.dataset.attivo="1";this.media.ondataavailable=e=>{if(e.data&&e.data.size)this.chunks.push(e.data);};this.media.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());btn.classList.remove("attivo");btn.dataset.attivo="0";const blob=new Blob(this.chunks,{type:this.media.mimeType||"audio/webm"});this.media=null;await this.invia(blob);};this.media.start();}catch(e){this.media=null;btn.classList.remove("attivo");btn.dataset.attivo="0";setErrore("cittadino-errore","non è stato possibile accedere al microfono");}},
+  async invia(blob){const form=new FormData();form.append("audio",blob,"registrazione.webm");try{const dati=await chiamaApi("/api/voce",{method:"POST",body:form});this.aggiornaBackend(valore(dati.backend,"non disponibile"));if(dati.testo!==null&&dati.testo!==undefined){const area=document.getElementById("cittadino-testo");area.value=(area.value?area.value+" ":"")+dati.testo;}else{const tentativi=arrayOf(dati.tentativi);setErrore("cittadino-errore",`trascrizione non disponibile. ${tentativi.length?`Tentativi: ${tentativi.map(t=>esc(typeof t==="object"?`${valore(t.backend)} — ${valore(t.esito)}`:t)).join("; ")}`:"Nessun tentativo disponibile."} Il testo manuale resta invariato.`);}}catch(e){setErrore("cittadino-errore",e.message);}}
 };
 
-/* =========================================================================
-   Avvio
-   ========================================================================= */
-FONTE.init(() => {
-  // Cambiare fonte cambia gli indici disponibili, quindi la vista si ricarica
-  // con l'ordinamento corrente. Se si stava ordinando per pressione e si passa
-  // al tempo reale (dove la pressione non esiste), si scivola sulla sofferenza.
-  const sel = document.getElementById("ordine-select");
-  let ordine = sel && sel.value ? sel.value : "pressione";
-  if (FONTE.corrente() === "live" && (ordine === "pressione" || ordine === "presenti")) {
-    ordine = "sofferenza";
-    if (sel) sel.value = ordine;
-  }
-  Rete.carica(ordine);
-});
-Rete.carica("pressione");
-Centrale.initUi();
-Centrale.initMappa();
-Cittadino.initUi();
+const Cittadino={
+  stato:{ingresso:null,testo:"",risposte:[],posizione:null,usa_modello:true,domanda:null,risposta:null,risposteInvalidate:[],storico:[],domande:{},orientamento:null},
+  init(){document.querySelectorAll(".ingresso-btn").forEach(b=>b.addEventListener("click",()=>this.inizia(b.dataset.ingresso)));document.getElementById("cittadino-posizione").addEventListener("click",()=>this.usaPosizione());Voce.init();},
+  corpo(){this.stato.testo=document.getElementById("cittadino-testo").value.trim();this.stato.posizione=statoApp.posizione;return {ingresso:this.stato.ingresso,testo:this.stato.testo||null,risposte:this.stato.risposte,posizione:this.stato.posizione,usa_modello:this.stato.usa_modello};},
+  async inizia(ingresso){this.stato={...this.stato,ingresso,risposte:[],domanda:null,risposta:null,risposteInvalidate:[],storico:[],domande:{},orientamento:null};document.querySelectorAll(".ingresso-btn").forEach(b=>b.classList.toggle("active",b.dataset.ingresso===ingresso));document.getElementById("orientamento-corpo").innerHTML="";await this.chiamaDialogo();},
+  usaPosizione(){const stato=document.getElementById("cittadino-posizione-stato");if(!navigator.geolocation){stato.textContent="geolocalizzazione non disponibile";return;}stato.textContent="individuazione della posizione…";navigator.geolocation.getCurrentPosition(pos=>{statoApp.posizione={lat:pos.coords.latitude,lon:pos.coords.longitude};this.stato.posizione=statoApp.posizione;stato.textContent=`posizione: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;},()=>{stato.textContent="posizione non condivisa";},{timeout:8000});},
+  async chiamaDialogo(){if(!this.stato.ingresso)return;const box=document.getElementById("dialogo-corpo");box.innerHTML=caricamentoHtml("Aggiornamento del percorso…");setErrore("cittadino-errore","");try{const dati=await postApi("/api/dialogo",this.corpo());this.renderDialogo(dati);}catch(e){box.innerHTML=erroreHtml(e.message);}},
+  rispostaGiaData(id){return this.stato.risposte.find(r=>r.id===id);},salvaDomanda(d){if(d&&d.id)this.stato.domande[d.id]=d;},
+  async scegli(valoreRisposta,id=this.stato.domanda&&this.stato.domanda.id){if(!id)return;const domanda=this.stato.domande[id]||this.stato.domanda;this.stato.storico.push({risposte:this.stato.risposte.map(x=>({...x})),domanda});const esistente=this.stato.risposte.find(r=>r.id===id);if(esistente)esistente.valore=valoreRisposta;else this.stato.risposte.push({id,valore:valoreRisposta});this.stato.domanda=domanda;this.stato.modificaId=null;await this.chiamaDialogo();},
+  async indietro(){const precedente=this.stato.storico.pop();if(!precedente){if(this.stato.risposte.length)this.stato.risposte.pop();}else this.stato.risposte=precedente.risposte;await this.chiamaDialogo();},
+  async correggi(id){const d=this.stato.domande[id],r=this.rispostaGiaData(id);if(!r)return;if(!d){setErrore("cittadino-errore","questa risposta non può essere modificata perché la domanda non è disponibile");return;}this.stato.modificaId=id;this.stato.domanda=d;this.renderDialogo(this.stato.risposta||{stato:"in_corso",domanda:d,restanti_utili:null,emergenza:{attiva:false}});},
+  renderDialogo(dati){const box=document.getElementById("dialogo-corpo"),emergenza=objOf(dati.emergenza),domanda=objOf(dati.domanda);this.stato.risposta=dati;this.stato.domanda=domanda;this.stato.risposteInvalidate=arrayOf(dati.risposte_invalidate);this.salvaDomanda(domanda);let html="";if(emergenza.attiva){html+=`<div class="box-emergenza"><h2>Chiama il 112/118</h2><p>${esc(valore(emergenza.avviso,"È necessario un contatto di emergenza."))}</p>${emergenza.limite?`<p><strong>Limite:</strong> ${esc(emergenza.limite)}</p>`:""}</div>`;box.innerHTML=html;return;}if(this.stato.risposteInvalidate.length)html+=`<div class="invalidate"><strong>Queste risposte non valgono più:</strong> ${this.stato.risposteInvalidate.map(esc).join(", ")}</div>`;html+=`<section class="card dialogo-card"><div class="progressione">${dati.restanti_utili===null||dati.restanti_utili===undefined?"Progressione non disponibile":`Restano ${esc(dati.restanti_utili)} informazioni utili`}</div>`;
+    if(dati.stato==="contatto_sanitario"){const canale=dati.canale||dati.contatto||emergenza.canale;html+=`<div class="box-contatto"><h2>Contatta un professionista</h2><p>${esc(valore(canale,"Il percorso richiede un contatto sanitario."))}</p>${dati.avviso?`<p>${esc(dati.avviso)}</p>`:""}${dati.limite?`<p><strong>Limite:</strong> ${esc(dati.limite)}</p>`:""}</div>`;}else if(dati.stato==="non_determinabile"){html+=`<div class="box-nondeterminabile"><h2>Percorso non determinabile</h2><p>${esc(valore(dati.motivo,"Le informazioni disponibili non permettono di determinare un percorso."))}</p></div>`;}else if(dati.stato==="sufficiente"){html+=`<h2>Percorso sufficientemente definito</h2><p class="muted">Puoi confrontare le opzioni disponibili e ciò che resta da verificare.</p><button type="button" class="azione" id="vedi-opzioni">Vedi le opzioni</button>`;}else if(domanda&&domanda.id){const inModifica=this.stato.modificaId===domanda.id;html+=`<h2>${esc(valore(domanda.testo))}</h2><button type="button" class="link-btn" id="perche-domanda">Perché me lo chiedi?</button><div id="spiegazione-domanda" class="spiegazione" hidden><p>${esc(valore(domanda.perche,"Informazione non disponibile."))}</p><p><strong>Chiarisce:</strong> ${esc(valore(domanda.chiarisce,"non disponibile"))}</p><p><strong>Fonte:</strong> ${esc(valore(domanda.fonte,"non disponibile"))}</p><p><strong>Revisione:</strong> ${esc(valore(domanda.revisione,"non disponibile"))}</p></div>`;const opzioni=arrayOf(domanda.opzioni);if(domanda.tipo==="testo"||domanda.tipo==="numero")html+=`<input id="domanda-input" class="domanda-input" type="${domanda.tipo==="numero"?"number":"text"}" value="${esc(valore(this.rispostaGiaData(domanda.id)&&this.rispostaGiaData(domanda.id).valore,""))}" placeholder="Scrivi una risposta"><div class="dialogo-azioni"><button type="button" class="azione" id="invia-testo">Continua</button>${domanda.ammette_non_so?'<button type="button" class="opzione-btn" data-valore="non_so">Non so</button>':""}</div>`;else html+=`<div class="opzioni-dialogo">${opzioni.map(o=>`<button type="button" class="opzione-btn" data-valore="${esc(o.valore)}">${esc(valore(o.etichetta,o.valore))}</button>`).join("")}${domanda.ammette_non_so?'<button type="button" class="opzione-btn" data-valore="non_so">Non so</button>':""}</div>`;html+=`<div class="dialogo-azioni"><button type="button" class="secondaria" id="indietro-dialogo">Indietro</button>${inModifica?'<button type="button" class="link-btn" id="annulla-modifica">Annulla modifica</button>':""}</div>`;}else html+=`<p class="muted">Il dialogo non ha restituito una domanda.</p>`;html+=this.risposteHtml();html+="</section>";box.innerHTML=html;
+    const why=document.getElementById("perche-domanda");if(why)why.addEventListener("click",()=>{const p=document.getElementById("spiegazione-domanda");p.hidden=!p.hidden;});document.querySelectorAll(".opzione-btn").forEach(b=>b.addEventListener("click",()=>this.scegli(b.dataset.valore)));document.querySelectorAll(".correggi-btn").forEach(b=>b.addEventListener("click",()=>this.correggi(b.dataset.id)));const invia=document.getElementById("invia-testo");if(invia)invia.addEventListener("click",()=>{const v=document.getElementById("domanda-input").value.trim();if(v)this.scegli(v);});const ind=document.getElementById("indietro-dialogo");if(ind)ind.addEventListener("click",()=>this.indietro());const ann=document.getElementById("annulla-modifica");if(ann)ann.addEventListener("click",()=>{this.stato.modificaId=null;this.renderDialogo(this.stato.risposta);});const opt=document.getElementById("vedi-opzioni");if(opt)opt.addEventListener("click",()=>this.caricaOrientamento());
+  },
+  risposteHtml(){if(!this.stato.risposte.length)return "";return `<div class="risposte-date"><h3>Risposte date</h3>${this.stato.risposte.map(r=>{const d=this.stato.domande[r.id]||{};return `<div class="risposta-riga"><span>${esc(valore(d.testo,r.id))}</span><span class="risposta-valore">${esc(valore(r.valore))} <button type="button" class="link-btn correggi-btn" data-id="${esc(r.id)}">Modifica</button></span></div>`;}).join("")}</div>`;},
+  async caricaOrientamento(){const box=document.getElementById("orientamento-corpo");box.innerHTML=caricamentoHtml("Confronto delle opzioni…");try{const dati=await postApi("/api/orientamento",this.corpo());this.stato.orientamento=dati;this.renderOrientamento(dati);}catch(e){box.innerHTML=erroreHtml(e.message);}},
+  async aggiornaVincolo(key){const m={senza_auto:{id:"senza_auto",valore:"si"},figlio:{id:"destinatario",valore:"figlio"},prescrizione:{id:"ha_prescrizione",valore:"si"}}[key];if(!m)return;const esistente=this.stato.risposte.find(r=>r.id===m.id);if(esistente&&esistente.valore===m.valore)this.stato.risposte=this.stato.risposte.filter(r=>r.id!==m.id);else if(esistente)esistente.valore=m.valore;else this.stato.risposte.push({id:m.id,valore:m.valore});await this.caricaOrientamento();},
+  requisitoHtml(r){const stato=String(valore(r.stato,"non_verificabile")),stati={necessario:"necessario",non_necessario:"non necessario",non_verificabile:"non verificabile"},cl=stato==="necessario"?"req-necessario":stato==="non_necessario"?"req-non-necessario":"req-non-verificabile",ic=stato==="necessario"?"!":stato==="non_necessario"?"✓":"?";const f=objOf(r.fonte),href=urlSicuro(f.url);return `<li><span class="req-icona ${cl}">${ic}</span><span><strong>${esc(valore(r.cosa))}</strong> — ${esc(stati[stato]||stati.non_verificabile)}${r.come_verificare?`<br><span class="muted">Come verificarlo: ${esc(r.come_verificare)}</span>`:""}${href?` <a href="${esc(href)}" target="_blank" rel="noopener">Fonte</a>`:""}</span></li>`;},
+  cardOpzione(o,esclusa=false){const generi={pronto_soccorso:"pronto soccorso",farmacia:"farmacia",struttura_accreditata:"struttura accreditata",canale_telefonico:"canale telefonico",medico_di_famiglia:"medico di famiglia"},compat=valore(o.compatibilita,esclusa?"incompatibile":"non_verificabile"),badge=compat==="compatibile"?"compatibile":compat==="incompatibile"?"incompatibile":"non-verificabile";let html=`<article class="opzione-card ${esclusa?"esclusa":""}"><div class="opzione-header"><h4>${esc(valore(o.nome))}</h4><span class="muted small">${esc(generi[o.genere]||valore(o.genere))}</span><span class="badge ${badge}">${esc(badge)}</span></div><p class="motivo">${esc(valore(esclusa?o.motivo_esclusione:o.motivo,"Motivazione non disponibile."))}</p>`;const req=arrayOf(o.requisiti);if(req.length)html+=`<h4>Requisiti</h4><ul class="requisiti">${req.map(r=>this.requisitoHtml(r)).join("")}</ul>`;const v=objOf(o.viaggio);if(Object.keys(v).length)html+=`<div class="viaggio"><strong>Viaggio:</strong> distanza ${fmt(v.distanza_km,1)} km — durata ${fmt(v.durata_min,0)} min — fonte percorso: ${esc(valore(v.fonte))}${v.senza_auto?` — senza auto: ${esc(v.senza_auto)}`:""}</div>`;const c=objOf(o.coda);if(o.genere==="pronto_soccorso"||Object.keys(c).length)html+=`<div class="coda"><strong>Coda:</strong> ${fmt(c.in_attesa,0)} persone${c.nota?` — ${esc(c.nota)}`:" — lunghezza della coda, non tempo di attesa personale"}</div>`;const dot=arrayOf(o.dotazione);if(dot.length)html+=`<div class="dotazione"><strong>Dotazione documentata:</strong> ${dot.map(d=>`${esc(valore(d.tipo))} (${fmt(d.num,0)})${d.fonte?` — ${esc(d.fonte)}`:""}`).join("; ")}</div>`;const fonti=arrayOf(o.fonti);html+=`<details class="fonti"><summary>Fonti</summary>${fonti.length?fonti.map(f=>{const href=urlSicuro(f.url);return `<div class="fonte-item"><strong>${esc(valore(f.nome))}</strong> — data: ${esc(valore(f.data))}${href?` — <a href="${esc(href)}" target="_blank" rel="noopener">${esc(f.url)}</a>`:""}<br><span class="muted">Come è stato verificato: ${esc(valore(f.come_verificato))}</span></div>`;}).join(""):"<p class=\"muted\">Nessuna fonte elencata.</p>"}</details></article>`;return html;},
+  renderOrientamento(dati){const box=document.getElementById("orientamento-corpo"),esito=objOf(dati.esito),cambiamenti=arrayOf(dati.cambiamenti),opzioni=arrayOf(dati.opzioni),nonVer=arrayOf(dati.non_verificabili),escluse=arrayOf(dati.escluse);let html="";if(Object.keys(esito).length)html+=`<section class="esito-orientamento"><h2>${esc(valore(esito.titolo,"Orientamento"))}</h2><p>${esc(valore(esito.spiegazione))}</p><p class="small muted">Canale: ${esc(valore(esito.canale))} — deciso da: ${esc(valore(esito.deciso_da))} — certezza: ${esc(valore(esito.certezza))}</p>${arrayOf(esito.cosa_manca).length?`<p class="small">Cosa manca: ${arrayOf(esito.cosa_manca).map(esc).join(", ")}</p>`:""}</section>`;if(cambiamenti.length)html+=`<section class="card"><h2>Cosa è cambiato rispetto a prima</h2>${cambiamenti.map(c=>`<p><strong>Vincolo:</strong> ${esc(valore(c.vincolo))}<br><strong>Effetto:</strong> ${esc(valore(c.effetto))}<br><strong>Dato determinante:</strong> ${esc(valore(c.dato_determinante))}</p>`).join("")}</section>`;[["Compatibili con il tuo percorso",opzioni,""],["Non verificabili",nonVer,"non-verificabili"],["Escluse",escluse,"escluse"]].forEach(([titolo,lista,cl],i)=>{html+=`<section class="gruppo-opzioni ${cl}"><h3>${esc(titolo)}${i===1?'<span class="badge badge-interpretazione">dato mancante non significa servizio assente</span>':""}</h3>${lista.length?lista.map(o=>this.cardOpzione(o,i===2)).join(""):"<p class=\"muted\">Nessuna opzione in questo gruppo.</p>"}</section>`;});html+=`<section class="card"><h2>Vincoli rapidi</h2><div class="vincoli-rapidi">${[["senza_auto","Non ho un'auto","senza_auto"],["figlio","È per mio figlio","destinatario"],["prescrizione","Ho già una prescrizione","ha_prescrizione"]].map(([k,l,id])=>`<button type="button" class="vincolo-btn ${this.stato.risposte.some(r=>r.id===id)?"attivo":""}" data-vincolo="${k}">${l}</button>`).join("")}</div></section>`;if(arrayOf(dati.avvertenze).length)html+=`<div class="box-avviso">${arrayOf(dati.avvertenze).map(esc).join("<br>")}</div>`;box.innerHTML=html;document.querySelectorAll(".vincolo-btn").forEach(b=>b.addEventListener("click",()=>this.aggiornaVincolo(b.dataset.vincolo)));}
+};
+
+document.getElementById("rete-posizione").addEventListener("click",()=>{const s=document.getElementById("rete-posizione-stato");if(!navigator.geolocation){s.textContent="geolocalizzazione non disponibile";return;}s.textContent="individuazione della posizione…";navigator.geolocation.getCurrentPosition(p=>{Bollettino.posizione={lat:p.coords.latitude,lon:p.coords.longitude};s.textContent=`posizione: ${p.coords.latitude.toFixed(4)}, ${p.coords.longitude.toFixed(4)}`;Bollettino.carica();},()=>{s.textContent="posizione non condivisa";},{timeout:8000});});
+document.getElementById("fonte-select").addEventListener("change",e=>{Rete.fonte=e.target.value;Rete.ordine=null;Rete.carica();});
+Rete.initMappa();Rete.carica();Copertura.carica();Bollettino.carica();Cittadino.init();
 </script>
 </body>
 </html>

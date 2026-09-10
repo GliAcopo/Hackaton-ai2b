@@ -115,6 +115,12 @@ class Indici:
     # misure. Non ordinabile, non proponibile come destinazione.
     senza_dato: bool = False
 
+    # I cinque livelli di priorita' come li pubblica la fonte, non aggregati.
+    # Passano di qui intatti perche' l'interfaccia possa mostrarli separati:
+    # sommare il livello 3 col 4 e' comodo per gli indici, ma non e' una prova
+    # che quei casi si possano trattare fuori dal pronto soccorso.
+    attesa_livelli: list[dict] = None
+
     # --- calibrazione sulla rete (riempita da rete(), vedi nota sotto) ---
     pressione_relativa: float | None = None   # 1.0 = come il resto della rete ora
     sofferenza_relativa: float | None = None
@@ -134,6 +140,7 @@ def calcola(s: StatoPS) -> Indici:
     """
     note: list[str] = []
     st = s.storico or {}
+    livelli = list(s.attesa_livelli or [])
     if not s.dato_disponibile:
         note.append(s.nota_fonte or "nessun dato dalla fonte per questo presidio")
     carico = _carico_pesato(s)
@@ -235,6 +242,7 @@ def calcola(s: StatoPS) -> Indici:
         carico_deviabile=round(carico_deviabile, 1) if carico_deviabile is not None else None,
         ore_paziente_recuperabili=round(ore_paziente, 1) if ore_paziente is not None else None,
         senza_dato=not s.dato_disponibile,
+        attesa_livelli=livelli,
         in_allarme=False,   # deciso da rete(), serve la mediana della rete
         note=note,
     )
@@ -264,12 +272,10 @@ def _calibra(tutti: list[Indici],
     significa "come il resto della rete adesso", 2.0 "il doppio della mediana".
     Cosi' la soglia si autocalibra e resta valida anche su un feed live.
 
-    ATTENZIONE al parametro `mediane`. Serve alla simulazione controfattuale:
-    se si ricalibrasse lo scenario "dopo" sulla sua NUOVA mediana, spostare
-    pazienti da un presidio abbasserebbe la mediana di rete e farebbe salire i
-    valori relativi di tutti gli altri, facendo sembrare che l'intervento
-    peggiori la situazione. Il confronto prima/dopo si fa a scala fissa: si
-    passano le mediane dello scenario di partenza.
+    Il parametro `mediane` permette di calibrare a SCALA FISSA, passando le
+    mediane di un'altra lettura invece di ricalcolarle: serve a confrontare due
+    istanti senza che il movimento della mediana faccia sembrare che tutto il
+    resto della rete sia cambiato.
     """
     if mediane is not None:
         med_p, med_s = mediane
@@ -362,84 +368,3 @@ if __name__ == "__main__":
               f"{i.in_attesa:4} {f(i.carico_deviabile):>6} {f(i.ore_paziente_recuperabili):>7}")
 
 
-# ---------------------------------------------------------------------------
-# Simulazione controfattuale
-#
-# E' la risposta a "perche' non basta una dashboard?". Una dashboard mostra lo
-# stato; questa funzione mostra lo stato CHE CI SAREBBE se si agisse, e ne
-# misura l'effetto sull'intera rete, effetto domino compreso.
-#
-# Tutto deterministico: nessun modello coinvolto. L'IA propone il piano, questa
-# funzione ne calcola le conseguenze.
-# ---------------------------------------------------------------------------
-
-def simula(codice_critico: str, quota: int, destinazioni: dict[str, int]) -> dict:
-    """Sposta `quota` codici a bassa intensita' e ricalcola TUTTA la rete.
-
-    destinazioni: {codice_presidio: quanti pazienti assorbe}
-    Ritorna prima/dopo per ogni presidio toccato, piu' l'effetto complessivo.
-    """
-    stati, meta = stato_rete()
-    per_codice = {s.codice: s for s in stati}
-    prima = {i.codice: i for i in [calcola(s) for s in stati]}
-    scala = _calibra(list(prima.values()))
-
-    critico = per_codice.get(codice_critico)
-    if critico is None:
-        raise KeyError(f"presidio {codice_critico} sconosciuto")
-
-    # Si tolgono prima i bianchi (i piu' deviabili), poi i verdi. Mai i gialli,
-    # mai i rossi: e' un vincolo clinico, non un'ottimizzazione.
-    restanti = min(quota, critico.attesa.get("bianchi", 0) + critico.attesa.get("verdi", 0))
-    tolti = {}
-    for colore in ("bianchi", "verdi"):
-        n = min(restanti, critico.attesa.get(colore, 0))
-        critico.attesa[colore] -= n
-        critico.tot_attesa -= n
-        critico.presenti -= n
-        tolti[colore] = n
-        restanti -= n
-
-    # e si aggiungono alle destinazioni, come verdi (ipotesi prudenziale:
-    # chi arriva altrove viene ritriagiato al livello piu' alto fra i deviabili)
-    assorbito = {}
-    for cod, n in destinazioni.items():
-        d = per_codice.get(cod)
-        if d is None:
-            continue
-        n = int(n)
-        d.attesa["verdi"] = d.attesa.get("verdi", 0) + n
-        d.tot_attesa += n
-        d.presenti += n
-        assorbito[cod] = n
-
-    dopo = {i.codice: i for i in [calcola(s) for s in stati]}
-    _calibra(list(dopo.values()), mediane=scala)   # scala fissa: vedi _calibra()
-
-    toccati = [codice_critico] + list(destinazioni)
-    confronto = []
-    for cod in toccati:
-        a, b = prima.get(cod), dopo.get(cod)
-        if not a or not b:
-            continue
-        confronto.append({
-            "codice": cod, "nome": a.nome,
-            "ruolo": "origine" if cod == codice_critico else "destinazione",
-            "prima": {"in_attesa": a.in_attesa, "pressione_relativa": a.pressione_relativa,
-                      "in_allarme": a.in_allarme},
-            "dopo": {"in_attesa": b.in_attesa, "pressione_relativa": b.pressione_relativa,
-                     "in_allarme": b.in_allarme},
-            "diventa_critico": (not a.in_allarme) and b.in_allarme,
-        })
-
-    ore = prima[codice_critico].ore_paziente_recuperabili
-    return {
-        "spostati": tolti,
-        "assorbiti": assorbito,
-        "confronto": confronto,
-        "allarmi_prima": sum(1 for i in prima.values() if i.in_allarme),
-        "allarmi_dopo": sum(1 for i in dopo.values() if i.in_allarme),
-        "effetto_domino": [c["nome"] for c in confronto if c["diventa_critico"]],
-        "ore_paziente_liberate": round((ore or 0) * (sum(tolti.values()) /
-                                       max(prima[codice_critico].deviabili_osservati, 1)), 1),
-    }

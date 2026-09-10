@@ -28,6 +28,23 @@ LE DUE FONTI NON DICONO LA STESSA COSA, e questo cambia gli indici:
 Meta' degli indici da una fonte e meta' dall'altra sarebbe un pasticcio: chi
 guarda deve sapere quale sta guardando. Per questo `meta` porta sempre fonte,
 istante e copertura, e l'interfaccia li mostra.
+
+TRE TEMPI, NON UNO. Un errore facile e' scrivere `datetime.now()` accanto a un
+numero e chiamarlo "aggiornato adesso". Sono tre cose diverse e vanno tenute
+separate perche' rispondono a tre domande diverse:
+
+    istante_fonte  quando il dato e' vero secondo CHI LO PUBBLICA.
+                   Lo snapshot ce l'ha (la colonna DATA del CSV).
+                   L'API live NON lo pubblica: nessun campo `updatedAt` nella
+                   risposta per presidio. Quindi vale None, ed e' dichiarato
+                   con `istante_fonte_pubblicato: false`. Mettere l'ora nostra
+                   al suo posto sarebbe inventare una garanzia che non abbiamo.
+    acquisito_il   quando NOI abbiamo scaricato quel dato dalla rete. Per una
+                   lettura da cache resta l'istante dello scaricamento
+                   originale, non quello della rilettura: e' esattamente il
+                   punto in cui il codice precedente sbagliava.
+    letto_il       quando questa risposta e' stata costruita. Serve solo a
+                   calcolare `eta_dato_s = letto_il - acquisito_il`.
 """
 from __future__ import annotations
 
@@ -111,7 +128,7 @@ class StatoPS:
     tipo: str          # PS | DEA I | DEA II | PS SPEC.
     comune: str
     asl: str
-    rilevato_il: str
+    rilevato_il: str      # alias storico di istante_fonte, tenuto per compatibilita'
 
     # in attesa di essere visitati: e' qui che si misura il sovraffollamento
     attesa: dict[str, int] = field(default_factory=dict)
@@ -131,6 +148,15 @@ class StatoPS:
     # e' il tempo vero, misurato dal presidio.
     attesa_media_h: float | None = None
     attesa_max_h: float | None = None
+
+    # I CINQUE LIVELLI ORIGINALI, non aggregati. La conversione ai quattro
+    # colori storici serve a far parlare snapshot e live la stessa lingua negli
+    # indici, ma e' una perdita di informazione: aggregare il livello 3
+    # (urgenza differibile) col 4 (urgenza minore) non dimostra affatto che i
+    # casi siano trattabili fuori dal pronto soccorso. Chi vuole quel giudizio
+    # deve poter vedere i livelli separati, quindi li conserviamo qui accanto.
+    # Ogni voce: {livello, etichetta, in_attesa, attesa_media_h, attesa_max_h}.
+    attesa_livelli: list[dict] = field(default_factory=list)
 
     # False quando la fonte pubblica solo la coda: chi e' gia' in trattamento
     # o in osservazione non e' noto, quindi l'occupazione non e' calcolabile.
@@ -247,12 +273,18 @@ def _scarica_stato(psid: str) -> dict | None:
         return None
 
 
-def _leggi_live(mappa: dict[str, dict]) -> tuple[dict[str, dict], bool]:
-    """Ritorna ({codice: risposta}, da_cache). Cache con TTL: vedi TTL_LIVE_S."""
+def _leggi_live(mappa: dict[str, dict]) -> tuple[dict[str, dict], bool, float | None]:
+    """Ritorna ({codice: risposta}, da_cache, quando_acquisito).
+
+    `quando_acquisito` e' l'epoch dello SCARICAMENTO, non della rilettura: per
+    una risposta servita dalla cache resta l'istante in cui quei numeri sono
+    arrivati davvero dalla rete. E' il dato che permette di dire "questa lettura
+    ha 4 minuti" invece di spacciarla per corrente.
+    """
     cache = _cache_live()
     fresca = cache.get("quando", 0) + TTL_LIVE_S > time.time()
     if fresca and cache.get("dati"):
-        return cache["dati"], True
+        return cache["dati"], True, cache.get("quando")
 
     def uno(voce):
         codice, m = voce
@@ -264,12 +296,13 @@ def _leggi_live(mappa: dict[str, dict]) -> tuple[dict[str, dict], bool]:
             if risposta:
                 dati[codice] = risposta
     if dati:
+        adesso = time.time()
         CACHE_LIVE.parent.mkdir(parents=True, exist_ok=True)
-        CACHE_LIVE.write_text(json.dumps({"quando": time.time(), "dati": dati},
+        CACHE_LIVE.write_text(json.dumps({"quando": adesso, "dati": dati},
                                          ensure_ascii=False), encoding="utf-8")
-        return dati, False
-    # rete giu': meglio una lettura vecchia dichiarata che nessun dato
-    return cache.get("dati", {}), True
+        return dati, False, adesso
+    # rete giu': meglio una lettura vecchia DICHIARATA VECCHIA che nessun dato
+    return cache.get("dati", {}), True, cache.get("quando")
 
 
 def _stato_rete_live() -> tuple[list[StatoPS], dict]:
@@ -280,9 +313,12 @@ def _stato_rete_live() -> tuple[list[StatoPS], dict]:
             "manca 2-data/derived/mappa_live.json: "
             "eseguire python3 4-src/costruisci_mappa_live.py")
 
-    dati, da_cache = _leggi_live(mappa)
+    dati, da_cache, quando_acq = _leggi_live(mappa)
     registro = _registro_presidi()
-    adesso = datetime.now().isoformat(timespec="seconds")
+    letto_il = datetime.now().isoformat(timespec="seconds")
+    acquisito_il = (datetime.fromtimestamp(quando_acq).isoformat(timespec="seconds")
+                    if quando_acq else None)
+    eta_s = round(time.time() - quando_acq) if quando_acq else None
 
     stati: list[StatoPS] = []
     senza_dato: list[str] = []
@@ -291,7 +327,9 @@ def _stato_rete_live() -> tuple[list[StatoPS], dict]:
         s = StatoPS(
             codice=codice, nome=p.get("nome", ""), tipo=p.get("tipo", ""),
             comune=p.get("comune", ""), asl=p.get("asl", ""),
-            rilevato_il=adesso,
+            # La fonte live non pubblica un istante proprio: qui va quando NOI
+            # abbiamo acquisito il dato, mai l'ora della rilettura.
+            rilevato_il=acquisito_il or letto_il,
             attesa={c: 0 for c in COLORI},
             trattamento={c: 0 for c in COLORI},
             osservazione={c: 0 for c in COLORI},
@@ -307,8 +345,21 @@ def _stato_rete_live() -> tuple[list[StatoPS], dict]:
 
         pesi_attesa: list[tuple[int, float]] = []
         for g in risposta.get("groups", []):
-            colore = LIVELLO_COLORE.get(str(g.get("group", {}).get("code")))
+            gruppo = g.get("group", {}) or {}
+            livello = str(gruppo.get("code"))
             quanti = int(g.get("total") or 0)
+            # Prima si conserva il livello ORIGINALE, con la sua etichetta e i
+            # suoi tempi: e' l'unica forma in cui il dato non ha perso nulla.
+            s.attesa_livelli.append({
+                "livello": livello,
+                "etichetta": (gruppo.get("labels") or {}).get("it") or livello,
+                "in_attesa": quanti,
+                "attesa_media_h": round(float(g.get("avgWaitSeconds") or 0) / 3600, 2),
+                "attesa_max_h": round(float(g.get("maxWaitSeconds") or 0) / 3600, 2),
+            })
+            # Solo dopo si aggrega ai quattro colori storici, che serve agli
+            # indici per confrontare snapshot e live sulla stessa scala.
+            colore = LIVELLO_COLORE.get(livello)
             if not colore or not quanti:
                 continue
             s.attesa[colore] += quanti
@@ -333,12 +384,25 @@ def _stato_rete_live() -> tuple[list[StatoPS], dict]:
 
     meta = {
         "fonte": "API Salute Lazio (tempo reale)",
-        "rilevato_il": adesso,
+        "fonte_tipo": "live",
+        "fonte_url": STATO_LIVE.split("?")[0],
+        # La risposta per presidio non contiene alcun campo di data: la Regione
+        # non dichiara a che ora quei numeri erano veri. Lo diciamo invece di
+        # sostituirlo con l'ora nostra.
+        "istante_fonte": None,
+        "istante_fonte_pubblicato": False,
+        "acquisito_il": acquisito_il,
+        "letto_il": letto_il,
+        "eta_dato_s": eta_s,
+        "rilevato_il": acquisito_il or letto_il,   # compatibilita'
         "presidi": len(stati),
+        "con_dato": len(stati) - len(senza_dato),
         "con_dato_live": len(stati) - len(senza_dato),
+        "senza_dato": senza_dato,
         "senza_dato_live": senza_dato,
         "da_cache": da_cache,
         "solo_coda": True,
+        "livelli_conservati": True,
         "avviso": (
             "Dato vivo: pazienti in attesa per priorita' e tempi di attesa "
             "pubblicati dalla Regione. La fonte non pubblica chi e' gia' in "
@@ -346,6 +410,16 @@ def _stato_rete_live() -> tuple[list[StatoPS], dict]:
             "non e' calcolabile in questa modalita'; la sofferenza invece e' "
             "misurata sui tempi reali, non stimata."
         ),
+        "limiti": [
+            "La lunghezza della coda non e' il tempo di attesa di chi arriva "
+            "adesso, e la media pubblicata non e' una previsione individuale.",
+            "Meno pazienti in attesa non significa cure piu' appropriate: "
+            "dice solo che in quell'istante c'era meno fila.",
+            "I cinque livelli di priorita' restano separati in "
+            "`attesa_livelli`: l'aggregazione ai quattro colori serve solo a "
+            "confrontare questa fonte con lo storico.",
+            "La fonte non dichiara l'istante a cui i numeri si riferiscono.",
+        ],
     }
     return stati, meta
 
@@ -372,15 +446,43 @@ def stato_rete(fonte: str = "snapshot") -> tuple[list[StatoPS], dict]:
         s.lat, s.lon, s.storico = p.get("lat"), p.get("lon"), p.get("storico")
         agganciati += 1
 
+    letto_il = datetime.now().isoformat(timespec="seconds")
+    try:
+        acquisito_il = datetime.fromtimestamp(
+            SNAPSHOT.stat().st_mtime).isoformat(timespec="seconds")
+    except OSError:
+        acquisito_il = None
+
     meta = {
         "fonte": "open data Regione Lazio (snapshot)",
-        "rilevato_il": quando,
+        "fonte_tipo": "snapshot",
+        "fonte_url": "https://dati.lazio.it/",
+        # Qui l'istante della fonte esiste davvero: e' la colonna DATA del CSV.
+        "istante_fonte": quando,
+        "istante_fonte_pubblicato": True,
+        "acquisito_il": acquisito_il,          # quando abbiamo scaricato il CSV
+        "letto_il": letto_il,
+        "eta_dato_s": None,                    # un file su disco non "invecchia"
+        "da_cache": False,
+        "rilevato_il": quando,                 # compatibilita'
         "presidi": len(stati),
+        "con_dato": len(stati),
+        "senza_dato": [],
         "con_anagrafica": agganciati,
+        "solo_coda": False,
+        "livelli_conservati": False,
         "avviso": (
             "Il dataset regionale «accessi in tempo reale» e' fermo a questa "
             "rilevazione: e' l'ultima disponibile, non l'istante corrente."
         ),
+        "limiti": [
+            "Rilevazione unica del 15/07/2021: non e' una serie storica e non "
+            "consente previsioni di afflusso.",
+            "La lunghezza della coda non e' il tempo di attesa individuale.",
+            "Meno pazienti in attesa non significa cure piu' appropriate.",
+            "Questa fonte pubblica i quattro colori storici, non i cinque "
+            "livelli: `attesa_livelli` resta quindi vuoto.",
+        ],
     }
     return stati, meta
 

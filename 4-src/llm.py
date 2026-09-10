@@ -51,6 +51,11 @@ SOLO_CACHE = os.environ.get("LLM_SOLO_CACHE", "") == "1"
 # girare offline subito dopo, che e' esattamente quello che serve al freeze.
 LIVE = os.environ.get("LLM_LIVE", "") == "1"
 
+# Il registro delle decisioni NON conserva il testo scritto dalla persona.
+# Con REGIA_REGISTRO_TESTO=1 lo fa, ed e' una scelta deliberata di chi avvia il
+# processo: vedi _registra() per il perche'.
+REGISTRA_TESTO = os.environ.get("REGIA_REGISTRO_TESTO", "") == "1"
+
 
 class LLMError(RuntimeError):
     pass
@@ -85,15 +90,35 @@ def _registra(backend: str, prompt: str, esito: dict, secondi: float) -> None:
     """Registro delle decisioni: ogni chiamata IA lascia una traccia.
 
     Non e' cerimonia: e' la risposta a "come tracciate le decisioni del modello?".
+
+    MINIMIZZAZIONE. La versione precedente scriveva `prompt[:400]` in chiaro su
+    un file di log ordinario. Quel prompt contiene la descrizione che una
+    persona ha appena fatto del proprio problema di salute: e' esattamente il
+    genere di dato che non deve finire in un registro tenuto per ragioni
+    tecniche. Il registro serve a dimostrare CHE una decisione e' stata presa,
+    da quale modello e quanto ci ha messo — non a conservare il sintomo.
+
+    Restano quindi: l'impronta del prompt (che permette di ricollegare due
+    chiamate identiche senza rivelarne il contenuto), la sua lunghezza, il
+    backend, il modello, la latenza e le CHIAVI dell'esito.
+
+    Chi ha davvero bisogno del testo, per una valutazione clinica del catalogo
+    o per un incidente, lo abilita esplicitamente con REGIA_REGISTRO_TESTO=1 e
+    se ne assume la responsabilita'. Non e' il comportamento predefinito.
     """
     riga = {
         "quando": time.strftime("%Y-%m-%dT%H:%M:%S"),
         "backend": backend,
         "modello": MODEL if backend == "agy" else OLLAMA_MODEL,
         "secondi": round(secondi, 2),
-        "prompt": prompt[:400],
-        "esito": esito,
+        "prompt_impronta": hashlib.sha256(prompt.encode("utf-8")).hexdigest()[:16],
+        "prompt_caratteri": len(prompt),
+        "esito_campi": sorted(esito.keys()) if isinstance(esito, dict) else None,
     }
+    if REGISTRA_TESTO:
+        riga["prompt"] = prompt[:400]
+        riga["esito"] = esito
+        riga["contiene_testo_utente"] = True
     try:
         REGISTRO.parent.mkdir(parents=True, exist_ok=True)
         with REGISTRO.open("a", encoding="utf-8") as fh:
