@@ -30,7 +30,7 @@ import subprocess
 import sys
 import time
 import traceback
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
@@ -245,6 +245,16 @@ def _dialogo(corpo: dict) -> dict:
     ingresso = str(corpo.get("ingresso") or "problema")
     testo = str(corpo.get("testo") or "")
     risposte = dialogo.normalizza_risposte(corpo.get("risposte"))
+    corretto = str(corpo.get("corretto") or "")
+    invalidate = []
+    if corretto:
+        valori = {r["id"]: r["valore"] for r in risposte}
+        invalidate = dialogo.invalidate_da(corretto, valori)
+        # Una risposta dipendente era valida nel vecchio ramo del dialogo, non
+        # necessariamente in quello appena scelto. Il server e' stateless:
+        # deve quindi espellerla dalla stessa richiesta che segnala la
+        # correzione, invece di limitarsi ad avvisare il client.
+        risposte = [r for r in risposte if r["id"] not in invalidate]
 
     # Il modello propone solo se ci sono candidate e se non e' stato disattivato.
     provvisorio = dialogo.passo(ingresso, risposte)
@@ -257,21 +267,26 @@ def _dialogo(corpo: dict) -> dict:
 
     esito = dialogo.passo(ingresso, risposte, scelta)
     segnali = ai.segnali_emergenza(testo)
+    interruzione = esito.get("interruzione") or {}
+    stop_emergenza = interruzione.get("canale") == "emergenza_112_118"
+    emergenza_attiva = bool(segnali["attivi"] or stop_emergenza)
     esito["emergenza"] = {
-        "attiva": bool(segnali["attivi"]),
+        "attiva": emergenza_attiva,
         "segnali": segnali["attivi"],
         "negati": segnali["negati"],
         "incerto": segnali["incerto"],
-        "avviso": ("Nella descrizione compaiono segnali che richiedono soccorso "
-                   "immediato: chiama il 112." if segnali["attivi"] else ""),
+        "avviso": (
+            "La persona non respira normalmente, non e' cosciente o non e' "
+            "possibile verificarlo: chiama subito il 112."
+            if stop_emergenza else
+            ("Nella descrizione compaiono segnali che richiedono soccorso "
+             "immediato: chiama il 112." if segnali["attivi"] else "")
+        ),
         "limite": segnali["limite"],
     }
     esito["catalogo"] = dialogo.intestazione()
     esito["risposte_registrate"] = risposte
-    corretto = corpo.get("corretto")
-    esito["risposte_invalidate"] = (
-        dialogo.invalidate_da(str(corretto), {r["id"]: r["valore"] for r in risposte})
-        if corretto else [])
+    esito["risposte_invalidate"] = invalidate
     return esito
 
 
@@ -414,7 +429,16 @@ class Handler(SimpleHTTPRequestHandler):
     def _instrada(self, percorso_url: str, q: dict, uno) -> None:
         # ---- stato della rete, con l'ordinamento scelto --------------------
         if percorso_url == "/api/rete":
-            indici, meta = rete(uno("ordine", "pressione"), self.fonte)
+            ordine = uno("ordine", "")
+            if ordine not in ORDINAMENTI:
+                ordine = "attesa" if self.fonte == "live" else "pressione"
+            # L'API live non conosce gli occupanti gia' in trattamento. Una
+            # richiesta rimasta selezionata su "pressione" non deve produrre
+            # un ordinamento interamente vuoto.
+            if self.fonte == "live" and ORDINAMENTI[ordine][1] in {
+                    "pressione_relativa", "presenti"}:
+                ordine = "attesa"
+            indici, meta = rete(ordine, self.fonte)
             # In tempo reale la fonte non pubblica ne' l'occupazione ne' i
             # presenti: offrire quegli ordinamenti darebbe una colonna di zeri
             # sotto un'etichetta che promette altro.
@@ -584,7 +608,8 @@ def chiudi_istanza_precedente(porta: int = 8000, forzato: bool = False) -> None:
         print(f"[avvio] Chiusa istanza precedente (PID: {', '.join(map(str, sorted(pids)))}), porta {porta} liberata.")
 
 
-class Server(HTTPServer):
+class Server(ThreadingHTTPServer):
+    daemon_threads = True
     allow_reuse_address = True
 
     def server_bind(self):
@@ -636,10 +661,17 @@ if __name__ == "__main__":
 
     if "--live" in sys.argv:
         os.environ["LLM_LIVE"] = "1"
+        os.environ.pop("LLM_SOLO_CACHE", None)
+    else:
+        # Senza --live la modalita' documentata e' davvero offline: cache hit
+        # oppure fallback deterministico immediato, mai una chiamata modello
+        # nascosta che fa sembrare congelata l'interfaccia.
+        os.environ.setdefault("LLM_SOLO_CACHE", "1")
     if "--fonte" in sys.argv:
         FONTE_DEFAULT = sys.argv[sys.argv.index("--fonte") + 1]
     import importlib
     importlib.reload(llm)          # rilegge LLM_LIVE dall'ambiente
+    importlib.reload(ai)           # riallinea LLMError/complete_json al modulo ricaricato
     print(f"fonte dati: {FONTE_DEFAULT}")
     print(llm.health())
 
@@ -661,5 +693,3 @@ if __name__ == "__main__":
 
     print(f"\nhttp://localhost:{porta}   (Ctrl-C per fermare)")
     avvia_server("127.0.0.1", porta)
-
-

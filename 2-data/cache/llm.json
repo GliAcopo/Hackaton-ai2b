@@ -638,5 +638,74 @@
   "opzione_id": "farmacia:SAN GIACOMO SNC DI TOMADINI GIUSEPPINA|41.89907,12.48121",
   "spiegazione": "Poiché sei cosciente, respiri normalmente e non hai indicato sintomi acuti, puoi rivolgerti alla farmacia SAN GIACOMO SNC DI TOMADINI GIUSEPPINA per un primo parere e farmaci da banco senza appuntamento. È la struttura compatibile più vicina, raggiungibile in 1.7 minuti di viaggio. Qualora comparissero dolore intenso, difficoltà respiratorie o altri segnali di allarme, rivolgiti subito al pronto soccorso o al Numero Unico di Emergenza 112.",
   "titolo": "Indicazione per primo orientamento sanitario"
+ },
+ "4f95a9f68c4fed0dc245dae0c0d1da92": {
+  "azioni_preparatorie": [
+   "Mantenere la normale operativita' dei Pronto Soccorso e delle postazioni 118, senza necessita' di attivare piani straordinari di emergenza calore o afflusso respiratorio.",
+   "Monitorare i sistemi di climatizzazione e deumidificazione nelle aree di attesa e degenza per compensare l'umidita' elevata (80%).",
+   "Garantire la disponibilita' standard di presidi per la reidratazione nei punti di primo intervento per pazienti fragili o anziani.",
+   "Mantenere attiva la sorveglianza epidemiologica di routine sui flussi di accesso ospedaliero e sui codici calore/respiratori.",
+   "Presidiare i canali informativi istituzionali senza diramare allarmi meteo-climatici o di inquinamento."
+  ],
+  "gruppi_vulnerabili": [
+   {
+    "gruppo": "Anziani, neonati e persone con patologie cardiovascolari croniche",
+    "perche": "L'elevato tasso di umidita' (80%) associato a una temperatura percepita di 29.8 C puo' ostacolare la corretta termoregolazione corporea."
+   },
+   {
+    "gruppo": "Soggetti con ipersensibilita' specifica all'ambrosia",
+    "perche": "E' rilevata una presenza minima di polline di ambrosia (0.2), pur a livelli non critici per la popolazione generale."
+   }
+  ],
+  "messaggio_cittadini": "Le condizioni meteorologiche e la qualita' dell'aria nel Lazio sono generalmente buone, con una temperatura percepita di 29.8 C dovuta all'alto tasso di umidita'. Si raccomanda ai soggetti piu' fragili e agli anziani di mantenersi idratati ed evitare sforzi prolungati in ambienti poco ventilati.",
+  "rischi": [
+   {
+    "effetto_atteso": "Possibile disagio fisiologico e lieve affaticamento termico nei soggetti fragili a causa del ridotto scambio termico/sudorazione.",
+    "fenomeno": "Umidita' elevata (80%) con temperatura percepita di 29.8 C",
+    "severita": "lieve"
+   },
+   {
+    "effetto_atteso": "Qualita' dell'aria ottimale (AQI 32, PM10 7.7 ug/m3, PM2.5 6.4 ug/m3), nessun impatto atteso sull'apparato respiratorio per inquinamento.",
+    "fenomeno": "Qualita' dell'aria",
+    "severita": "nessuna"
+   },
+   {
+    "effetto_atteso": "Quadro pollinico silente ad eccezione di una traccia trascurabile di ambrosia (0.2); nessun incremento atteso di accessi per allergie stagionali.",
+    "fenomeno": "Concentrazione pollinica",
+    "severita": "nessuna"
+   },
+   {
+    "effetto_atteso": "Precipitazioni quasi nulle (0.2 mm) e vento a 18.7 km/h, assenza di criticita' per la viabilita' e i mezzi di soccorso.",
+    "fenomeno": "Precipitazioni e vento",
+    "severita": "nessuna"
+   }
+  ]
+ },
+ "1d4c3ac6ef159fa53fc8f3b6787f88c6": {
+  "id": "evoluzione",
+  "motivo": "Sapere se la situazione sta peggiorando, migliorando o e' stabile permette di capire l'urgenza immediata di assistenza per un lattante con sintomi insorti da meno di un'ora."
+ },
+ "65dd57a7cb9e8ba112b3a2b54ca730cc": {
+  "cosa_manca": [
+   "Quali siano i sintomi o il problema di salute attuale, non descritti nel messaggio",
+   "L'effettiva identità ed età della persona per cui si richiede assistenza, dato il contrasto tra \"per me\", \"meno di 1 anno\" e il riferimento all'evento del padre"
+  ],
+  "opzione_id": "farmacia:SAN GIACOMO SNC DI TOMADINI GIUSEPPINA|41.89907,12.48121",
+  "spiegazione": "La persona è cosciente, respira normalmente e il testo riporta solo un evento passato relativo a un'altra persona, senza sintomi acuti attuali. Puoi rivolgerti alla farmacia SAN GIACOMO SNC DI TOMADINI GIUSEPPINA, che dista 1.7 minuti di viaggio, per un primo consiglio e orientamento senza appuntamento. In presenza di sintomi nuovi o in peggioramento, contatta subito i servizi di emergenza o un medico.",
+  "titolo": "Accesso di prossimità presso farmacia territoriale"
+ },
+ "f33d5f5d1fd5978d816624724bafbcf6": {
+  "id": "mobilita",
+  "motivo": "Serve a individuare le strutture sanitarie che puoi raggiungere concretamente con i tuoi mezzi."
+ },
+ "39d5985fd1c5dd11c0aa9b5941815199": {
+  "cosa_manca": [
+   "Presenza di ferite aperte o deformità evidenti",
+   "Capacità di muovere il dito e livello del dolore",
+   "Disponibilità di un mezzo di trasporto autonomo o necessità di accompagnamento"
+  ],
+  "opzione_id": "ps:92000",
+  "spiegazione": "Per verificare l'eventuale presenza di una frattura attraverso una radiografia, la farmacia non è sufficiente ed è opportuno recarsi in un pronto soccorso. Ti suggerisco il Pol. Univ. Tor Vergata poiché è la struttura di pronto soccorso più vicina, raggiungibile in 4.1 minuti di viaggio. All'arrivo la priorità di accesso verrà determinata dal personale di triage in base alle tue condizioni cliniche.",
+  "titolo": "Accesso al Pronto Soccorso Pol. Univ. Tor Vergata"
  }
 }

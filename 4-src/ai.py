@@ -221,7 +221,7 @@ def bollettino_sanitario(meteo: dict, aria: dict | None = None) -> dict:
     )
     try:
         return complete_json(prompt, SCHEMA_BOLLETTINO, SISTEMA)
-    except LLMError as exc:
+    except LLMError:
         percepita = meteo.get("percepita_c") or 0
         return {
             "rischi": [{
@@ -231,7 +231,7 @@ def bollettino_sanitario(meteo: dict, aria: dict | None = None) -> dict:
             }],
             "gruppi_vulnerabili": [],
             "azioni_preparatorie": [],
-            "messaggio_cittadini": f"Bollettino non disponibile ({exc}).",
+            "messaggio_cittadini": "Interpretazione automatica non disponibile in questa modalita'.",
             "_fallback": True,
         }
 
@@ -407,13 +407,13 @@ def orientamento(testo: str, confronto: dict, fatti: dict,
 
     try:
         r = complete_json(prompt, SCHEMA_ORIENTAMENTO, SISTEMA)
-    except LLMError as exc:
+    except LLMError:
         primo = compatibili[0]
         return esito(
             primo, "regole deterministiche (modello non disponibile)", "media",
             f"Opzione piu' vicina fra quelle compatibili: {primo['nome']}",
-            f"Il modello non e' disponibile ({exc}), quindi questa non e' una "
-            f"scelta motivata sul tuo caso: e' la prima opzione compatibile per "
+            "In modalita' demo l'orientamento personalizzato non era in cache: "
+            "viene quindi mostrata la prima opzione compatibile per "
             f"distanza. {primo['motivo']} Se hai un dubbio, chiama il 116117.",
             ["motivazione personalizzata non disponibile"])
 
