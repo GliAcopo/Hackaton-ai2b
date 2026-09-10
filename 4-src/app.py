@@ -21,13 +21,19 @@ La fonte si puo' anche scegliere per singola chiamata: /api/rete?fonte=live.
 """
 from __future__ import annotations
 
+import atexit
 import json
 import os
+import signal
+import socket
+import subprocess
 import sys
+import time
 import traceback
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
+
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -201,7 +207,187 @@ class Handler(SimpleHTTPRequestHandler):
         return self._json({"errore": "endpoint sconosciuto"}, 404)
 
 
+PID_FILE = Path(__file__).resolve().parent / ".server.pid"
+
+
+def _antenati() -> set[int]:
+    """Restituisce l'insieme dei PID del processo corrente e di tutti i suoi antenati."""
+    pids = {os.getpid()}
+    try:
+        curr = os.getppid()
+        while curr > 1:
+            pids.add(curr)
+            with open(f"/proc/{curr}/stat") as f:
+                curr = int(f.read().split()[3])
+    except Exception:
+        pass
+    return pids
+
+
+def _porta_in_uso(porta: int, host: str = "127.0.0.1") -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        if hasattr(socket, "SO_REUSEPORT"):
+            try:
+                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+            except OSError:
+                pass
+        try:
+            s.bind((host, porta))
+            return False
+        except OSError:
+            return True
+
+
+def chiudi_istanza_precedente(porta: int = 8000, forzato: bool = False) -> None:
+    """Se un'altra istanza sta usando la porta o app.py e' gia' in esecuzione,
+    chiude l'istanza precedente per consentire il riavvio pulito."""
+    da_escludere = _antenati()
+    pids: set[int] = set()
+
+    # 1. PID file
+    if PID_FILE.exists():
+        try:
+            pid = int(PID_FILE.read_text().strip())
+            if pid not in da_escludere:
+                pids.add(pid)
+        except Exception:
+            pass
+
+    # 2. Processi che ascoltano sulla porta via lsof
+    try:
+        res = subprocess.run(["lsof", "-ti", f":{porta}"], capture_output=True, text=True, timeout=2)
+        for linea in res.stdout.strip().split():
+            if linea.isdigit():
+                pid = int(linea)
+                if pid not in da_escludere:
+                    pids.add(pid)
+    except Exception:
+        pass
+
+    # 3. Processi che usano la porta via fuser
+    try:
+        res = subprocess.run(["fuser", f"{porta}/tcp"], capture_output=True, text=True, timeout=2)
+        for parte in (res.stdout + " " + res.stderr).split():
+            if parte.isdigit():
+                pid = int(parte)
+                if pid not in da_escludere:
+                    pids.add(pid)
+    except Exception:
+        pass
+
+    # 4. Altre istanze di 4-src/app.py via pgrep
+    try:
+        res = subprocess.run(["pgrep", "-f", "4-src/app.py"], capture_output=True, text=True, timeout=2)
+        for linea in res.stdout.strip().split():
+            if linea.isdigit():
+                pid = int(linea)
+                if pid not in da_escludere:
+                    pids.add(pid)
+    except Exception:
+        pass
+
+
+    if not pids and not _porta_in_uso(porta):
+        return
+
+    # Invia SIGTERM per chiusura ordinata
+    for pid in pids:
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except (ProcessLookupError, PermissionError):
+            pass
+
+    # Invoca fuser per terminare chiunque occupi la porta
+    try:
+        subprocess.run(["fuser", "-k", "-TERM", f"{porta}/tcp"], capture_output=True, timeout=2)
+    except Exception:
+        pass
+
+    # Attendi brevemente che la porta si liberi
+    inizio = time.monotonic()
+    while time.monotonic() - inizio < 1.5:
+        if not _porta_in_uso(porta):
+            break
+        time.sleep(0.1)
+
+    # Se ancora in uso, escalation a SIGKILL
+    if _porta_in_uso(porta):
+        for pid in pids:
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except (ProcessLookupError, PermissionError):
+                pass
+        try:
+            subprocess.run(["fuser", "-k", "-KILL", f"{porta}/tcp"], capture_output=True, timeout=2)
+        except Exception:
+            pass
+        inizio = time.monotonic()
+        while time.monotonic() - inizio < 1.0:
+            if not _porta_in_uso(porta):
+                break
+            time.sleep(0.1)
+
+    try:
+        if PID_FILE.exists():
+            PID_FILE.unlink()
+    except Exception:
+        pass
+
+    if pids:
+        print(f"[avvio] Chiusa istanza precedente (PID: {', '.join(map(str, sorted(pids)))}), porta {porta} liberata.")
+
+
+class Server(HTTPServer):
+    allow_reuse_address = True
+
+    def server_bind(self):
+        if hasattr(socket, "SO_REUSEPORT"):
+            try:
+                self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+            except OSError:
+                pass
+        super().server_bind()
+
+
+def avvia_server(host: str = "127.0.0.1", porta: int = 8000) -> None:
+    PID_FILE.write_text(str(os.getpid()))
+
+    def _rimuovi_pid():
+        try:
+            if PID_FILE.exists() and PID_FILE.read_text().strip() == str(os.getpid()):
+                PID_FILE.unlink()
+        except Exception:
+            pass
+
+    atexit.register(_rimuovi_pid)
+
+    server = None
+    for tentativo in range(3):
+        try:
+            server = Server((host, porta), Handler)
+            break
+        except OSError as exc:
+            if exc.errno == 98 and tentativo < 2:
+                chiudi_istanza_precedente(porta, forzato=True)
+                time.sleep(0.5)
+            else:
+                raise
+
+    server.serve_forever()
+
+
 if __name__ == "__main__":
+    porta = 8000
+    if "--porta" in sys.argv:
+        porta = int(sys.argv[sys.argv.index("--porta") + 1])
+    elif "--port" in sys.argv:
+        porta = int(sys.argv[sys.argv.index("--port") + 1])
+    elif "PORT" in os.environ:
+        porta = int(os.environ["PORT"])
+
+    chiudi_istanza_precedente(porta)
+
     if "--live" in sys.argv:
         os.environ["LLM_LIVE"] = "1"
     if "--fonte" in sys.argv:
@@ -210,5 +396,24 @@ if __name__ == "__main__":
     importlib.reload(llm)          # rilegge LLM_LIVE dall'ambiente
     print(f"fonte dati: {FONTE_DEFAULT}")
     print(llm.health())
-    print("\nhttp://localhost:8000   (Ctrl-C per fermare)")
-    HTTPServer(("127.0.0.1", 8000), Handler).serve_forever()
+
+    print("\nModalità di esecuzione:")
+    if llm.LIVE and FONTE_DEFAULT == "live":
+        print("  ✓ MODALITÀ LIVE COMPLETA ATTIVA (dati Salute Lazio + LLM in tempo reale)")
+    elif llm.LIVE:
+        print("  ✓ LLM LIVE ATTIVO (modello in tempo reale, cache ignorata)")
+        print("  → Per attivare anche i dati PS in tempo reale: python3 4-src/app.py --fonte live --live")
+    elif FONTE_DEFAULT == "live":
+        print("  ✓ DATI LIVE ATTIVI (Salute Lazio in tempo reale)")
+        print("  → Per attivare anche l'LLM live: python3 4-src/app.py --fonte live --live")
+    else:
+        print("  • Modalità corrente: DEMO (dati snapshot 2021 + cache LLM)")
+        print("  • Comandi da terminale per entrare nella modalità live:")
+        print("      python3 4-src/app.py --live               # LLM in tempo reale (senza cache)")
+        print("      python3 4-src/app.py --fonte live         # dati Pronto Soccorso in tempo reale")
+        print("      python3 4-src/app.py --fonte live --live   # tutto in tempo reale (dati + LLM)")
+
+    print(f"\nhttp://localhost:{porta}   (Ctrl-C per fermare)")
+    avvia_server("127.0.0.1", porta)
+
+

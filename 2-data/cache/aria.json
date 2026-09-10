@@ -1,18 +1,18 @@
 {
   "fbd8a4e6289ef55f83fc": {
-    "ts": 1789037693.1270177,
+    "ts": 1789042585.7243197,
     "dati": {
-      "pm10": 12.1,
-      "pm2_5": 7.6,
-      "aqi_europeo": 31,
+      "pm10": 6.2,
+      "pm2_5": 5.0,
+      "aqi_europeo": 32,
       "pollini": {
         "graminacee": 0.0,
         "olivo": 0.0,
-        "ambrosia": 0.2,
+        "ambrosia": 0.1,
         "ontano": 0.0,
         "betulla": 0.0
       },
-      "rilevato_il": "2026-09-10T12:00"
+      "rilevato_il": "2026-09-10T14:00"
     }
   },
   "306cbfc8cb8eb83174e9": {

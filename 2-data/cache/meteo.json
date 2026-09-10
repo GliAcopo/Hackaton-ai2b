@@ -1,14 +1,14 @@
 {
   "724650ddd993ee586cba": {
-    "ts": 1789037692.8902347,
+    "ts": 1789042585.489884,
     "dati": {
-      "temperatura_c": 25.7,
-      "percepita_c": 29.2,
-      "umidita_pct": 77,
-      "precipitazione_mm": 0.0,
-      "vento_kmh": 7.7,
-      "codice_meteo": 3,
-      "rilevato_il": "2026-09-10T12:45"
+      "temperatura_c": 27.7,
+      "percepita_c": 30.8,
+      "umidita_pct": 70,
+      "precipitazione_mm": 0.1,
+      "vento_kmh": 11.9,
+      "codice_meteo": 61,
+      "rilevato_il": "2026-09-10T14:15"
     }
   },
   "647c611082b17fb7cb14": {

@@ -1,5 +1,17 @@
 # Catalogo e Documentazione Dataset
 
+## Aggiunta del 10 settembre 2026: grandi apparecchiature
+
+In `raw/dataset_integrativo/nazionale/apparecchiature/` sono disponibili:
+
+- `DISPO_GAP_80_20260907.csv`: originale nazionale, 6.836 righe.
+- `apparecchiature_lazio_20260907.csv`: filtro Lazio, 903 righe e 340 coppie azienda/struttura; codici conservati come stringhe.
+- `provenienza.json`: URL, versione, licenza IODL 2.0, hash SHA-256 e limiti.
+
+Fonte: [Ministero della Salute](https://www.dati.salute.gov.it/it/dataset/apparecchiature-sanitarie/). Il dato contiene tipologie, numerosità e localizzazione delle grandi apparecchiature. Non indica appuntamenti prenotabili, personale presente o disponibilità in tempo reale. Nessun collegamento automatico ai presidi dell'app è stato ancora eseguito.
+
+La lista di correzioni e integrazioni concordate è in [Valore per il cittadino](../1-README/VALORE_CITTADINO_IMPLEMENTAZIONI.md).
+
 I dataset sono stati organizzati secondo la suddivisione esatta della **Traccia**:
 
 1. **`dataset_principale/`**: Portale Open Data Regione Lazio ([dati.lazio.it](https://dati.lazio.it/dataset/))

@@ -400,5 +400,37 @@
     "severita": "nessuna"
    }
   ]
+ },
+ "52d2666c736edde2cfe158bf45fca5b9": {
+  "azioni_preparatorie": [
+   "Monitoraggio ordinario degli accessi in Pronto Soccorso per eventuale disagio termico da afa/umidità elevata (70%).",
+   "Verifica del corretto funzionamento degli impianti di climatizzazione nelle sale d'attesa e nei reparti di degenza.",
+   "Verifica delle scorte di soluzioni idratanti ed elettrolitiche nei presidi di emergenza.",
+   "Mantenimento del regolare assetto di triage senza necessità di attivazione di percorsi straordinari per ondate di calore o inquinamento."
+  ],
+  "gruppi_vulnerabili": [
+   {
+    "gruppo": "Anziani fragili e persone con patologie croniche cardiorespiratorie",
+    "perche": "L'umidità al 70% associata a temperatura percepita di 30.8 C può determinare moderato disagio termico e difficoltà di termoregolazione."
+   }
+  ],
+  "messaggio_cittadini": "Le condizioni ambientali e la qualità dell'aria sono complessivamente buone, ma l'umidità elevata può causare una sensazione di afa. Si consiglia alle persone più fragili e anziane di bere regolarmente acqua e sostare in ambienti freschi o ventilati.",
+  "rischi": [
+   {
+    "effetto_atteso": "Possibile disagio fisiologico e lieve aumento di astenia o richieste di soccorso tra soggetti fragili per afa moderata.",
+    "fenomeno": "Disagio termico da umidità (temperatura percepita 30.8 C, umidità 70%)",
+    "severita": "lieve"
+   },
+   {
+    "effetto_atteso": "Nessun impatto sulle vie respiratorie legato alla qualità dell'aria.",
+    "fenomeno": "Qualità dell'aria (AQI 32, PM10 6.2 ug/m3, PM2.5 5.0 ug/m3)",
+    "severita": "nessuna"
+   },
+   {
+    "effetto_atteso": "Nessun sovraccarico per reazioni allergiche respiratorie acute.",
+    "fenomeno": "Concentrazione allergenica pollini (valori tra 0.0 e 0.1)",
+    "severita": "nessuna"
+   }
+  ]
  }
 }

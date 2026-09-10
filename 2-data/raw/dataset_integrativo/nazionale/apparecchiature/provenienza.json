@@ -1,0 +1,18 @@
+{
+  "fonte": "Ministero della Salute",
+  "pagina": "https://www.dati.salute.gov.it/it/dataset/apparecchiature-sanitarie/",
+  "download": "https://www.dati.salute.gov.it/sites/default/files/opendata/DISPO_GAP_80_20260907.csv",
+  "licenza": "IODL 2.0",
+  "data_dataset": "2026-09-07",
+  "data_download": "2026-09-10",
+  "sha256_originale": "c06ec72aa350dfc89d89209979666cd114423ac28260520d3d70e9226de99eb0",
+  "righe_nazionali": 6836,
+  "righe_lazio": 903,
+  "strutture_lazio": 340,
+  "trasformazione": "Filtro regione=LAZIO; tutte le colonne e i codici testuali preservati. Nessun join con presidi eseguito.",
+  "limiti": [
+    "Inventario delle grandi apparecchiature, non censimento di ogni dotazione medica.",
+    "num_app_disponibili non indica slot prenotabili, personale in turno o disponibilita in tempo reale.",
+    "Assenza dal dataset non prova assenza della dotazione."
+  ]
+}

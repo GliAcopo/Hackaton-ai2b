@@ -9,4 +9,6 @@ venv/
 !.env.example
 
 *.log
+*.pid
 .DS_Store
+
