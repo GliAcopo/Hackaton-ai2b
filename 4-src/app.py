@@ -3,11 +3,26 @@
 A un hackathon un `pip install` che fallisce alle 16:00 e' una sconfitta.
 Se vuoi FastAPI mettila dopo, quando il flusso gia' gira.
 
-    python3 4-src/app.py     ->  http://localhost:8000
+    python3 4-src/app.py                  ->  http://localhost:8000
+    python3 4-src/app.py --fonte live     ->  stato dei PS in tempo reale
+    python3 4-src/app.py --live           ->  niente cache LLM: modello vero
+    python3 4-src/app.py --fonte live --live  ->  tutto vivo, niente precalcolo
+
+DUE COSE DIVERSE, DUE INTERRUTTORI DIVERSI.
+
+`--fonte live` riguarda i DATI: interroga l'API di Salute Lazio invece di
+leggere lo snapshot open data del 2021. E' la sorgente che si vuole in gara.
+
+`--live` riguarda l'LLM: ignora la cache delle risposte e interpella davvero
+il modello. In demo conviene il contrario (la cache risponde in millisecondi
+e non dipende dalla rete), ma serve poterlo dimostrare dal vivo.
+
+La fonte si puo' anche scegliere per singola chiamata: /api/rete?fonte=live.
 """
 from __future__ import annotations
 
 import json
+import os
 import sys
 import traceback
 from http.server import HTTPServer, SimpleHTTPRequestHandler
@@ -25,6 +40,11 @@ from indici import ORDINAMENTI, rete, simula  # noqa: E402
 
 WEB = Path(__file__).resolve().parent.parent / "5-web"
 ROMA = (41.8933, 12.4829)
+
+# Sorgente predefinita del server, scavalcabile per singola richiesta con
+# ?fonte=live. Resta "snapshot" se non si chiede altro: la demo offline deve
+# continuare a funzionare identica a prima.
+FONTE_DEFAULT = "snapshot"
 
 
 def _vicini(lat: float, lon: float, indici: list, quanti: int = 5) -> list[dict]:
@@ -69,6 +89,7 @@ class Handler(SimpleHTTPRequestHandler):
             return super().do_GET()
         q = parse_qs(url.query)
         uno = lambda k, d="": q.get(k, [d])[0]
+        self.fonte = uno("fonte", FONTE_DEFAULT)
         try:
             return self._instrada(url.path, q, uno)
         except Exception as exc:  # noqa: BLE001
@@ -78,17 +99,23 @@ class Handler(SimpleHTTPRequestHandler):
     def _instrada(self, percorso_url: str, q: dict, uno) -> None:
         # ---- stato della rete, con l'ordinamento scelto --------------------
         if percorso_url == "/api/rete":
-            indici, meta = rete(uno("ordine", "pressione"))
+            indici, meta = rete(uno("ordine", "pressione"), self.fonte)
+            # In tempo reale la fonte non pubblica ne' l'occupazione ne' i
+            # presenti: offrire quegli ordinamenti darebbe una colonna di zeri
+            # sotto un'etichetta che promette altro.
+            # NB: "capienza" resta: in live la capacita' residua si calcola
+            # sulla coda invece che sui posti (vedi indici._calibra).
+            senza = {"pressione", "presenti"} if meta.get("solo_coda") else set()
             return self._json({
                 "meta": meta,
-                "ordinamenti": {k: v[0] for k, v in ORDINAMENTI.items()},
+                "ordinamenti": {k: v[0] for k, v in ORDINAMENTI.items() if k not in senza},
                 "presidi": [i.to_dict() for i in indici],
             })
 
         # ---- piano di deviazione IA per un presidio ------------------------
         if percorso_url == "/api/piano":
             codice = uno("codice")
-            indici, meta = rete("pressione")
+            indici, meta = rete("pressione", self.fonte)
             critico = next((i for i in indici if i.codice == codice), None)
             if critico is None:
                 return self._json({"errore": f"presidio {codice} sconosciuto"}, 404)
@@ -116,7 +143,7 @@ class Handler(SimpleHTTPRequestHandler):
                 return self._json({"errore": "parametro `testo` mancante"}, 400)
             lat = float(uno("lat", ROMA[0]))
             lon = float(uno("lon", ROMA[1]))
-            indici, meta = rete("pressione")
+            indici, meta = rete("pressione", self.fonte)
             t = ai.triage_chiamata(testo)
             vicini = _vicini(lat, lon, indici, quanti=6)
             return self._json({
@@ -132,7 +159,7 @@ class Handler(SimpleHTTPRequestHandler):
                 return self._json({"errore": "parametro `sintomo` mancante"}, 400)
             lat = float(uno("lat", ROMA[0]))
             lon = float(uno("lon", ROMA[1]))
-            indici, meta = rete("pressione")
+            indici, meta = rete("pressione", self.fonte)
             vicini = _vicini(lat, lon, indici, quanti=5)
             terr = territorio.vicini(lat, lon, raggio_km=3.0, quanti=6)
             return self._json({
@@ -175,6 +202,13 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
+    if "--live" in sys.argv:
+        os.environ["LLM_LIVE"] = "1"
+    if "--fonte" in sys.argv:
+        FONTE_DEFAULT = sys.argv[sys.argv.index("--fonte") + 1]
+    import importlib
+    importlib.reload(llm)          # rilegge LLM_LIVE dall'ambiente
+    print(f"fonte dati: {FONTE_DEFAULT}")
     print(llm.health())
     print("\nhttp://localhost:8000   (Ctrl-C per fermare)")
     HTTPServer(("127.0.0.1", 8000), Handler).serve_forever()

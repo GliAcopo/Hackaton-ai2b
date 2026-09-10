@@ -3,26 +3,60 @@
 Una firma sola, due sorgenti dietro:
 
     stato_rete("snapshot")  # CSV open data, rilevazione del 2021-07-15 16:58
-    stato_rete("live")      # API salutelazio, se e quando la troviamo
+    stato_rete("live")      # API Salute Lazio, dato vivo di adesso
 
-ONESTA' SULLA FONTE. Il dataset che la Regione chiama "accessi in tempo reale"
-e' in realta' congelato: il datastore CKAN restituisce sempre e solo la
-rilevazione del 15/07/2021 fra le 16:56 e le 16:58. Non e' un problema da
-nascondere simulando un orologio: ogni risposta porta `fonte` e `rilevato_il`,
-e l'interfaccia li mostra sempre. Dichiararlo per primi vale piu' che farsi
-smontare dalla giuria.
+ONESTA' SULLA FONTE. Il dataset che la Regione pubblica come open data e si
+chiama "accessi in tempo reale" e' in realta' congelato: il datastore CKAN
+restituisce sempre e solo la rilevazione del 15/07/2021 fra le 16:56 e le
+16:58. Non e' un problema da nascondere simulando un orologio: ogni risposta
+porta `fonte` e `rilevato_il`, e l'interfaccia li mostra sempre.
+
+Il dato vivo esiste pero' altrove: il portale salutelazio.it interroga
+un'API pubblica e senza autenticazione che pubblica, presidio per presidio,
+i pazienti in attesa per priorita' e i tempi di attesa medio e massimo.
+E' quella che alimenta `fonte="live"`.
+
+LE DUE FONTI NON DICONO LA STESSA COSA, e questo cambia gli indici:
+
+  snapshot -> attesa + trattamento + osservazione + boarding, per colore.
+              Si sa chi c'e' DENTRO: la pressione (occupazione) si calcola.
+  live     -> solo la CODA, per priorita', piu' i tempi di attesa VERI.
+              Non si sa chi e' gia' in trattamento: la pressione non si
+              calcola e resta None, dichiarata. In cambio la sofferenza
+              smette di essere stimata e diventa misurata.
+
+Meta' degli indici da una fonte e meta' dall'altra sarebbe un pasticcio: chi
+guarda deve sapere quale sta guardando. Per questo `meta` porta sempre fonte,
+istante e copertura, e l'interfaccia li mostra.
 """
 from __future__ import annotations
 
+import concurrent.futures
 import csv
 import json
 import re
+import time
+import urllib.error
+import urllib.request
 from dataclasses import dataclass, asdict, field
+from datetime import datetime
 from pathlib import Path
 
 RADICE = Path(__file__).resolve().parent.parent
 SNAPSHOT = RADICE / "2-data" / "raw" / "dataset_principale" / "lazio" / "pronto_soccorso_accessi_tempo_reale.csv"
 PRESIDI = RADICE / "2-data" / "derived" / "presidi.json"
+MAPPA_LIVE = RADICE / "2-data" / "derived" / "mappa_live.json"
+CACHE_LIVE = RADICE / "2-data" / "cache" / "live.json"
+
+STATO_LIVE = ("https://server.salutelazio.it/server/external-services/"
+              "facilities/structures/emergency-status?facilityId=")
+
+# Quanto teniamo buona una lettura live prima di richiederla. Non e' pigrizia:
+# la coda di un pronto soccorso non cambia in dieci secondi, e senza questo un
+# refresh della pagina spara 49 richieste a un server pubblico altrui.
+TTL_LIVE_S = 60
+PARALLELE = 6      # richieste contemporanee: cortesia verso il server
+TIMEOUT_S = 12
 
 
 def num(valore: str | None) -> float | None:
@@ -92,6 +126,22 @@ class StatoPS:
     tot_ricovero: int = 0
     presenti: int = 0
 
+    # Tempi di attesa PUBBLICATI dalla Regione (solo fonte live). Quando ci
+    # sono, la sofferenza non va piu' stimata dalla lunghezza della coda:
+    # e' il tempo vero, misurato dal presidio.
+    attesa_media_h: float | None = None
+    attesa_max_h: float | None = None
+
+    # False quando la fonte pubblica solo la coda: chi e' gia' in trattamento
+    # o in osservazione non e' noto, quindi l'occupazione non e' calcolabile.
+    ha_presenti: bool = True
+
+    # False quando la fonte non ha dato niente per questo presidio. NON e' lo
+    # stesso di "zero pazienti": un presidio che non trasmette sembrerebbe
+    # vuoto e finirebbe in cima alle destinazioni consigliate. Va escluso.
+    dato_disponibile: bool = True
+    nota_fonte: str = ""
+
     # arricchimento da presidi.json (puo' mancare finche' non e' costruito)
     lat: float | None = None
     lon: float | None = None
@@ -135,13 +185,175 @@ def _registro_presidi() -> dict[str, dict]:
     return {str(p["codice"]): p for p in dati}
 
 
+# --- Feed live ------------------------------------------------------------
+#
+# CORRISPONDENZA FRA LE DUE SCALE DI TRIAGE. Lo snapshot 2021 usa i quattro
+# colori storici; l'API usa i cinque livelli numerici introdotti dalle linee
+# di indirizzo nazionali sul triage (DM 2019). La tabella di conversione:
+#
+#   1 Emergenza            -> rossi
+#   2 Urgenza              -> gialli    (ex arancione)
+#   3 Urgenza differibile  -> verdi     (ex azzurro)
+#   4 Urgenza minore       -> verdi
+#   5 Non urgenza          -> bianchi
+#
+# LA RIGA CHE DECIDE TUTTO E' IL LIVELLO 3, e la scelta va motivata perche'
+# sposta il "carico deviabile" di tutta la rete da 81 a 165 pazienti.
+#
+# Il codice verde della vecchia scala e' definito come "urgenza minore o
+# DIFFERIBILE": copre cioe' entrambi i livelli che la scala a cinque separa in
+# azzurro (3, differibile) e verde (4, minore). Mandare l'azzurro fra i gialli
+# sembra piu' prudente, ma rende la fonte live incoerente con lo storico usato
+# come moltiplicatore: nei dati 2021 i verdi sono il 65-70% degli accessi,
+# percentuale che si spiega solo se comprendono anche i differibili.
+#
+# Resta il fatto che un differibile non e' un codice minore: per questo il
+# carico deviabile non e' un conteggio ma resta corretto per la quota storica
+# del presidio (vedi indici.calcola), il piano dichiara sempre quali codici
+# tocca, e la deviazione riguarda i NUOVI accessi instradati dal 118, non le
+# persone gia' in coda.
+#
+# Per tornare alla lettura prudente basta rimettere "3": "gialli" qui sotto.
+LIVELLO_COLORE = {"1": "rossi", "2": "gialli", "3": "verdi",
+                  "4": "verdi", "5": "bianchi"}
+
+
+def _mappa_live() -> dict[str, dict]:
+    try:
+        return json.loads(MAPPA_LIVE.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _cache_live() -> dict:
+    try:
+        return json.loads(CACHE_LIVE.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _scarica_stato(psid: str) -> dict | None:
+    """Stato live di un presidio. None se il presidio non lo pubblica."""
+    try:
+        with urllib.request.urlopen(STATO_LIVE + psid, timeout=TIMEOUT_S) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as exc:
+        # 422 = il presidio esiste in anagrafe ma non trasmette (Gemelli e
+        # Campus Bio-Medico, alla verifica). Non e' un errore nostro.
+        if exc.code in (404, 422):
+            return None
+        raise
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError):
+        return None
+
+
+def _leggi_live(mappa: dict[str, dict]) -> tuple[dict[str, dict], bool]:
+    """Ritorna ({codice: risposta}, da_cache). Cache con TTL: vedi TTL_LIVE_S."""
+    cache = _cache_live()
+    fresca = cache.get("quando", 0) + TTL_LIVE_S > time.time()
+    if fresca and cache.get("dati"):
+        return cache["dati"], True
+
+    def uno(voce):
+        codice, m = voce
+        return codice, _scarica_stato(m["psid"])
+
+    dati: dict[str, dict] = {}
+    with concurrent.futures.ThreadPoolExecutor(PARALLELE) as pool:
+        for codice, risposta in pool.map(uno, mappa.items()):
+            if risposta:
+                dati[codice] = risposta
+    if dati:
+        CACHE_LIVE.parent.mkdir(parents=True, exist_ok=True)
+        CACHE_LIVE.write_text(json.dumps({"quando": time.time(), "dati": dati},
+                                         ensure_ascii=False), encoding="utf-8")
+        return dati, False
+    # rete giu': meglio una lettura vecchia dichiarata che nessun dato
+    return cache.get("dati", {}), True
+
+
+def _stato_rete_live() -> tuple[list[StatoPS], dict]:
+    """Coda e tempi di attesa veri, presidio per presidio, adesso."""
+    mappa = _mappa_live()
+    if not mappa:
+        raise FileNotFoundError(
+            "manca 2-data/derived/mappa_live.json: "
+            "eseguire python3 4-src/costruisci_mappa_live.py")
+
+    dati, da_cache = _leggi_live(mappa)
+    registro = _registro_presidi()
+    adesso = datetime.now().isoformat(timespec="seconds")
+
+    stati: list[StatoPS] = []
+    senza_dato: list[str] = []
+    for codice, p in registro.items():
+        risposta = dati.get(codice)
+        s = StatoPS(
+            codice=codice, nome=p.get("nome", ""), tipo=p.get("tipo", ""),
+            comune=p.get("comune", ""), asl=p.get("asl", ""),
+            rilevato_il=adesso,
+            attesa={c: 0 for c in COLORI},
+            trattamento={c: 0 for c in COLORI},
+            osservazione={c: 0 for c in COLORI},
+            lat=p.get("lat"), lon=p.get("lon"), storico=p.get("storico"),
+            ha_presenti=False,
+        )
+        if risposta is None:
+            senza_dato.append(s.nome)
+            s.dato_disponibile = False
+            s.nota_fonte = "il presidio non trasmette lo stato in tempo reale"
+            stati.append(s)
+            continue
+
+        pesi_attesa: list[tuple[int, float]] = []
+        for g in risposta.get("groups", []):
+            colore = LIVELLO_COLORE.get(str(g.get("group", {}).get("code")))
+            quanti = int(g.get("total") or 0)
+            if not colore or not quanti:
+                continue
+            s.attesa[colore] += quanti
+            pesi_attesa.append((quanti, float(g.get("avgWaitSeconds") or 0)))
+        s.tot_attesa = sum(s.attesa.values())
+        # `presenti` resta 0 e non copia la coda. Sono due cose diverse: i
+        # presenti comprendono chi e' gia' in trattamento o in osservazione, e
+        # questa fonte non li pubblica. Copiarci dentro la coda farebbe
+        # comparire un numero plausibile e sbagliato in ogni punto che legge
+        # `presenti` - l'ordinamento "piu' pazienti presenti" compreso.
+
+        if pesi_attesa and s.tot_attesa:
+            # media pesata sui pazienti, non sui gruppi: tre gruppi da 1, 1 e
+            # 19 persone non contano un terzo ciascuno.
+            s.attesa_media_h = round(
+                sum(q * a for q, a in pesi_attesa) / s.tot_attesa / 3600, 2)
+        s.attesa_max_h = round(max(
+            (float(g.get("maxWaitSeconds") or 0)
+             for g in risposta.get("groups", [])), default=0.0) / 3600, 2)
+        s.nota_fonte = "coda e tempi di attesa pubblicati dalla Regione"
+        stati.append(s)
+
+    meta = {
+        "fonte": "API Salute Lazio (tempo reale)",
+        "rilevato_il": adesso,
+        "presidi": len(stati),
+        "con_dato_live": len(stati) - len(senza_dato),
+        "senza_dato_live": senza_dato,
+        "da_cache": da_cache,
+        "solo_coda": True,
+        "avviso": (
+            "Dato vivo: pazienti in attesa per priorita' e tempi di attesa "
+            "pubblicati dalla Regione. La fonte non pubblica chi e' gia' in "
+            "trattamento o in osservazione, quindi la PRESSIONE (occupazione) "
+            "non e' calcolabile in questa modalita'; la sofferenza invece e' "
+            "misurata sui tempi reali, non stimata."
+        ),
+    }
+    return stati, meta
+
+
 def stato_rete(fonte: str = "snapshot") -> tuple[list[StatoPS], dict]:
     """Ritorna (stati, meta). `meta` porta fonte e istante della rilevazione."""
     if fonte == "live":
-        raise NotImplementedError(
-            "Il feed live di salutelazio non e' ancora agganciato: "
-            "usa fonte='snapshot'."
-        )
+        return _stato_rete_live()
 
     with SNAPSHOT.open(encoding="utf-8", newline="") as fh:
         righe = list(csv.DictReader(fh))

@@ -1,19 +1,10 @@
 {
- "24e037a3f835e414755ed66ecdc8505b": {
-  "alternative": [
-   "Contattare la continuità assistenziale (guardia medica) o recarsi presso una delle altre farmacie vicine (es. SAN GIACOMO SNC DI TOMADINI GIUSEPPINA a 0.66 km o ENEI LILIANA a 0.68 km)",
-   "In caso di comparsa di segnali di allarme pediatrici o peggioramento acuto, recarsi al Pronto Soccorso DEA II Bambino Gesù (a 6.2 minuti, 1 persona in attesa) o chiamare il 118"
-  ],
-  "cosa_fare_subito": "Somministrare un antipiretico secondo dosaggio pediatrico consueto, idratare il bambino e monitorarne temperatura e condizioni generali.",
-  "dove": "farmacia",
-  "motivazione": "La febbre insorta da meno di 24 ore senza segni di emergenza/urgenza acuta è gestibile a livello territoriale. Raggiungendo la farmacia LIPPI TULLIA (Via Arenula, 73, a soli 0.65 km), accessibile immediatamente, si evitano gli spostamenti verso l'ospedale e l'attesa in pronto soccorso (dove ci sono da 1 a 22 persone in attesa, come ad es. le 3 persone al San Giovanni Calibita-FBF o le 9 al Santo Spirito), consentendo di ricevere subito un primo supporto farmaceutico in attesa di rintracciare il pediatra o la guardia medica."
- },
- "f35855d43f83ec1c79933a2cc262edda": {
+ "4f3f33e3d24f4afedc5afa7bba4f0af1": {
   "azioni_operative": [
-   "Attivazione del protocollo Ares 118 per instradamento selettivo dei nuovi accessi a bassa complessita' (codici bianchi e verdi) verso Madre G. Vannini e Sant'Eugenio.",
-   "Comunicazione al triage del Policlinico Casilino per proposta di reindirizzamento volontario assistito verso Madre G. Vannini.",
-   "Pre-allerta delle caposale e dei triage di Madre G. Vannini e Sant'Eugenio sull'accoglienza dei flussi deviati.",
-   "Rivalutazione a 60 minuti degli indici di pressione di Casilino, Vannini e Sant'Eugenio tramite cruscotto di rete."
+   "Notifica alla Centrale Operativa ARES 118 del piano di deviazione per i nuovi accessi a bassa e media priorita' (codici bianchi e verdi) dall'area del Casilino.",
+   "Attivazione del routing preferenziale dei mezzi di soccorso non critici su Madre G. Vannini (quadrante Est/Roma) e Sant'Eugenio (quadrante Sud/Roma).",
+   "Apertura del canale di fast-track/ambulatorio a bassa intensita' presso Madre G. Vannini e Sant'Eugenio per rapido assorbimento dei codici minori.",
+   "Monitoraggio a 60 e 120 minuti degli indici di pressione di Casilino, Vannini e Sant'Eugenio per rimodulazione o chiusura della deviazione."
   ],
   "codici_coinvolti": [
    "bianchi",
@@ -21,53 +12,49 @@
   ],
   "destinazioni": [
    {
-    "nome": "Madre G. Vannini",
-    "perche": "Presidio con pressione minima della rete (0.33), elevata capacita' residua (72.1) e prossimita' logistica nel quadrante est di Roma.",
-    "quota": 16
+    "nome": "Madre G. Vannini (DEA I, Roma)",
+    "perche": "Pressione bassissima (0.33), vicinanza territoriale nel quadrante est/Roma, soli 7 pazienti in attesa e ampia capacita' residua stimata di 72.1 pazienti.",
+    "quota": 14
    },
    {
-    "nome": "Sant'Eugenio",
-    "perche": "Massima capacita' residua stimata tra i candidati (84.4) con soli 5 pazienti in attesa e pressione sotto la mediana (0.87).",
-    "quota": 8
+    "nome": "Sant'Eugenio (DEA I, Roma)",
+    "perche": "Maggiore capacita' residua stimata della rete (84.4 pazienti), soli 5 in attesa e pressione ampiamente sotto soglia di allarme (0.87).",
+    "quota": 10
    }
   ],
-  "effetto_domino": "Nessun rischio di allarme indotto: con le quote assegnate (16 a Madre G. Vannini e 8 a Sant'Eugenio), entrambi i presidi rimangono ampiamente al di sotto delle rispettive capacita' residue (72.1 e 84.4) e ben lontani dalla soglia di allarme di 1.5.",
-  "motivazione": "Il Policlinico Casilino e' in forte sovraccarico (pressione 1.74 oltre soglia 1.5, sofferenza storico 2.41, 32 in attesa di cui 29 bianchi/verdi). La deviazione di 24 codici bianchi e verdi alleggerisce il presidio consentendo un recupero fino a 75.2 ore-paziente senza impattare i codici a maggiore complessita'.",
+  "effetto_domino": "Nessun rischio di allarme indotto: con l'assegnazione di 14 pazienti a Madre G. Vannini (capacita' residua 72.1) e 10 a Sant'Eugenio (capacita' residua 84.4), entrambi i presidi rimangono ampiamente al di sotto dei propri limiti di saturazione e lontani dalla soglia di allarme (1.5).",
+  "motivazione": "Il Policlinico Casilino presenta un indice di pressione critico a 1.74 (soglia allarme 1.5) e una sofferenza storica di 2.41 con 29 codici bianchi e verdi in attesa. La deviazione di 24 pazienti non critici (pari all'intero carico deviabile stimato arrotondato per difetto sui 24.8 disponibili) consente di abbattere il sovraccarico recuperando fino a circa 75.2 ore-paziente senza impattare sui codici a maggiore complessita'.",
   "quota_da_deviare": 24,
   "urgenza": 4
  },
- "41abf0778cfdd3ad8d8609d8643bc7a9": {
+ "7d5e48deae4acdf4800b2aa2f4cfeb5b": {
   "azioni_preparatorie": [
-   "Mantenere l'ordinario assetto dei Pronto Soccorso e delle postazioni 118, senza necessita' di potenziamenti straordinari.",
-   "Assicurare il corretto funzionamento e il comfort termico degli impianti di climatizzazione/deumidificazione nei reparti di degenza e nelle sale d'attesa.",
-   "Garantire la regolare disponibilita' di farmaci broncodilatatori e presidi per soggetti asmatici o cardiopatici cronici.",
-   "Monitorare l'eventuale variazione dei parametri microclimatici e degli indici di qualita' dell'aria nelle prossime ore."
+   "Mantenere la normale operatività dei Pronto Soccorso monitorando eventuali accessi di soggetti fragili per disagio da afa.",
+   "Verificare il corretto funzionamento degli impianti di climatizzazione e ventilazione nelle sale d'attesa e nei reparti di degenza.",
+   "Garantire la regolare disponibilità di soluzioni idratanti ed elettrolitiche nei punti di primo intervento.",
+   "Monitorare l'evoluzione dei bollettini bioclimatici e dei tassi di umidità relativa nelle ore centrali della giornata.",
+   "Attivare i consueti canali informativi territoriali con consigli pratici per l'idratazione e la prevenzione del colpo di calore per i soggetti fragili."
   ],
   "gruppi_vulnerabili": [
    {
-    "gruppo": "Pazienti con patologie cardiorespiratorie croniche ed anziani fragili",
-    "perche": "L'elevata umidita' relativa (81%) associata a una temperatura percepita di 28.0 C puo' acuire senso di affanno, difficolta' di termoregolazione e spossatezza."
+    "gruppo": "Anziani e soggetti con patologie croniche cardiovascolari o metaboliche",
+    "perche": "L'elevata umidità relativa (80%) associata a una temperatura percepita di 28.5 °C ostacola la fisiologica termoregolazione e dispersione del calore per evaporazione."
    },
    {
-    "gruppo": "Soggetti con forte sensibilita' all'ambrosia",
-    "perche": "Presenza minima ma rilevata di polline di ambrosia (0.2), potenziale causa di lievi sintomi rinitici o irritativi in soggetti altamente sensibilizzati."
+    "gruppo": "Soggetti altamente allergici all'ambrosia",
+    "perche": "È rilevata una concentrazione basale minima di polline di ambrosia (0.2), con potenziale lieve reattività per persone con polisensibilizzazioni severe."
    }
   ],
-  "messaggio_cittadini": "Le condizioni meteo e la qualita' dell'aria nel Lazio sono complessivamente buone, sebbene l'elevata umidita' possa causare un leggero disagio alle persone anziane o fragili. Si raccomanda di arieggiare i locali nelle ore piu' fresche e di bere acqua con regolarita'.",
+  "messaggio_cittadini": "Le temperature sono gradevoli ma l'elevata umidità può causare una sensazione di afa, soprattutto a bambini e anziani. Si consiglia di bere regolarmente acqua e arieggiare i locali nelle ore meno calde.",
   "rischi": [
    {
-    "effetto_atteso": "Possibile disagio fisiologico moderato e difficolta' di traspirazione, in particolare per anziani o cardiopatici.",
-    "fenomeno": "Elevata umidita' relativa (81%) con temperatura percepita di 28.0 C",
+    "effetto_atteso": "L'elevato tasso di umidità aumenta la percezione termica a 28.5 °C (temperatura reale 25.0 °C), provocando possibile senso di spossatezza o disagio nei soggetti fragili.",
+    "fenomeno": "Afa e disagio termico da elevata umidità (80%)",
     "severita": "lieve"
    },
    {
-    "effetto_atteso": "Qualita' dell'aria buona (AQI 31, PM10 12.1 ug/m3, PM2.5 7.6 ug/m3); nessun impatto negativo atteso sulla popolazione generale.",
-    "fenomeno": "Qualita' dell'aria favorevole",
-    "severita": "nessuna"
-   },
-   {
-    "effetto_atteso": "Nessun incremento significativo di accessi per reazioni allergiche respiratorie acute.",
-    "fenomeno": "Livelli pollinici trascurabili (ambrosia 0.2, altri assenti)",
+    "effetto_atteso": "Concentrazioni molto basse di particolato (PM10 12.1 ug/m3, PM2.5 7.6 ug/m3, AQI 31) e pollini quasi assenti; nessun impatto patologico atteso sulla popolazione generale.",
+    "fenomeno": "Qualità dell'aria e carico pollinico",
     "severita": "nessuna"
    }
   ]
@@ -77,13 +64,13 @@
   "dea_ii_richiesto": true,
   "paziente_pediatrico": false,
   "red_flags": [
-   "dolore toracico irradiato al braccio sinistro",
+   "dolore al petto irradiato al braccio sinistro",
    "sudorazione fredda"
   ],
-  "sintesi": "Uomo di 62 anni a Torre Angela con dolore toracico irradiato al braccio sinistro e sudorazione fredda, quadro altamente sospetto per sindrome coronarica acuta. Richiesto invio immediato di mezzo di soccorso avanzato (MSA) con tele-ECG e centralizzazione verso DEA con emodinamica attiva.",
+  "sintesi": "Uomo di 62 anni con dolore toracico irradiato al braccio sinistro e sudorazione fredda in atto. Richiesto invio immediato di mezzo di soccorso avanzato e centralizzazione verso DEA II con emodinamica (rete IMA).",
   "sintomi": [
    "dolore al petto",
-   "irradiazione al braccio sinistro",
+   "irradiazione braccio sinistro",
    "sudorazione fredda"
   ]
  },
@@ -92,38 +79,326 @@
   "dea_ii_richiesto": false,
   "paziente_pediatrico": false,
   "red_flags": [],
-  "sintesi": "Donna di 34 anni con trauma isolato alla caviglia ed edema post-caduta, senza compromissione dei parametri vitali. Quadro a bassa complessità/urgenza differibile, gestibile presso PS o DEA di I livello della rete territoriale.",
+  "sintesi": "Donna di 34 anni con trauma minore alla caviglia post-caduta e difficoltà alla deambulazione in zona Tuscolana. Condizione stabile e differibile, nessun criterio di emergenza o necessità di DEA di II livello.",
   "sintomi": [
    "caviglia gonfia",
-   "difficoltà nella deambulazione"
+   "difficolta a camminare"
   ]
  },
  "90bfe21042bd6d52a71e0c48262c90a8": {
-  "codice": "bianco",
+  "codice": "verde",
   "dea_ii_richiesto": false,
   "paziente_pediatrico": true,
   "red_flags": [],
-  "sintesi": "Bambino di 6 anni con febbre da ieri sera, vigile, reattivo, beve e gioca regolarmente. Quadro non urgente a bassa priorità gestibile dal pediatra di libera scelta o continuità assistenziale.",
+  "sintesi": "Bambino di 6 anni con febbre da ieri sera, vigile, reattivo, beve e gioca regolarmente. Quadro clinico stabile a bassa priorità, gestibile dal pediatra di libera scelta o pronto soccorso di base senza necessità di DEA II.",
   "sintomi": [
-   "febbre 38.5"
+   "febbre a 38.5"
   ]
  },
  "8200f60c644cda09338fe29125634a37": {
   "alternative": [
-   "San Giovanni Calibita-FBF (DEA I, 10 minuti, 3 persone in attesa)",
-   "Santo Spirito (DEA I, 10 minuti, 9 persone in attesa)"
+   "San Giovanni Calibita-FBF (DEA I) - 10 minuti, 3 persone in attesa",
+   "Santo Spirito (DEA I) - 10 minuti, 9 persone in attesa"
   ],
-  "cosa_fare_subito": "Idratare il bambino, monitorare la temperatura e le condizioni generali nell'attesa di una valutazione clinica.",
+  "cosa_fare_subito": "Somministrare un antipiretico se prescritto o consigliato in precedenza, monitorare la temperatura, mantenere il bambino idratato e contattare la guardia medica/continuità assistenziale se il pediatra non è reperibile.",
   "dove": "pronto_soccorso",
-  "motivazione": "Trattandosi di un paziente pediatrico con febbre e pediatra non reperibile, e non essendoci presidi territoriali geolocalizzati nel raggio utile, la scelta più indicata è il Pronto Soccorso pediatrico del Bambino Gesù (DEA II), situato a 10 minuti di distanza e con 1 sola persona in attesa. In caso di peggioramento delle condizioni generali o comparsa di segni di allarme, chiamare immediatamente il 118."
+  "motivazione": "Trattandosi di un bambino con febbre senza presidi territoriali disponibili nell'elenco fornito e in assenza del pediatra di base, la struttura ospedaliera pediatrica di riferimento più appropriata è il DEA II Bambino Gesù, che si trova a 10 minuti e ha attualmente solo 1 persona in attesa. In caso di peggioramento delle condizioni generali o comparsa di segni di allarme, contattare immediatamente il 118."
  },
  "9f0b6d66b99ca34558cf26490ac3e7e0": {
   "alternative": [
-   "Santo Spirito (DEA I, 10 min, 9 persone in attesa)",
-   "San Giovanni Addolorata (DEA II, 10 min, 12 persone in attesa)"
+   "Santo Spirito (DEA I, 10 minuti, 9 persone in attesa)",
+   "San Giovanni Addolorata (DEA II, 10 minuti, 12 persone in attesa)"
   ],
-  "cosa_fare_subito": "Applica ghiaccio sulla caviglia, tienila a riposo sollevata ed evita di caricarvi peso sopra.",
+  "cosa_fare_subito": "Applica ghiaccio, tieni l'arto a riposo e sollevato, evitando di caricare eccessivamente il peso.",
   "dove": "pronto_soccorso",
-  "motivazione": "Poiché non sono presenti presidi territoriali geolocalizzati nel raggio, il livello di assistenza adeguato per una valutazione ortopedica/radiologica è il Pronto Soccorso. La struttura più efficiente per un adulto tra quelle disponibili a pari distanza (10 minuti) è il San Giovanni Calibita-FBF (DEA I), che presenta la coda minore con sole 3 persone in attesa (il Bambino Gesù è un presidio pediatrico)."
+  "motivazione": "In assenza di presidi territoriali geolocalizzati nel raggio utile per una valutazione traumatologica con possibile radiografia, la struttura più indicata e meno affollata per adulti è il Pronto Soccorso San Giovanni Calibita-FBF (DEA I), situato a 10 minuti con sole 3 persone in attesa (il Bambino Gesù è un ospedale pediatrico). In caso di peggioramento o comparsa di sintomi gravi, chiama immediatamente il 118."
+ },
+ "1e41e3ff76e554105b91f9dc20fd498a": {
+  "azioni_operative": [
+   "Attivazione ARES 118 per instradamento dei nuovi accessi a bassa complessità verso il DEA I Sant'Eugenio.",
+   "Fast-track al triage del Santa Maria Goretti per smaltimento e rivalutazione dell'unico codice bianco/verde in attesa.",
+   "Allerta della centrale operativa 118 sul quadro meteo (30.2 °C percepiti, umidità 89%) per monitorare accessi da calore.",
+   "Monitoraggio telematico a 60 minuti dei tempi d'attesa e della pressione residua del Sant'Eugenio."
+  ],
+  "codici_coinvolti": [
+   "bianchi",
+   "verdi"
+  ],
+  "destinazioni": [
+   {
+    "nome": "Sant'Eugenio",
+    "perche": "DEA I geograficamente più prossimo verso Roma lungo la direttrice Pontina e dotato della maggiore capacità residua stimata (28.0 pazienti con soli 8 in attesa).",
+    "quota": 0
+   }
+  ],
+  "effetto_domino": "Nessun rischio di allarme indotto: la deviazione effettiva è nulla/minima a fronte di una capacità residua di 28.0 pazienti al Sant'Eugenio e 8 in attesa.",
+  "motivazione": "Il Santa Maria Goretti presenta sofferenza storica elevata (2.99), ma un solo paziente bianco/verde in attesa e un carico deviabile stimato frazionario (0.7 pazienti). Essendo i codici non frazionabili e pari a 0 l'intero deviabile senza superare la stima (0 < 0.7), la priorità è la gestione interna del singolo caso in attesa e l'instradamento preventivo dei nuovi flussi 118 su Sant'Eugenio.",
+  "quota_da_deviare": 0,
+  "urgenza": 2
+ },
+ "ac03e4e7211c5ec987fe05f33ab4e490": {
+  "codice": "giallo",
+  "dea_ii_richiesto": false,
+  "paziente_pediatrico": false,
+  "red_flags": [
+   "Forte dolore addominale acuto da tre ore in paziente anziana",
+   "Vomito associato con potenziale rischio di disidratazione o addome acuto"
+  ],
+  "sintesi": "Donna di 71 anni in zona Prenestina con forte dolore addominale insorto da tre ore associato a vomito. Quadro a rischio evolutivo che richiede tempestivo invio di mezzo di soccorso verso DEA di I livello.",
+  "sintomi": [
+   "forte dolore addominale da tre ore",
+   "vomito"
+  ]
+ },
+ "0ce80237770901ff71a27001442b9e24": {
+  "alternative": [
+   "CENTROLAB S.R.L. (struttura accreditata, Via dei Montecatini 6a-6b, 0.71 km)",
+   "medico_di_base"
+  ],
+  "cosa_fare_subito": "Misurare la temperatura corporea, assumere liquidi ed eventualmente un antipiretico di comune uso da banco per la febbre, consultando il farmacista.",
+  "dove": "farmacia",
+  "motivazione": "I sintomi descritti (tosse e febbre da due giorni con respiro normale) rappresentano una condizione a bassa intensità assistenziale non urgente, gestibile sul territorio senza sovraccaricare la rete d'emergenza. Recandosi alla farmacia LIPPI TULLIA (Via Arenula, 73, 0.65 km) si evitano i tempi di attesa del Pronto Soccorso, dove ci sono tra 4 e 9 persone in coda (ad esempio 5 persone in attesa al San Giovanni Calibita-FBF o 6 al Santo Spirito), ottenendo assistenza immediata. In caso di peggioramento o comparsa di difficoltà respiratoria, chiamare tempestivamente il 118."
+ },
+ "db558b84ce3a36796fbb6f28b57423fb": {
+  "azioni_preparatorie": [
+   "Mantenimento delle scorte ordinarie di soluzioni reidratanti e presidi nei Pronto Soccorso della rete regionale.",
+   "Monitoraggio standard dei flussi di accesso nei PS regionali per malori correlati al calore/afa moderata.",
+   "Allineamento operativo con il servizio 118 Lazio per la gestione ordinaria delle chiamate sul territorio.",
+   "Verifica dell'efficienza degli impianti di climatizzazione nelle sale d'attesa e nei reparti di degenza.",
+   "Diffusione di comunicazioni informative di base sull'idratazione attraverso i canali regionali istituzionali."
+  ],
+  "gruppi_vulnerabili": [
+   {
+    "gruppo": "Soggetti fragili e anziani con patologie croniche/cardiovascolari",
+    "perche": "L'umidità al 67% eleva la temperatura percepita a 30.1 °C, aumentando il disagio termico e il carico cardiocircolatorio."
+   },
+   {
+    "gruppo": "Soggetti con specifica e severa sensibilità all'ambrosia",
+    "perche": "Rilevata presenza isolata di pollini di ambrosia (1.3), benché le altre specie polliniche siano assenti."
+   }
+  ],
+  "messaggio_cittadini": "Le condizioni meteo e la qualità dell'aria nel Lazio sono complessivamente buone, con clima moderatamente afoso. Si consiglia agli anziani e alle persone fragili di bere regolarmente acqua ed evitare l'esposizione prolungata nelle ore centrali della giornata.",
+  "rischi": [
+   {
+    "effetto_atteso": "Lieve disagio termico e potenziale lieve incremento di accessi nei soggetti fragili per debolezza o disidratazione.",
+    "fenomeno": "Disagio bioclimatico da calore e umidità (T 26.8 °C, percepita 30.1 °C, umidità 67%)",
+    "severita": "lieve"
+   },
+   {
+    "effetto_atteso": "Possibili reazioni lievi e circoscritte solo in individui altamente sensibilizzati.",
+    "fenomeno": "Esposizione a pollini di ambrosia (1.3)",
+    "severita": "lieve"
+   },
+   {
+    "effetto_atteso": "Nessun impatto clinico o respiratorio significativo sulla popolazione generale.",
+    "fenomeno": "Qualità dell'aria (PM10 11.3 ug/m3, PM2.5 6.8 ug/m3, AQI 32)",
+    "severita": "nessuna"
+   }
+  ]
+ },
+ "722a07ef57bb253740b8a80f1c234083": {
+  "alternative": [
+   "Pol. Univ. Tor Vergata (DEA I)",
+   "Policlinico Casilino (DEA I)"
+  ],
+  "cosa_fare_subito": "Chiamare immediatamente il 118, applicare pressione diretta per arrestare l'emorragia e non muovere la persona.",
+  "dove": "118",
+  "motivazione": "La descrizione segnala una lesione gravissima con amputazione traumatica/ferita maggiore e rischio immediato di shock emorragico potenzialmente fatale, situazione di emergenza assoluta da gestire tramite soccorso avanzato 118 sul posto."
+ },
+ "9b993a2dfa681459fab580960a5a0ee1": {
+  "azioni_operative": [
+   "Allertare la CORES/ARES 118 per il re-routing dei mezzi di soccorso per codici a bassa priorita verso i presidi Sant'Eugenio e F. Spaziani.",
+   "Attivare il fast-track/ambulatorio a bassa intensita al Goretti per la gestione in loco dei restanti codici bianchi e verdi.",
+   "Notificare le direzioni sanitarie e i triage di Sant'Eugenio e Spaziani per la predisposizione all'accoglienza delle quote concordate.",
+   "Rivalutare gli indici di pressione e l'afflusso della rete a 60 minuti dall'avvio della deviazione."
+  ],
+  "codici_coinvolti": [
+   "bianchi",
+   "verdi"
+  ],
+  "destinazioni": [
+   {
+    "nome": "Sant'Eugenio",
+    "perche": "DEA I con ampia capacita residua stimata (84.4 pazienti), pressione favorevole (0.87) e collegamento strategico da Latina.",
+    "quota": 9
+   },
+   {
+    "nome": "F. Spaziani",
+    "perche": "DEA I geograficamente limitrofo nell'area sud (Frosinone), con capacita residua stimata di 45.5 pazienti, idoneo ad assorbire una quota moderata.",
+    "quota": 5
+   }
+  ],
+  "effetto_domino": "Nessuna delle due destinazioni rischia l'allarme: Sant'Eugenio assorbe 9 su 84.4 di capacita residua (pressione 0.87); Spaziani assorbe 5 su 45.5 di capacita residua rimanendo ampiamente sotto la soglia di allarme di 1.5.",
+  "motivazione": "Il presidio Goretti e in severo sovraccarico (pressione 1.68, oltre soglia 1.5; sofferenza storico 4.04). Con 20 codici bianchi e verdi in attesa e carico deviabile stimato di 14.8, deviare 14 pazienti a bassa complessita consente di decongestionare il PS recuperando fino a 46.5 ore-paziente senza saturare i presidi riceventi.",
+  "quota_da_deviare": 14,
+  "urgenza": 4
+ },
+ "b8990f6c7152c6f0430903c196e09afb": {
+  "azioni_operative": [
+   "Notificare alla Centrale Operativa ARES 118 il blocco/rallentamento dei flussi spontanei di bassa priorità verso Santa Maria Goretti.",
+   "Reindirizzare i nuovi accessi a bassa priorità (codici bianchi e verdi) via 118 verso l'Ospedale Sant'Eugenio (direttrice Pontina).",
+   "Attivare il fast-track/ambulatorio a bassa intensità presso Santa Maria Goretti per smaltire rapidamente l'unico codice bianco/verde in attesa.",
+   "Monitorare la tenuta dei tempi d'attesa e rivalutare i flussi della rete tra 60 minuti."
+  ],
+  "codici_coinvolti": [
+   "bianchi",
+   "verdi"
+  ],
+  "destinazioni": [
+   {
+    "nome": "Sant'Eugenio",
+    "perche": "Presidio geograficamente più prossimo sulla direttrice Roma Sud (Pontina) con la massima capacità residua stimata disponibile (25.4 pazienti) e solo 8 in attesa.",
+    "quota": 0
+   }
+  ],
+  "effetto_domino": "Nessun rischio di allarme o sovraccarico per il Sant'Eugenio: la capacità residua stimata è di 25.4 pazienti a fronte di soli 8 in attesa e una deviazione minima o nulla non altera minimamente l'equilibrio operativo del presidio.",
+  "motivazione": "Il presidio Santa Maria Goretti evidenzia una forte sofferenza rispetto al proprio storico (3.39), ma registra attualmente 13 pazienti (tutti e 13 in attesa) di cui solo 1 codice bianco/verde, con un carico deviabile stimato frazionario pari a 0.7 pazienti (ore-paziente recuperabili: 2.3). Essendo la quota da deviare un numero intero non superiore a 0.7, non è possibile deviare quote intere (quota = 0). L'intervento si concentra sul blocco dell'afflusso dei nuovi arrivi a bassa complessità verso Latina reindirizzandoli verso il Sant'Eugenio.",
+  "quota_da_deviare": 0,
+  "urgenza": 2
+ },
+ "dfc744cd3d40dc730cb240281af86140": {
+  "azioni_operative": [
+   "Attivare la deviazione ARES 118 per i codici a bassa intensita' (bianchi e verdi) afferenti all'area del Casilino verso Pertini e Umberto I.",
+   "Inviare notifica operativa ai triage di Sandro Pertini e Policlinico Umberto I sul carico previsto in arrivo.",
+   "Rimodulare le risorse di triage del Policlinico Casilino per velocizzare la presa in carico dei pazienti ad alta intensita' gia' presenti.",
+   "Monitorare entro 60 minuti i tempi di attesa e i volumi dei PS riceventi per verificare la tenuta della rete."
+  ],
+  "codici_coinvolti": [
+   "bianchi",
+   "verdi"
+  ],
+  "destinazioni": [
+   {
+    "nome": "Sandro Pertini",
+    "perche": "Presidio DEA I geograficamente limitrofo (quadrante est) con 12.9 posti di capacita' residua e solo 4 pazienti in attesa.",
+    "quota": 4
+   },
+   {
+    "nome": "Pol. Univ. Umberto I",
+    "perche": "Hub DEA II vicino all'area est/centro-est con ampia capacita' residua (23.6 pazienti) e soli 3 pazienti in attesa.",
+    "quota": 2
+   }
+  ],
+  "effetto_domino": "Nessuna destinazione rischia l'allarme: Pertini assorbe 4 pazienti su 12.9 di capacita' residua (4 in attesa attuali) e Umberto I assorbe 2 pazienti su 23.6 di capacita' residua (3 in attesa attuali), rimanendo entrambi ampiamente sotto soglia.",
+  "motivazione": "Il Policlinico Casilino presenta 32 pazienti presenti tutti in attesa, di cui 8 codici bianchi/verdi e un carico deviabile di 6.9 pazienti (20.8 ore-paziente recuperabili). Si propone la deviazione di 6 codici a bassa priorita' verso presidi contigui e con elevata capacita' residua.",
+  "quota_da_deviare": 6,
+  "urgenza": 2
+ },
+ "c80761b540b0017296b241513bd04c09": {
+  "codice": "verde",
+  "dea_ii_richiesto": false,
+  "paziente_pediatrico": false,
+  "red_flags": [
+   "possibile emorragia non controllata",
+   "lesioni a tendini o vasi profondi"
+  ],
+  "sintesi": "Uomo di 55 anni cosciente con ferita da taglio profonda e sanguinante alla mano in zona Casilina. Condizioni emodinamiche apparentemente stabili, urgenza differibile con indicazione a PS/DEA di I livello.",
+  "sintomi": [
+   "taglio profondo alla mano",
+   "sanguinamento"
+  ]
+ },
+ "4b16c1fb68b23cb536b58e2d436021c1": {
+  "azioni_operative": [
+   "ARES 118: attivare il reindirizzamento dei mezzi di soccorso di base con codici a bassa priorità verso le strutture individuate.",
+   "Triage Casilino: informare i pazienti deambulanti in codice bianco/verde sui tempi di attesa e proporre il reindirizzamento volontario.",
+   "Coordinamento di rete: monitorare i flussi in tempo reale verso Sant'Eugenio e Sandro Pertini verificando la tenuta delle sale d'attesa.",
+   "Centrale Operativa: rivalutare la distribuzione del carico dopo 60 minuti dall'avvio della deviazione."
+  ],
+  "codici_coinvolti": [
+   "bianchi",
+   "verdi"
+  ],
+  "destinazioni": [
+   {
+    "nome": "Sant'Eugenio",
+    "perche": "Ampia capacità residua disponibile (30.3 pazienti) e solo 7 pazienti attualmente in attesa.",
+    "quota": 16
+   },
+   {
+    "nome": "Sandro Pertini",
+    "perche": "Prossimità territoriale nel quadrante est/nord-est per assorbire una quota contenuta entro la capacità residua (11.3).",
+    "quota": 8
+   }
+  ],
+  "effetto_domino": "Rischio di saturazione o allarme nullo/basso per le destinazioni: la quota assegnata a Sant'Eugenio (16 su 30.3) e al Sandro Pertini (8 su 11.3) è ampiamente entro le rispettive capacità residue, non inducendo allarmi a catena.",
+  "motivazione": "Il Policlinico Casilino presenta 32 pazienti presenti tutti in attesa, di cui 29 codici bianchi e verdi, con un carico deviabile stimato di 24.8 pazienti. Per alleggerire la pressione e recuperare circa 75.2 ore-paziente senza sovraccaricare la rete, si devia una quota intera di 24 pazienti verso Sant'Eugenio e Sandro Pertini.",
+  "quota_da_deviare": 24,
+  "urgenza": 3
+ },
+ "32bc6bd2678c05e2b0026200e92728cd": {
+  "alternative": [
+   "SAN GIACOMO SNC DI TOMADINI GIUSEPPINA (farmacia), Via del Corso, 498, 0.66 km",
+   "CENTROLAB S.R.L. (struttura accreditata), Via dei Montecatini 6a-6b, 0.71 km",
+   "Medico di medicina generale"
+  ],
+  "cosa_fare_subito": "Recarsi presso la farmacia per un primo consulto farmaceutico o contattare il proprio medico di medicina generale.",
+  "dove": "farmacia",
+  "motivazione": "Sintomo a bassa intensità e non urgente presente da tre giorni: il livello di assistenza appropriato è territoriale. Rivolgersi alla farmacia LIPPI TULLIA (Via Arenula, 73, distante 0.65 km) consente di ottenere assistenza immediata, evitando di attendere dietro alle 6 persone in coda al San Giovanni Calibita-FBF o alle 9 persone al San Giovanni Addolorata per un codice a bassa priorità. In caso di peggioramento improvviso dei sintomi o difficoltà respiratorie, chiamare immediatamente il 118."
+ },
+ "3391a4d3fce2decec9ce23efa0134b64": {
+  "azioni_operative": [
+   "Allertare la centrale operativa ARES 118 per il re-routing delle nuove ambulanze a bassa priorita (codici bianchi e verdi) verso Madre G. Vannini e Sant'Eugenio.",
+   "Attivare al triage del Policlinico Casilino il protocollo di fast-track e orientamento dei codici bianchi/verdi deambulanti verso presidi alternativi di prossimita o cure primarie territoriali.",
+   "Istituire un monitoraggio a 60 minuti dei volumi di accesso e della pressione presso Madre G. Vannini e Sant'Eugenio per verificare l'assorbimento del flusso.",
+   "Rimodulare i turni del personale di supporto e accelerare le dimissioni/trasferimenti dei pazienti gia processati in area di degenza del Policlinico Casilino per liberare 75.2 ore-paziente."
+  ],
+  "codici_coinvolti": [
+   "bianchi",
+   "verdi"
+  ],
+  "destinazioni": [
+   {
+    "nome": "Madre G. Vannini",
+    "perche": "Presidio territorialmente piu prossimo al Casilino (Roma Est), con indice di pressione molto basso (0.33) e capienza residua di 72.1 pazienti (7 in attesa).",
+    "quota": 16
+   },
+   {
+    "nome": "Sant'Eugenio",
+    "perche": "DEA I su quadrante accessibile, con ampia capacita residua stimata (84.4 pazienti), pressione 0.87 e soli 5 pazienti in attesa.",
+    "quota": 8
+   }
+  ],
+  "effetto_domino": "Nessuna destinazione rischia di finire a sua volta in allarme. L'incremento di 16 pazienti su Madre G. Vannini (pressione 0.33, capacita residua 72.1) e di 8 pazienti su Sant'Eugenio (pressione 0.87, capacita residua 84.4) rimane ampiamente all'interno dei margini di sicurezza e ben al di sotto della soglia critica di 1.5.",
+  "motivazione": "Il Policlinico Casilino presenta un indice di pressione critico di 1.74 (oltre la soglia 1.5) e una sofferenza storica di 2.41 con 32 pazienti in attesa, di cui 29 bianchi e verdi. Per decongestionare il presidio e recuperare 75.2 ore-paziente senza compromettere la rete, si deviano 24 pazienti di bassa intensita (entro il limite stimato di 24.8) prioritariamente verso l'Ospedale Madre G. Vannini per vicinanza e minima saturazione, integrando con il Sant'Eugenio per il carico residuo.",
+  "quota_da_deviare": 24,
+  "urgenza": 4
+ },
+ "bbda82d241a34e5b46e710afff46d19e": {
+  "azioni_preparatorie": [
+   "Monitoraggio ordinario dei flussi di accesso ai Pronto Soccorso della rete regionale per sintomi correlati a disagio termico o afa.",
+   "Verifica e mantenimento delle scorte di soluzioni reidratanti ed elettroliti sui mezzi di soccorso ARES 118 e nei DEA.",
+   "Controllo dell'adeguato funzionamento degli impianti di climatizzazione e deumidificazione nelle sale d'attesa e nei reparti di degenza.",
+   "Comunicazione di vigilanza preventiva alle RSA e strutture sociosanitarie del territorio per l'idratazione degli ospiti e il microclima interno.",
+   "Presidio delle linee ordinarie di coordinamento tra centrale operativa 118 e direzioni sanitarie ospedaliere senza necessita' di incremento straordinario del personale."
+  ],
+  "gruppi_vulnerabili": [
+   {
+    "gruppo": "Anziani fragili e pazienti con patologie croniche cardiovascolari",
+    "perche": "L'elevata umidita' (77%) unita a una temperatura percepita di 29.2 C ostacola la termoregolazione per evaporazione, aumentando l'affaticamento cardiocircolatorio."
+   },
+   {
+    "gruppo": "Bambini nella prima infanzia",
+    "perche": "I sistemi di termoregolazione dei piu' piccoli sono piu' sensibili alle condizioni afose e all'umidita' elevata."
+   }
+  ],
+  "messaggio_cittadini": "Le condizioni meteo attuali presentano una temperatura gradevole ma con elevata umidita' che aumenta la percezione del caldo. Si raccomanda di bere regolarmente acqua, favorire il ricambio d'aria nei locali ed evitare sforzi prolungati nelle ore centrali per anziani e bambini.",
+  "rischi": [
+   {
+    "effetto_atteso": "L'umidita' elevata al 77% con temperatura misurata a 25.7 C porta la percepita a 29.2 C, generando una sensazione di afa e modesto disagio termico, senza quadri di colpo di calore acuto.",
+    "fenomeno": "Disagio termico da afa ed elevata umidita'",
+    "severita": "lieve"
+   },
+   {
+    "effetto_atteso": "AQI pari a 31, con PM10 a 12.1 ug/m3 e PM2.5 a 7.6 ug/m3; parametri ampiamente nei limiti, nessun impatto negativo atteso sulle vie respiratorie.",
+    "fenomeno": "Inquinamento atmosferico",
+    "severita": "nessuna"
+   },
+   {
+    "effetto_atteso": "Concentrazioni assenti per quasi tutte le specie e trascurabili per ambrosia (0.2), nessun incremento atteso di accessi per reazioni allergiche acute.",
+    "fenomeno": "Carico pollinico e allergenico",
+    "severita": "nessuna"
+   }
+  ]
  }
 }

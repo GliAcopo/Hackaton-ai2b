@@ -1,0 +1,394 @@
+{
+ "13400": {
+  "psid": "PS000000000000000038",
+  "nome_live": "Pronto Soccorso Sant'Anna",
+  "km_dal_nostro_punto": 9.619,
+  "lat_live": 41.7582585,
+  "lon_live": 12.5060185,
+  "coordinata_live_affidabile": false
+ },
+ "5100": {
+  "psid": "PS000000000000000029",
+  "nome_live": "Pronto Soccorso Palestrina",
+  "km_dal_nostro_punto": 0.005,
+  "lat_live": 41.8364623,
+  "lon_live": 12.8862652,
+  "coordinata_live_affidabile": true
+ },
+ "3000": {
+  "psid": "PS000000000000000026",
+  "nome_live": "Pronto Soccorso Oftalmico",
+  "km_dal_nostro_punto": 0.009,
+  "lat_live": 41.9081302,
+  "lon_live": 12.4485703,
+  "coordinata_live_affidabile": true
+ },
+ "5200": {
+  "psid": "PS000000000000000042",
+  "nome_live": "Pronto Soccorso Subiaco",
+  "km_dal_nostro_punto": 0.011,
+  "lat_live": 41.9322937,
+  "lon_live": 13.0863671,
+  "coordinata_live_affidabile": true
+ },
+ "7400": {
+  "psid": "PS000000000000000012",
+  "nome_live": "Pronto Soccorso Cristo Re",
+  "km_dal_nostro_punto": 0.019,
+  "lat_live": 41.918295,
+  "lon_live": 12.4209644,
+  "coordinata_live_affidabile": true
+ },
+ "91500": {
+  "psid": "PS000000000000000052",
+  "nome_live": "Pronto Soccorso Campus Bio-Medico",
+  "km_dal_nostro_punto": 0.019,
+  "lat_live": 41.7713633,
+  "lon_live": 12.4672569,
+  "coordinata_live_affidabile": true
+ },
+ "2601": {
+  "psid": "PS000000000000000040",
+  "nome_live": "Pronto Soccorso Santo Spirito",
+  "km_dal_nostro_punto": 0.021,
+  "lat_live": 41.9011483,
+  "lon_live": 12.4627747,
+  "coordinata_live_affidabile": true
+ },
+ "4500": {
+  "psid": "PS000000000000000010",
+  "nome_live": "Pronto Soccorso Civitavecchia",
+  "km_dal_nostro_punto": 0.023,
+  "lat_live": 42.0983614,
+  "lon_live": 11.8097145,
+  "coordinata_live_affidabile": true
+ },
+ "90401": {
+  "psid": "PS000000000000000053",
+  "nome_live": "Pronto Soccorso Bambino Gesù Roma",
+  "km_dal_nostro_punto": 0.029,
+  "lat_live": 41.8971475,
+  "lon_live": 12.4610411,
+  "coordinata_live_affidabile": true
+ },
+ "4700": {
+  "psid": "PS000000000000000017",
+  "nome_live": "Pronto Soccorso Frascati",
+  "km_dal_nostro_punto": 0.032,
+  "lat_live": 41.8091291,
+  "lon_live": 12.6757086,
+  "coordinata_live_affidabile": true
+ },
+ "4900": {
+  "psid": "PS000000000000000022",
+  "nome_live": "Pronto Soccorso Monterotondo",
+  "km_dal_nostro_punto": 0.032,
+  "lat_live": 42.0505242,
+  "lon_live": 12.6210614,
+  "coordinata_live_affidabile": true
+ },
+ "7300": {
+  "psid": "PS000000000000000056",
+  "nome_live": "Pronto Soccorso San Carlo di Nancy",
+  "km_dal_nostro_punto": 0.035,
+  "lat_live": 41.8977938,
+  "lon_live": 12.4390037,
+  "coordinata_live_affidabile": true
+ },
+ "5900": {
+  "psid": "PS000000000000000005",
+  "nome_live": "Pronto Soccorso Bracciano",
+  "km_dal_nostro_punto": 0.038,
+  "lat_live": 42.0965166,
+  "lon_live": 12.1729057,
+  "coordinata_live_affidabile": true
+ },
+ "20402": {
+  "psid": "PS000000000000000015",
+  "nome_live": "Pronto Soccorso Fondi",
+  "km_dal_nostro_punto": 0.038,
+  "lat_live": 41.3615981,
+  "lon_live": 13.4151467,
+  "coordinata_live_affidabile": true
+ },
+ "1901": {
+  "psid": "PS000000000000000032",
+  "nome_live": "Pronto Soccorso Rieti",
+  "km_dal_nostro_punto": 0.044,
+  "lat_live": 42.422921,
+  "lon_live": 12.9078822,
+  "coordinata_live_affidabile": true
+ },
+ "90402": {
+  "psid": "PS000000000000000054",
+  "nome_live": "Pronto Soccorso Bambino Gesù Palidoro",
+  "km_dal_nostro_punto": 0.044,
+  "lat_live": 41.9194097,
+  "lon_live": 12.1421899,
+  "coordinata_live_affidabile": true
+ },
+ "18000": {
+  "psid": "PS000000000000000051",
+  "nome_live": "Pronto Soccorso Aurelia Hospital",
+  "km_dal_nostro_punto": 0.055,
+  "lat_live": 41.8875674,
+  "lon_live": 12.3983542,
+  "coordinata_live_affidabile": true
+ },
+ "91900": {
+  "psid": "PS000000000000000037",
+  "nome_live": "Pronto Soccorso Sant'Andrea",
+  "km_dal_nostro_punto": 0.056,
+  "lat_live": 41.9828379,
+  "lon_live": 12.4697854,
+  "coordinata_live_affidabile": true
+ },
+ "21500": {
+  "psid": "PS000000000000000004",
+  "nome_live": "Pronto Soccorso Aprilia",
+  "km_dal_nostro_punto": 0.058,
+  "lat_live": 41.5875282,
+  "lon_live": 12.647813,
+  "coordinata_live_affidabile": true
+ },
+ "90100": {
+  "psid": "PS000000000000000033",
+  "nome_live": "Pronto Soccorso San Camillo",
+  "km_dal_nostro_punto": 0.059,
+  "lat_live": 41.8695741,
+  "lon_live": 12.4552897,
+  "coordinata_live_affidabile": true
+ },
+ "28501": {
+  "psid": "PS000000000000000034",
+  "nome_live": "Pronto Soccorso San Filippo Neri",
+  "km_dal_nostro_punto": 0.061,
+  "lat_live": 41.9482314,
+  "lon_live": 12.4139639,
+  "coordinata_live_affidabile": true
+ },
+ "20600": {
+  "psid": "PS000000000000000016",
+  "nome_live": "Pronto Soccorso Formia",
+  "km_dal_nostro_punto": 0.062,
+  "lat_live": 41.2615954,
+  "lon_live": 13.6175838,
+  "coordinata_live_affidabile": true
+ },
+ "7600": {
+  "psid": "PS000000000000000047",
+  "nome_live": "Pronto Soccorso Vannini",
+  "km_dal_nostro_punto": 0.063,
+  "lat_live": 41.8815391,
+  "lon_live": 12.5433219,
+  "coordinata_live_affidabile": true
+ },
+ "4300": {
+  "psid": "PS000000000000000003",
+  "nome_live": "Pronto Soccorso Anzio",
+  "km_dal_nostro_punto": 0.063,
+  "lat_live": 41.4610726,
+  "lon_live": 12.6365105,
+  "coordinata_live_affidabile": true
+ },
+ "7100": {
+  "psid": "PS000000000000000036",
+  "nome_live": "Pronto Soccorso San Pietro",
+  "km_dal_nostro_punto": 0.069,
+  "lat_live": 41.9646956,
+  "lon_live": 12.4515569,
+  "coordinata_live_affidabile": true
+ },
+ "22600": {
+  "psid": "PS000000000000000041",
+  "nome_live": "Pronto Soccorso Sora",
+  "km_dal_nostro_punto": 0.072,
+  "lat_live": 41.7302798,
+  "lon_live": 13.636644,
+  "coordinata_live_affidabile": true
+ },
+ "200": {
+  "psid": "PS000000000000000001",
+  "nome_live": "Pronto Soccorso Acquapendente",
+  "km_dal_nostro_punto": 0.083,
+  "lat_live": 42.7463797,
+  "lon_live": 11.8646308,
+  "coordinata_live_affidabile": true
+ },
+ "5300": {
+  "psid": "PS000000000000000045",
+  "nome_live": "Pronto Soccorso Tivoli",
+  "km_dal_nostro_punto": 0.088,
+  "lat_live": 41.9606414,
+  "lon_live": 12.8025554,
+  "coordinata_live_affidabile": true
+ },
+ "29200": {
+  "psid": "PS000000000000000008",
+  "nome_live": "Pronto Soccorso Castelli",
+  "km_dal_nostro_punto": 0.104,
+  "lat_live": 41.6771327,
+  "lon_live": 12.6470031,
+  "coordinata_live_affidabile": true
+ },
+ "29400": {
+  "psid": "PS000000000000000006",
+  "nome_live": "Pronto Soccorso Casilino",
+  "km_dal_nostro_punto": 0.126,
+  "lat_live": 41.8696257,
+  "lon_live": 12.5903912,
+  "coordinata_live_affidabile": true
+ },
+ "6601": {
+  "psid": "PS000000000000000039",
+  "nome_live": "Pronto Soccorso Sant'Eugenio",
+  "km_dal_nostro_punto": 0.141,
+  "lat_live": 41.8222377,
+  "lon_live": 12.473322,
+  "coordinata_live_affidabile": true
+ },
+ "90600": {
+  "psid": "PS000000000000000046",
+  "nome_live": "Pronto Soccorso Umberto I",
+  "km_dal_nostro_punto": 0.143,
+  "lat_live": 41.9070541,
+  "lon_live": 12.5105901,
+  "coordinata_live_affidabile": true
+ },
+ "90501": {
+  "psid": "PS000000000000000055",
+  "nome_live": "Pronto Soccorso Policlinico Gemelli",
+  "km_dal_nostro_punto": 0.151,
+  "lat_live": 41.9308232,
+  "lon_live": 12.430993,
+  "coordinata_live_affidabile": true
+ },
+ "26700": {
+  "psid": "PS000000000000000030",
+  "nome_live": "Pronto Soccorso Pertini",
+  "km_dal_nostro_punto": 0.187,
+  "lat_live": 41.9207122,
+  "lon_live": 12.5381021,
+  "coordinata_live_affidabile": true
+ },
+ "700": {
+  "psid": "PS000000000000000043",
+  "nome_live": "Pronto Soccorso Tarquinia",
+  "km_dal_nostro_punto": 0.189,
+  "lat_live": 42.2500742,
+  "lon_live": 11.7593749,
+  "coordinata_live_affidabile": true
+ },
+ "21601": {
+  "psid": "PS000000000000000018",
+  "nome_live": "Pronto Soccorso Frosinone",
+  "km_dal_nostro_punto": 0.282,
+  "lat_live": 41.6391734,
+  "lon_live": 13.3260878,
+  "coordinata_live_affidabile": true
+ },
+ "5400": {
+  "psid": "PS000000000000000048",
+  "nome_live": "Pronto Soccorso Velletri",
+  "km_dal_nostro_punto": 0.284,
+  "lat_live": 41.6877274,
+  "lon_live": 12.7812812,
+  "coordinata_live_affidabile": true
+ },
+ "27100": {
+  "psid": "PS000000000000000049",
+  "nome_live": "Pronto Soccorso Viterbo",
+  "km_dal_nostro_punto": 0.289,
+  "lat_live": 42.3926815,
+  "lon_live": 12.1235566,
+  "coordinata_live_affidabile": true
+ },
+ "90200": {
+  "psid": "PS000000000000000035",
+  "nome_live": "Pronto Soccorso San Giovanni Add.",
+  "km_dal_nostro_punto": 0.431,
+  "lat_live": 41.8873211,
+  "lon_live": 12.5030344,
+  "coordinata_live_affidabile": true
+ },
+ "20000": {
+  "psid": "PS000000000000000021",
+  "nome_live": "Pronto Soccorso Latina",
+  "km_dal_nostro_punto": 1.171,
+  "lat_live": 41.4626301,
+  "lon_live": 12.908977,
+  "coordinata_live_affidabile": true
+ },
+ "4600": {
+  "psid": "PS000000000000000011",
+  "nome_live": "Pronto Soccorso Colleferro",
+  "km_dal_nostro_punto": 1.172,
+  "lat_live": 41.7283744,
+  "lon_live": 13.0046554,
+  "coordinata_live_affidabile": true
+ },
+ "20401": {
+  "psid": "PS000000000000000044",
+  "nome_live": "Pronto Soccorso Terracina",
+  "km_dal_nostro_punto": 1.319,
+  "lat_live": 41.2988785,
+  "lon_live": 13.2326163,
+  "coordinata_live_affidabile": true
+ },
+ "21602": {
+  "psid": "PS000000000000000002",
+  "nome_live": "Pronto Soccorso Alatri",
+  "km_dal_nostro_punto": 1.428,
+  "lat_live": 41.73784,
+  "lon_live": 13.3344305,
+  "coordinata_live_affidabile": true
+ },
+ "22800": {
+  "psid": "PS000000000000000007",
+  "nome_live": "Pronto Soccorso Cassino",
+  "km_dal_nostro_punto": 1.636,
+  "lat_live": 41.5062125,
+  "lon_live": 13.8429717,
+  "coordinata_live_affidabile": true
+ },
+ "7200": {
+  "psid": "PS000000000000000020",
+  "nome_live": "Pronto Soccorso Isola Tiberina",
+  "km_dal_nostro_punto": 0.017,
+  "lat_live": 41.891061,
+  "lon_live": 12.4769188,
+  "coordinata_live_affidabile": true
+ },
+ "300": {
+  "psid": "PS000000000000000009",
+  "nome_live": "Pronto Soccorso Civita Castellana",
+  "km_dal_nostro_punto": 0.063,
+  "lat_live": 42.2903073,
+  "lon_live": 12.4199153,
+  "coordinata_live_affidabile": true
+ },
+ "92000": {
+  "psid": "PS000000000000000031",
+  "nome_live": "Pronto Soccorso PTV",
+  "km_dal_nostro_punto": 0.08,
+  "lat_live": 41.8570305,
+  "lon_live": 12.6315237,
+  "coordinata_live_affidabile": true
+ },
+ "6602": {
+  "psid": "PS000000000000000013",
+  "nome_live": "Pronto Soccorso CTO",
+  "km_dal_nostro_punto": 0.11,
+  "lat_live": 41.8586956,
+  "lon_live": 12.4861993,
+  "coordinata_live_affidabile": true
+ },
+ "6100": {
+  "psid": "PS000000000000000028",
+  "nome_live": "Pronto Soccorso Ostia",
+  "km_dal_nostro_punto": 0.133,
+  "lat_live": 41.7293901,
+  "lon_live": 12.2994407,
+  "coordinata_live_affidabile": true
+ }
+}

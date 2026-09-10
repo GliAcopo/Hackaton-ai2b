@@ -104,6 +104,17 @@ class Indici:
     atteso_pesato: float | None = None
     peso_medio: float | None = None
 
+    # L'attesa effettivamente usata per la sofferenza, e da dove viene.
+    # Con lo snapshot e' stimata dalla coda; con il feed live e' il tempo medio
+    # PUBBLICATO dalla Regione. Il numero cambia significato, quindi si dichiara.
+    attesa_h: float | None = None
+    attesa_misurata: bool = False
+    attesa_storica_h: float | None = None   # mediana storica di quel presidio
+
+    # La fonte non ha dato niente per questo presidio: i suoi zeri non sono
+    # misure. Non ordinabile, non proponibile come destinazione.
+    senza_dato: bool = False
+
     # --- calibrazione sulla rete (riempita da rete(), vedi nota sotto) ---
     pressione_relativa: float | None = None   # 1.0 = come il resto della rete ora
     sofferenza_relativa: float | None = None
@@ -123,6 +134,8 @@ def calcola(s: StatoPS) -> Indici:
     """
     note: list[str] = []
     st = s.storico or {}
+    if not s.dato_disponibile:
+        note.append(s.nota_fonte or "nessun dato dalla fonte per questo presidio")
     carico = _carico_pesato(s)
 
     accessi = st.get("accessi_anno")
@@ -138,7 +151,13 @@ def calcola(s: StatoPS) -> Indici:
     pressione = None
     atteso_pesato = None
     peso_medio = None
-    if accessi and permanenza:
+    if not s.ha_presenti:
+        # Fonte live: pubblica solo la coda. Senza chi e' gia' in trattamento
+        # o in osservazione, il numeratore dell'occupazione non esiste.
+        # Calcolarla lo stesso darebbe un numero piccolo e falso per tutti.
+        note.append("fonte live: chi e' gia' dentro non e' pubblicato, "
+                    "pressione non calcolabile")
+    elif accessi and permanenza:
         occupazione = (accessi / ORE_ANNO) * permanenza
         peso_medio = _peso_medio_storico(st)
         if occupazione > 0 and peso_medio:
@@ -157,14 +176,25 @@ def calcola(s: StatoPS) -> Indici:
     throughput = None
     attesa_implicita = None
     sofferenza = None
+    attesa_usata = None
+    misurata = False
     if accessi:
         throughput = accessi / ORE_ANNO
         if throughput > 0:
             attesa_implicita = s.tot_attesa / throughput
-            if attesa_storica and attesa_storica > 0:
-                sofferenza = attesa_implicita / attesa_storica
-            else:
-                note.append("attesa mediana storica assente")
+    # Se la fonte pubblica il tempo di attesa vero, quello vince sulla stima:
+    # non e' un miglioramento cosmetico, e' la differenza fra "quanto ci
+    # metterebbe a smaltire questa coda al suo ritmo medio" e "quanto sta
+    # aspettando davvero la gente che e' li' adesso".
+    if s.attesa_media_h is not None:
+        attesa_usata, misurata = s.attesa_media_h, True
+    elif attesa_implicita is not None:
+        attesa_usata = attesa_implicita
+    if attesa_usata is not None:
+        if attesa_storica and attesa_storica > 0:
+            sofferenza = attesa_usata / attesa_storica
+        else:
+            note.append("attesa mediana storica assente")
 
     # --- Deviabilita' -------------------------------------------------------
     # I codici a bassa intensita' gia' in attesa sono il bacino teorico.
@@ -197,10 +227,14 @@ def calcola(s: StatoPS) -> Indici:
         throughput_h=round(throughput, 2) if throughput else None,
         attesa_implicita_h=round(attesa_implicita, 2) if attesa_implicita is not None else None,
         sofferenza=round(sofferenza, 2) if sofferenza else None,
+        attesa_h=round(attesa_usata, 2) if attesa_usata is not None else None,
+        attesa_misurata=misurata,
+        attesa_storica_h=attesa_storica,
         deviabili_osservati=deviabili,
         quota_strutturale=round(quota, 3) if quota else None,
         carico_deviabile=round(carico_deviabile, 1) if carico_deviabile is not None else None,
         ore_paziente_recuperabili=round(ore_paziente, 1) if ore_paziente is not None else None,
+        senza_dato=not s.dato_disponibile,
         in_allarme=False,   # deciso da rete(), serve la mediana della rete
         note=note,
     )
@@ -252,6 +286,18 @@ def _calibra(tutti: list[Indici],
                 i.posti_residui = round(max(0.0, (tetto - i.carico_pesato) / i.peso_medio), 1)
         if i.sofferenza and med_s:
             i.sofferenza_relativa = round(i.sofferenza / med_s, 2)
+        if (i.posti_residui is None and not i.senza_dato
+                and med_s and i.throughput_h and i.attesa_storica_h):
+            # Fonte live: senza occupazione non c'e' capacita' residua per
+            # posti. Si ripiega su quella della CODA: quante persone possono
+            # ancora mettersi in fila prima che l'attesa qui valga una volta e
+            # mezza la mediana della rete. E' una grandezza diversa da quella
+            # dello snapshot - stessa domanda, altro lato del pronto soccorso -
+            # e per questo resta dichiarata nelle note.
+            coda_max = (SOGLIA_SOFFERENZA * med_s * i.attesa_storica_h
+                        * i.throughput_h)
+            i.posti_residui = round(max(0.0, coda_max - i.in_attesa), 1)
+            i.note = (i.note or []) + ["capacita' residua stimata sulla coda"]
         i.in_allarme = bool(
             (i.pressione_relativa or 0) >= SOGLIA_PRESSIONE
             or (i.sofferenza_relativa or 0) >= SOGLIA_SOFFERENZA
@@ -270,8 +316,8 @@ ORDINAMENTI = {
 }
 
 
-def rete(ordine: str = "pressione") -> tuple[list[Indici], dict]:
-    stati, meta = stato_rete()
+def rete(ordine: str = "pressione", fonte: str = "snapshot") -> tuple[list[Indici], dict]:
+    stati, meta = stato_rete(fonte)
     calcolati = [calcola(s) for s in stati]
     _calibra(calcolati)
     etichetta, campo = ORDINAMENTI.get(ordine, ORDINAMENTI["pressione"])

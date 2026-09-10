@@ -43,6 +43,14 @@ REGISTRO = RADICE / "3-docs" / "decisioni.jsonl"
 # nessun backend viene interpellato, si risponde solo da cache.
 SOLO_CACHE = os.environ.get("LLM_SOLO_CACHE", "") == "1"
 
+# Lo specchio esatto di SOLO_CACHE: con LLM_LIVE=1 (o `--live` sulla riga di
+# comando) la cache NON viene letta e il modello risponde davvero, ogni volta.
+# Serve a due cose diverse: provare che il sistema funziona anche senza niente
+# di precalcolato, e rigenerare risposte diventate vecchie.
+# La cache viene comunque SCRITTA: una passata live lascia la demo pronta a
+# girare offline subito dopo, che e' esattamente quello che serve al freeze.
+LIVE = os.environ.get("LLM_LIVE", "") == "1"
+
 
 class LLMError(RuntimeError):
     pass
@@ -213,7 +221,7 @@ def complete_json(prompt: str, schema: dict, system: str = "") -> dict:
     """
     chiave = _chiave(prompt, schema, system)
     cache = _leggi_cache()
-    if chiave in cache:
+    if chiave in cache and not LIVE:
         return cache[chiave]
     if SOLO_CACHE:
         raise LLMError("LLM_SOLO_CACHE=1 e la risposta non e' in cache")
@@ -254,7 +262,10 @@ def health() -> str:
         righe.append(f"{ok} ollama model={OLLAMA_MODEL} disponibili={len(nomi)}")
     except Exception as exc:  # noqa: BLE001
         righe.append(f"KO  ollama non raggiungibile ({exc})")
-    righe.append(f"--  cache: {len(_leggi_cache())} risposte memorizzate")
+    modo = ("LIVE (cache ignorata in lettura)" if LIVE
+            else "SOLO CACHE (nessun backend)" if SOLO_CACHE
+            else "cache, poi modello")
+    righe.append(f"--  cache: {len(_leggi_cache())} risposte memorizzate  [{modo}]")
     righe.append(f"--  backend primario: {BACKEND}")
     return "\n".join(righe)
 

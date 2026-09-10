@@ -256,6 +256,11 @@
       </div>
       <div id="rete-meta" class="meta-bar"></div>
       <div class="rete-controls">
+        <label for="fonte-select">Fonte:</label>
+        <select id="fonte-select">
+          <option value="snapshot">Open data (snapshot 15/07/2021)</option>
+          <option value="live">Tempo reale (API Salute Lazio)</option>
+        </select>
         <label for="ordine-select">Ordina per:</label>
         <select id="ordine-select"></select>
         <span id="rete-stato-caricamento"></span>
@@ -267,7 +272,9 @@
           <table>
             <thead>
               <tr>
-                <th>Presidio</th><th>Tipo</th><th>Pressione<br><small>× mediana rete</small></th><th>Sofferenza<br><small>× mediana rete</small></th>
+                <th>Presidio</th><th>Tipo</th>
+                <th><span id="col-guida">Pressione</span><br><small>× mediana rete</small></th>
+                <th><span id="col-seconda">Sofferenza</span><br><small><span id="col-seconda-sub">× mediana rete</span></small></th>
                 <th>In attesa</th><th>Carico deviabile</th>
               </tr>
             </thead>
@@ -333,7 +340,7 @@
 
 </main>
 
-<footer>REGIA — cruscotto dimostrativo. I dati di rete provengono da uno snapshot regionale, non dal tempo reale.</footer>
+<footer id="piede">REGIA — cruscotto dimostrativo.</footer>
 
 <script src="vendor/leaflet.js"></script>
 <script>
@@ -379,9 +386,28 @@ async function chiamaApi(percorso){
   return dati;
 }
 
+// Sorgente dei dati scelta nell'interfaccia. Vive qui e non dentro la vista
+// Rete perche' la useranno anche gli altri due tab: la centrale 118 e il
+// cittadino devono vedere la stessa rete che vede la cabina di regia.
+const FONTE = {
+  valore: "snapshot",
+  corrente(){ return this.valore; },
+  init(alCambio){
+    const sel = document.getElementById("fonte-select");
+    if (!sel) return;
+    sel.value = this.valore;
+    sel.addEventListener("change", () => { this.valore = sel.value; alCambio(); });
+  },
+};
+
 function metaBarHtml(meta){
   if (!meta) return "";
   let html = `<span>Fonte: <strong>${esc(meta.fonte)}</strong> — rilevazione del ${fmtDataOra(meta.rilevato_il)}</span>`;
+  // Se il feed live non ha risposto, si mostra l'ultima lettura riuscita: va
+  // detto, altrimenti un numero vecchio si spaccia per attuale.
+  if (meta.da_cache) html += `<span class="pill pill-warn">ultima lettura disponibile: la fonte non ha risposto ora</span>`;
+  if (meta.senza_dato_live && meta.senza_dato_live.length)
+    html += `<span class="pill">${meta.senza_dato_live.length} presidi non trasmettono: ${esc(meta.senza_dato_live.join(", "))}</span>`;
   if (meta.avviso) html += `<span class="meta-avviso">⚠ ${esc(meta.avviso)}</span>`;
   return html;
 }
@@ -441,13 +467,26 @@ const Rete = {
     return m;
   },
 
+  // QUALE INDICATORE GUIDA LA VISTA. Dipende dalla fonte, e non e' un
+  // dettaglio estetico: lo snapshot open data dice chi c'e' DENTRO il pronto
+  // soccorso (attesa + trattamento + osservazione) e quindi permette di
+  // calcolare la pressione; il feed in tempo reale della Regione pubblica solo
+  // la CODA e i tempi di attesa veri, quindi la pressione non esiste e la
+  // colonna resterebbe vuota. In quel caso la vista si regge sulla sofferenza,
+  // che in live e' anzi misurata invece che stimata.
+  guida(meta){
+    return (meta && meta.solo_coda)
+      ? { campo: "sofferenza_relativa", titolo: "Sofferenza", sub: "× mediana rete" }
+      : { campo: "pressione_relativa", titolo: "Pressione", sub: "× mediana rete" };
+  },
+
   // NB: si usa SEMPRE pressione_relativa, mai la pressione grezza.
   // La grezza vale 3-15 al picco delle 16:58 (e' il rapporto con la media
   // annua), quindi con queste soglie sarebbe tutto rosso e indistinguibile.
   // La relativa e' calibrata sulla mediana della rete: 1.0 = come il presidio
   // mediano adesso, ed e' la scala a cui si riferisce la soglia di allarme.
-  coloreMarker(p){
-    const v = p.pressione_relativa;
+  coloreMarker(p, campo){
+    const v = p[campo || "pressione_relativa"];
     if (v === null || v === undefined) return "#9e9e9e";
     if (v < 1.0) return "#1e7d34";
     if (v < 1.5) return "#c9a227";
@@ -461,7 +500,8 @@ const Rete = {
     stato.innerHTML = caricamentoHtml("Caricamento rete…");
     errBox.innerHTML = "";
     try {
-      const dati = await chiamaApi(`/api/rete?ordine=${encodeURIComponent(ordine)}`);
+      const dati = await chiamaApi(
+        `/api/rete?ordine=${encodeURIComponent(ordine)}&fonte=${encodeURIComponent(FONTE.corrente())}`);
       this.ultimaRisposta = dati;
       stato.innerHTML = "";
       this.render(dati);
@@ -473,18 +513,37 @@ const Rete = {
 
   popolaSelect(ordinamenti, ordineCorrente){
     const sel = document.getElementById("ordine-select");
-    if (sel.dataset.popolato === "1") return;
+    // Ripopolare quando cambia la fonte: il tempo reale offre meno
+    // ordinamenti, e un'opzione rimasta li' dalla fonte precedente
+    // chiederebbe al server un campo che in questa modalita' non esiste.
+    if (sel.dataset.popolato === FONTE.corrente()) return;
     sel.innerHTML = Object.entries(ordinamenti).map(([chiave, etichetta]) =>
       `<option value="${esc(chiave)}" ${chiave === ordineCorrente ? "selected" : ""}>${esc(etichetta)}</option>`
     ).join("");
-    sel.dataset.popolato = "1";
-    sel.addEventListener("change", () => this.carica(sel.value));
+    sel.dataset.popolato = FONTE.corrente();
+    if (!sel.dataset.collegato) {
+      sel.dataset.collegato = "1";
+      sel.addEventListener("change", () => this.carica(sel.value));
+    }
   },
 
   render(dati){
     const { meta, ordinamenti, presidi } = dati;
+    const guida = this.guida(meta);
+    document.getElementById("col-guida").textContent = guida.titolo;
+    // Con il feed live la seconda colonna smette di essere un rapporto e
+    // diventa il tempo di attesa vero: e' un dato migliore, va detto.
+    document.getElementById("col-seconda").textContent =
+      meta.solo_coda ? "Attesa media reale" : "Sofferenza";
+    document.getElementById("col-seconda-sub").textContent =
+      meta.solo_coda ? "pubblicata dalla Regione" : "× mediana rete";
     this.popolaSelect(ordinamenti, meta.ordine ? meta.ordine.chiave : "pressione");
     document.getElementById("rete-meta").innerHTML = metaBarHtml(meta);
+    // Il piede pagina dichiara la fonte: cambiarla e lasciare scritto
+    // "snapshot" sarebbe la bugia piu' facile da fare e da farsi scoprire.
+    document.getElementById("piede").textContent = meta.solo_coda
+      ? "REGIA — cruscotto dimostrativo. Stato dei pronto soccorso in tempo reale dall'API di Salute Lazio."
+      : "REGIA — cruscotto dimostrativo. I dati di rete provengono da uno snapshot regionale del 15/07/2021, non dal tempo reale.";
 
     const righe = [
       { num: fmtInt(meta.in_allarme), lbl: "presidi in allarme", bad: meta.in_allarme > 0 },
@@ -498,7 +557,7 @@ const Rete = {
     // tabella, nell'ordine gia' fornito dal server
     const tbody = document.getElementById("rete-tbody");
     tbody.innerHTML = presidi.map(p => {
-      const vp = p.pressione_relativa;
+      const vp = p[guida.campo];
       const classePress = (vp === null || vp === undefined) ? "press-null"
         : vp < 1.0 ? "press-verde"
         : vp < 1.5 ? "press-giallo"
@@ -506,9 +565,9 @@ const Rete = {
       return `<tr data-codice="${esc(p.codice)}" class="${p.codice === this.codiceSelezionato ? "selezionata" : ""}">
         <td>${p.in_allarme ? '<span class="dot-allarme" title="in allarme"></span>' : ""}${esc(p.nome)}</td>
         <td>${esc(p.tipo)}</td>
-        <td class="press-tag ${classePress}">${fmt(p.pressione_relativa, 2)}</td>
-        <td>${fmt(p.sofferenza_relativa, 2)}</td>
-        <td>${fmtInt(p.in_attesa)}</td>
+        <td class="press-tag ${classePress}">${fmt(vp, 2)}</td>
+        <td>${meta.solo_coda ? (p.attesa_h === null || p.attesa_h === undefined ? "—" : fmt(p.attesa_h, 2) + " h") : fmt(p.sofferenza_relativa, 2)}</td>
+        <td>${fmtInt(p.in_attesa)}${p.senza_dato ? ' <span class="pill pill-warn">non trasmette</span>' : ""}</td>
         <td>${fmt(p.carico_deviabile, 1)}</td>
       </tr>`;
     }).join("");
@@ -523,14 +582,15 @@ const Rete = {
     const puntiValidi = [];
     presidi.forEach(p => {
       if (p.lat === null || p.lon === null || p.lat === undefined || p.lon === undefined) return;
-      const colore = this.coloreMarker(p);
+      const colore = this.coloreMarker(p, guida.campo);
       const marker = L.circleMarker([p.lat, p.lon], {
         radius: p.in_allarme ? 10 : 7,
         color: p.in_allarme ? "#c02626" : colore,
         weight: p.in_allarme ? 3 : 1.5,
         fillColor: colore, fillOpacity: .85,
       }).addTo(map);
-      marker.bindTooltip(`${esc(p.nome)} — pressione ${fmt(p.pressione_relativa, 2)}× la mediana della rete`);
+      marker.bindTooltip(`${esc(p.nome)} — ${guida.titolo.toLowerCase()} ${fmt(p[guida.campo], 2)}× la mediana della rete`
+        + (meta.solo_coda && p.attesa_h != null ? ` · attesa reale ${fmt(p.attesa_h, 2)} h` : ""));
       marker.on("click", () => this.seleziona(p.codice));
       this.layerMarker[p.codice] = marker;
       puntiValidi.push([p.lat, p.lon]);
@@ -562,11 +622,19 @@ const Rete = {
   },
 
   renderPannello(p){
+    const meta = (this.ultimaRisposta && this.ultimaRisposta.meta) || {};
+    const soloCoda = !!meta.solo_coda;
     const campi = [
-      ["Presenti", fmtInt(p.presenti)], ["In attesa", fmtInt(p.in_attesa)],
+      // In tempo reale la fonte pubblica solo la coda: dire "presenti" un
+      // numero che conta i soli pazienti in attesa sarebbe falso.
+      [soloCoda ? "Presenti (non pubblicato)" : "Presenti",
+       soloCoda ? "—" : fmtInt(p.presenti)],
+      ["In attesa", fmtInt(p.in_attesa)],
       ["Carico pesato", fmt(p.carico_pesato, 1)], ["Occupazione attesa", fmt(p.occupazione_attesa, 1)],
       ["Pressione (× mediana rete)", fmt(p.pressione_relativa, 2)],
       ["Sofferenza (× mediana rete)", fmt(p.sofferenza_relativa, 2)],
+      [p.attesa_misurata ? "Attesa media PUBBLICATA dalla Regione"
+                         : "Attesa stimata dalla coda", p.attesa_h == null ? "—" : fmt(p.attesa_h, 2) + " h"],
       ["Posti residui", fmt(p.posti_residui, 1)],
       ["Throughput (paz/h)", fmt(p.throughput_h, 2)], ["Attesa implicita (h)", fmt(p.attesa_implicita_h, 2)],
       ["Deviabili osservati", fmtInt(p.deviabili_osservati)],
@@ -594,7 +662,7 @@ const Rete = {
     btn.disabled = true;
     box.innerHTML = caricamentoHtml("Generazione del piano in corso (può richiedere fino a 10 secondi la prima volta)…");
     try {
-      const dati = await chiamaApi(`/api/piano?codice=${encodeURIComponent(codice)}`);
+      const dati = await chiamaApi(`/api/piano?codice=${encodeURIComponent(codice)}&fonte=${encodeURIComponent(FONTE.corrente())}`);
       this.renderPiano(dati);
     } catch (e) {
       box.innerHTML = erroreHtml(e.message);
@@ -719,7 +787,7 @@ const Centrale = {
     const lon = document.getElementById("chiamata-lon").value || ROMA.lon;
     esito.innerHTML = caricamentoHtml("Analisi della chiamata in corso (può richiedere fino a 10 secondi)…");
     try {
-      const dati = await chiamaApi(`/api/triage?testo=${encodeURIComponent(testo)}&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`);
+      const dati = await chiamaApi(`/api/triage?testo=${encodeURIComponent(testo)}&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&fonte=${encodeURIComponent(FONTE.corrente())}`);
       this.render(dati);
     } catch (e) {
       esito.innerHTML = erroreHtml(e.message);
@@ -844,7 +912,7 @@ const Cittadino = {
     esito.innerHTML = caricamentoHtml("Analisi in corso (può richiedere fino a 10 secondi)…");
     try {
       const { lat, lon } = this.posizione;
-      const dati = await chiamaApi(`/api/cittadino?sintomo=${encodeURIComponent(sintomo)}&lat=${lat}&lon=${lon}`);
+      const dati = await chiamaApi(`/api/cittadino?sintomo=${encodeURIComponent(sintomo)}&lat=${lat}&lon=${lon}&fonte=${encodeURIComponent(FONTE.corrente())}`);
       this.render(dati);
     } catch (e) {
       esito.innerHTML = "";
@@ -957,6 +1025,18 @@ const Cittadino = {
 /* =========================================================================
    Avvio
    ========================================================================= */
+FONTE.init(() => {
+  // Cambiare fonte cambia gli indici disponibili, quindi la vista si ricarica
+  // con l'ordinamento corrente. Se si stava ordinando per pressione e si passa
+  // al tempo reale (dove la pressione non esiste), si scivola sulla sofferenza.
+  const sel = document.getElementById("ordine-select");
+  let ordine = sel && sel.value ? sel.value : "pressione";
+  if (FONTE.corrente() === "live" && (ordine === "pressione" || ordine === "presenti")) {
+    ordine = "sofferenza";
+    if (sel) sel.value = ordine;
+  }
+  Rete.carica(ordine);
+});
 Rete.carica("pressione");
 Centrale.initUi();
 Centrale.initMappa();

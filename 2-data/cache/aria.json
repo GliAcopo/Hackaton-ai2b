@@ -1,22 +1,6 @@
 {
-  "4309b0e1b452933f07d9": {
-    "ts": 1789033660.0071902,
-    "dati": {
-      "pm10": 13.6,
-      "pm2_5": 8.0,
-      "aqi_europeo": 29,
-      "pollini": {
-        "graminacee": 0.0,
-        "olivo": 0.0,
-        "ambrosia": 0.4,
-        "ontano": 0.0,
-        "betulla": 0.0
-      },
-      "rilevato_il": "2026-09-10T11:00"
-    }
-  },
   "fbd8a4e6289ef55f83fc": {
-    "ts": 1789034643.2674754,
+    "ts": 1789037693.1270177,
     "dati": {
       "pm10": 12.1,
       "pm2_5": 7.6,
@@ -25,6 +9,22 @@
         "graminacee": 0.0,
         "olivo": 0.0,
         "ambrosia": 0.2,
+        "ontano": 0.0,
+        "betulla": 0.0
+      },
+      "rilevato_il": "2026-09-10T12:00"
+    }
+  },
+  "306cbfc8cb8eb83174e9": {
+    "ts": 1789036795.1273808,
+    "dati": {
+      "pm10": 11.3,
+      "pm2_5": 6.8,
+      "aqi_europeo": 32,
+      "pollini": {
+        "graminacee": 0.0,
+        "olivo": 0.0,
+        "ambrosia": 1.3,
         "ontano": 0.0,
         "betulla": 0.0
       },
