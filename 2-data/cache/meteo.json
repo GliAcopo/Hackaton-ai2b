@@ -1,0 +1,58 @@
+{
+  "443351f1fc1cde77802d": {
+    "ts": 1789033659.5952878,
+    "dati": {
+      "temperatura_c": 24.3,
+      "percepita_c": 27.6,
+      "umidita_pct": 82,
+      "precipitazione_mm": 0.0,
+      "vento_kmh": 7.2,
+      "codice_meteo": 3,
+      "rilevato_il": "2026-09-10T11:45"
+    }
+  },
+  "0d79a4a2070339d4012c": {
+    "ts": 1789033660.0068958,
+    "dati": {
+      "t_max_c": 28.0,
+      "t_min_c": 18.7,
+      "percepita_max_c": 28.2,
+      "precipitazione_mm": 0.0,
+      "data": "2021-07-15"
+    }
+  },
+  "d6221dc7be9f55ea0614": {
+    "ts": 1789034429.2143323,
+    "dati": {
+      "temperatura_c": 25.0,
+      "percepita_c": 28.5,
+      "umidita_pct": 78,
+      "precipitazione_mm": 0.0,
+      "vento_kmh": 6.2,
+      "codice_meteo": 3,
+      "rilevato_il": "2026-09-10T12:00"
+    }
+  },
+  "724650ddd993ee586cba": {
+    "ts": 1789034643.052477,
+    "dati": {
+      "temperatura_c": 24.6,
+      "percepita_c": 28.0,
+      "umidita_pct": 81,
+      "precipitazione_mm": 0.0,
+      "vento_kmh": 7.7,
+      "codice_meteo": 3,
+      "rilevato_il": "2026-09-10T12:00"
+    }
+  },
+  "647c611082b17fb7cb14": {
+    "ts": 1789034643.647142,
+    "dati": {
+      "t_max_c": 28.0,
+      "t_min_c": 18.7,
+      "percepita_max_c": 28.2,
+      "precipitazione_mm": 0.0,
+      "data": "2021-07-15"
+    }
+  }
+}

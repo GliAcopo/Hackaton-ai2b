@@ -1,0 +1,129 @@
+{
+ "24e037a3f835e414755ed66ecdc8505b": {
+  "alternative": [
+   "Contattare la continuità assistenziale (guardia medica) o recarsi presso una delle altre farmacie vicine (es. SAN GIACOMO SNC DI TOMADINI GIUSEPPINA a 0.66 km o ENEI LILIANA a 0.68 km)",
+   "In caso di comparsa di segnali di allarme pediatrici o peggioramento acuto, recarsi al Pronto Soccorso DEA II Bambino Gesù (a 6.2 minuti, 1 persona in attesa) o chiamare il 118"
+  ],
+  "cosa_fare_subito": "Somministrare un antipiretico secondo dosaggio pediatrico consueto, idratare il bambino e monitorarne temperatura e condizioni generali.",
+  "dove": "farmacia",
+  "motivazione": "La febbre insorta da meno di 24 ore senza segni di emergenza/urgenza acuta è gestibile a livello territoriale. Raggiungendo la farmacia LIPPI TULLIA (Via Arenula, 73, a soli 0.65 km), accessibile immediatamente, si evitano gli spostamenti verso l'ospedale e l'attesa in pronto soccorso (dove ci sono da 1 a 22 persone in attesa, come ad es. le 3 persone al San Giovanni Calibita-FBF o le 9 al Santo Spirito), consentendo di ricevere subito un primo supporto farmaceutico in attesa di rintracciare il pediatra o la guardia medica."
+ },
+ "f35855d43f83ec1c79933a2cc262edda": {
+  "azioni_operative": [
+   "Attivazione del protocollo Ares 118 per instradamento selettivo dei nuovi accessi a bassa complessita' (codici bianchi e verdi) verso Madre G. Vannini e Sant'Eugenio.",
+   "Comunicazione al triage del Policlinico Casilino per proposta di reindirizzamento volontario assistito verso Madre G. Vannini.",
+   "Pre-allerta delle caposale e dei triage di Madre G. Vannini e Sant'Eugenio sull'accoglienza dei flussi deviati.",
+   "Rivalutazione a 60 minuti degli indici di pressione di Casilino, Vannini e Sant'Eugenio tramite cruscotto di rete."
+  ],
+  "codici_coinvolti": [
+   "bianchi",
+   "verdi"
+  ],
+  "destinazioni": [
+   {
+    "nome": "Madre G. Vannini",
+    "perche": "Presidio con pressione minima della rete (0.33), elevata capacita' residua (72.1) e prossimita' logistica nel quadrante est di Roma.",
+    "quota": 16
+   },
+   {
+    "nome": "Sant'Eugenio",
+    "perche": "Massima capacita' residua stimata tra i candidati (84.4) con soli 5 pazienti in attesa e pressione sotto la mediana (0.87).",
+    "quota": 8
+   }
+  ],
+  "effetto_domino": "Nessun rischio di allarme indotto: con le quote assegnate (16 a Madre G. Vannini e 8 a Sant'Eugenio), entrambi i presidi rimangono ampiamente al di sotto delle rispettive capacita' residue (72.1 e 84.4) e ben lontani dalla soglia di allarme di 1.5.",
+  "motivazione": "Il Policlinico Casilino e' in forte sovraccarico (pressione 1.74 oltre soglia 1.5, sofferenza storico 2.41, 32 in attesa di cui 29 bianchi/verdi). La deviazione di 24 codici bianchi e verdi alleggerisce il presidio consentendo un recupero fino a 75.2 ore-paziente senza impattare i codici a maggiore complessita'.",
+  "quota_da_deviare": 24,
+  "urgenza": 4
+ },
+ "41abf0778cfdd3ad8d8609d8643bc7a9": {
+  "azioni_preparatorie": [
+   "Mantenere l'ordinario assetto dei Pronto Soccorso e delle postazioni 118, senza necessita' di potenziamenti straordinari.",
+   "Assicurare il corretto funzionamento e il comfort termico degli impianti di climatizzazione/deumidificazione nei reparti di degenza e nelle sale d'attesa.",
+   "Garantire la regolare disponibilita' di farmaci broncodilatatori e presidi per soggetti asmatici o cardiopatici cronici.",
+   "Monitorare l'eventuale variazione dei parametri microclimatici e degli indici di qualita' dell'aria nelle prossime ore."
+  ],
+  "gruppi_vulnerabili": [
+   {
+    "gruppo": "Pazienti con patologie cardiorespiratorie croniche ed anziani fragili",
+    "perche": "L'elevata umidita' relativa (81%) associata a una temperatura percepita di 28.0 C puo' acuire senso di affanno, difficolta' di termoregolazione e spossatezza."
+   },
+   {
+    "gruppo": "Soggetti con forte sensibilita' all'ambrosia",
+    "perche": "Presenza minima ma rilevata di polline di ambrosia (0.2), potenziale causa di lievi sintomi rinitici o irritativi in soggetti altamente sensibilizzati."
+   }
+  ],
+  "messaggio_cittadini": "Le condizioni meteo e la qualita' dell'aria nel Lazio sono complessivamente buone, sebbene l'elevata umidita' possa causare un leggero disagio alle persone anziane o fragili. Si raccomanda di arieggiare i locali nelle ore piu' fresche e di bere acqua con regolarita'.",
+  "rischi": [
+   {
+    "effetto_atteso": "Possibile disagio fisiologico moderato e difficolta' di traspirazione, in particolare per anziani o cardiopatici.",
+    "fenomeno": "Elevata umidita' relativa (81%) con temperatura percepita di 28.0 C",
+    "severita": "lieve"
+   },
+   {
+    "effetto_atteso": "Qualita' dell'aria buona (AQI 31, PM10 12.1 ug/m3, PM2.5 7.6 ug/m3); nessun impatto negativo atteso sulla popolazione generale.",
+    "fenomeno": "Qualita' dell'aria favorevole",
+    "severita": "nessuna"
+   },
+   {
+    "effetto_atteso": "Nessun incremento significativo di accessi per reazioni allergiche respiratorie acute.",
+    "fenomeno": "Livelli pollinici trascurabili (ambrosia 0.2, altri assenti)",
+    "severita": "nessuna"
+   }
+  ]
+ },
+ "d7167a75451edbcb6af63021ca980eb4": {
+  "codice": "rosso",
+  "dea_ii_richiesto": true,
+  "paziente_pediatrico": false,
+  "red_flags": [
+   "dolore toracico irradiato al braccio sinistro",
+   "sudorazione fredda"
+  ],
+  "sintesi": "Uomo di 62 anni a Torre Angela con dolore toracico irradiato al braccio sinistro e sudorazione fredda, quadro altamente sospetto per sindrome coronarica acuta. Richiesto invio immediato di mezzo di soccorso avanzato (MSA) con tele-ECG e centralizzazione verso DEA con emodinamica attiva.",
+  "sintomi": [
+   "dolore al petto",
+   "irradiazione al braccio sinistro",
+   "sudorazione fredda"
+  ]
+ },
+ "1561fb7191d67d802d560a9fe6bfaf83": {
+  "codice": "verde",
+  "dea_ii_richiesto": false,
+  "paziente_pediatrico": false,
+  "red_flags": [],
+  "sintesi": "Donna di 34 anni con trauma isolato alla caviglia ed edema post-caduta, senza compromissione dei parametri vitali. Quadro a bassa complessità/urgenza differibile, gestibile presso PS o DEA di I livello della rete territoriale.",
+  "sintomi": [
+   "caviglia gonfia",
+   "difficoltà nella deambulazione"
+  ]
+ },
+ "90bfe21042bd6d52a71e0c48262c90a8": {
+  "codice": "bianco",
+  "dea_ii_richiesto": false,
+  "paziente_pediatrico": true,
+  "red_flags": [],
+  "sintesi": "Bambino di 6 anni con febbre da ieri sera, vigile, reattivo, beve e gioca regolarmente. Quadro non urgente a bassa priorità gestibile dal pediatra di libera scelta o continuità assistenziale.",
+  "sintomi": [
+   "febbre 38.5"
+  ]
+ },
+ "8200f60c644cda09338fe29125634a37": {
+  "alternative": [
+   "San Giovanni Calibita-FBF (DEA I, 10 minuti, 3 persone in attesa)",
+   "Santo Spirito (DEA I, 10 minuti, 9 persone in attesa)"
+  ],
+  "cosa_fare_subito": "Idratare il bambino, monitorare la temperatura e le condizioni generali nell'attesa di una valutazione clinica.",
+  "dove": "pronto_soccorso",
+  "motivazione": "Trattandosi di un paziente pediatrico con febbre e pediatra non reperibile, e non essendoci presidi territoriali geolocalizzati nel raggio utile, la scelta più indicata è il Pronto Soccorso pediatrico del Bambino Gesù (DEA II), situato a 10 minuti di distanza e con 1 sola persona in attesa. In caso di peggioramento delle condizioni generali o comparsa di segni di allarme, chiamare immediatamente il 118."
+ },
+ "9f0b6d66b99ca34558cf26490ac3e7e0": {
+  "alternative": [
+   "Santo Spirito (DEA I, 10 min, 9 persone in attesa)",
+   "San Giovanni Addolorata (DEA II, 10 min, 12 persone in attesa)"
+  ],
+  "cosa_fare_subito": "Applica ghiaccio sulla caviglia, tienila a riposo sollevata ed evita di caricarvi peso sopra.",
+  "dove": "pronto_soccorso",
+  "motivazione": "Poiché non sono presenti presidi territoriali geolocalizzati nel raggio, il livello di assistenza adeguato per una valutazione ortopedica/radiologica è il Pronto Soccorso. La struttura più efficiente per un adulto tra quelle disponibili a pari distanza (10 minuti) è il San Giovanni Calibita-FBF (DEA I), che presenta la coda minore con sole 3 persone in attesa (il Bambino Gesù è un presidio pediatrico)."
+ }
+}
