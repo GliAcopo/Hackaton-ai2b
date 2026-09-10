@@ -9,7 +9,7 @@ rimossa dall'app. Restano due viste: **Rete** e **Cittadino**.
 
 ## I limiti, dichiarati prima di tutto
 
-- REGIA non fa diagnosi e non assegna un codice di triage validato: aiuta a
+- SubitoSalute Lazio non fa diagnosi e non assegna un codice di triage validato: aiuta a
   capire quale canale può essere appropriato, la decisione clinica resta a un
   professionista.
 - Non stimiamo il tempo risparmiato: non abbiamo un dato comparabile per
@@ -33,7 +33,7 @@ Una persona con un problema di salute, o con una prestazione già indicata da
 un professionista, deve scegliere tra pronto soccorso, farmacia, continuità
 assistenziale (116117) o una struttura territoriale. Le informazioni per
 decidere esistono ma sono sparse tra fonti diverse, con formati e aggiornamenti
-non omogenei. REGIA le centralizza per spiegare le alternative reali e ciò che
+non omogenei. SubitoSalute Lazio le centralizza per spiegare le alternative reali e ciò che
 resta da verificare, senza promettere la cura migliore in assoluto. Il
 pubblico è chi descrive un sintomo e chi cerca già una prestazione: residenti,
 visitatori, genitori e caregiver, con domande che si adattano al contesto

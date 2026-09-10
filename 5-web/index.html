@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>REGIA — Rete e orientamento alla cura</title>
+<title>SubitoSalute Lazio — orientamento alla cura</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
   :root{
@@ -61,7 +61,7 @@
 </head>
 <body>
 <header class="topbar">
-  <div class="brand"><span class="logo">🏥</span><h1>REGIA</h1><span class="sottotitolo">Rete e orientamento alla cura — Lazio</span></div>
+  <div class="brand"><span class="logo">🏥</span><h1>SubitoSalute</h1><span class="sottotitolo">Lazio — orientamento alla cura</span></div>
   <nav class="tabs" role="tablist" aria-label="Sezioni principali">
     <button class="tab-btn active" data-tab="rete" type="button">Rete</button>
     <button class="tab-btn" data-tab="cittadino" type="button">Cittadino</button>
@@ -84,7 +84,7 @@
     </div>
   </section>
 </main>
-<footer>REGIA — orientamento e informazioni con fonti e limiti espliciti.</footer>
+<footer>SubitoSalute Lazio — orientamento e informazioni con fonti e limiti espliciti.</footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 "use strict";
@@ -109,7 +109,7 @@ document.querySelectorAll(".tab-btn").forEach(b=>b.addEventListener("click",()=>
 
 const Rete={
   ultima:null,selezionato:null,marker:{},legenda:{},posizione:null,markerPosizione:null,cerchioPrecisione:null,fonte:"snapshot",ordine:null,
-  initMappa(){if(mappe.rete)return mappe.rete;const m=L.map("mappa-rete").setView([41.9,12.6],8);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"&copy; contributori OpenStreetMap"}).addTo(m);mappe.rete=m;return m;},
+  initMappa(){if(mappe.rete)return mappe.rete;const m=L.map("mappa-rete",{scrollWheelZoom:false}).setView([41.9,12.6],8);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"&copy; contributori OpenStreetMap"}).addTo(m);mappe.rete=m;return m;},
   async carica(ordine){const stato=document.getElementById("rete-stato-caricamento");stato.innerHTML=caricamentoHtml("Caricamento rete…");setErrore("rete-errore","");const params=new URLSearchParams({fonte:this.fonte});if(ordine)params.set("ordine",ordine);try{const dati=await chiamaApi(`/api/rete?${params.toString()}`);this.ultima=dati;stato.innerHTML="";this.render(dati);}catch(e){stato.innerHTML="";setErrore("rete-errore",e.message);}},
   popolaOrdinamenti(ordinamenti){const sel=document.getElementById("ordine-select");const entries=Object.entries(objOf(ordinamenti));const scelto=this.ultima&&this.ultima.meta&&this.ultima.meta.ordine?this.ultima.meta.ordine.chiave:(this.ordine||(entries[0]&&entries[0][0]));sel.innerHTML=[[false,"Dove la situazione è più critica"],[true,"Dove conviene andare"]].map(([meno,label])=>`<optgroup label="${label}">${entries.filter(([k])=>k.startsWith("meno_")===meno).map(([k,v])=>`<option value="${esc(k)}" ${k===scelto?"selected":""}>${esc(v)}</option>`).join("")}</optgroup>`).join("");this.ordine=sel.value||null;document.getElementById("rete-avviso-ordine").hidden=!String(this.ordine||"").startsWith("meno_");const keys=entries.map(([k])=>k);[["rete-piu-critici",keys.includes("pressione")?"pressione":"sofferenza"],["rete-meno-coda","meno_coda"]].forEach(([id,key])=>{const b=document.getElementById(id);b.disabled=!keys.includes(key);b.setAttribute("aria-pressed",String(this.ordine===key));b.onclick=()=>{sel.value=key;sel.dispatchEvent(new Event("change"));};});if(!sel.dataset.collegato){sel.dataset.collegato="1";sel.addEventListener("change",()=>{this.ordine=sel.value;this.carica(this.ordine);});}},
   indicatore(p){const fasce=arrayOf(this.legenda.colori).filter(x=>x&&typeof x==="object");const v=p.senza_dato?null:p.pressione_relativa;if(fasce.length){const fascia=v===null||v===undefined?fasce.find(x=>x.classe==="assente"):fasce.find(x=>x.classe!=="assente"&&(x.fino_a===null||(typeof x.fino_a==="number"&&v<x.fino_a)));return (fascia&&fascia.colore)||"#8b929b";}if(v===null||v===undefined)return "#8b929b";return v<1?"#1e7d34":v<1.5?"#c9a227":v<2?"#d2691e":"#c02626";},

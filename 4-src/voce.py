@@ -69,7 +69,7 @@ AGY_SUPPORTA_AUDIO = False
 # Modello predefinito per faster-whisper (se installato nell'ambiente).
 REGIA_WHISPER_MODEL = os.environ.get("REGIA_WHISPER_MODEL", "small")
 
-# faster-whisper non e' installato nell'ambiente che esegue REGIA: sta in un
+# faster-whisper non e' installato nell'ambiente che esegue SubitoSalute Lazio: sta in un
 # virtualenv separato dell'utente. Importarlo aggiungendo quel site-packages a
 # sys.path funzionerebbe finche' le dipendenze binarie (ctranslate2, av,
 # onnxruntime) restano compatibili, e smetterebbe di funzionare senza preavviso

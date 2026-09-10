@@ -1,10 +1,10 @@
-# REGIA: valore per il cittadino e lista di implementazioni
+# SubitoSalute Lazio: valore per il cittadino e lista di implementazioni
 
 Decisioni concordate il 10 settembre 2026. Questo documento specifica il lavoro da fare; le caselle aperte non indicano funzionalità già implementate. Non è una timeline.
 
 ## Proposta di valore
 
-REGIA centralizza informazioni sanitarie e territoriali per aiutare il cittadino a trovare un percorso di assistenza appropriato e concretamente accessibile, spiegando le alternative e ciò che resta da verificare.
+SubitoSalute Lazio centralizza informazioni sanitarie e territoriali per aiutare il cittadino a trovare un percorso di assistenza appropriato e concretamente accessibile, spiegando le alternative e ciò che resta da verificare.
 
 L'app serve sia chi descrive un sintomo sia chi ha già una prestazione da cercare. È destinata a residenti, visitatori, genitori e caregiver: il contesto individuale modifica le domande, senza restringere il pubblico a una sola categoria.
 

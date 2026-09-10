@@ -11,7 +11,7 @@ Perimetro corrente: vedi [VALORE_CITTADINO_IMPLEMENTAZIONI.md](VALORE_CITTADINO_
 ## Obiettivo in una frase
 
 > Per il **cittadino nel Lazio** che deve orientarsi tra pronto soccorso,
-> farmacia, continuità assistenziale e strutture territoriali, REGIA confronta
+> farmacia, continuità assistenziale e strutture territoriali, SubitoSalute Lazio confronta
 > **le opzioni reali della rete sanitaria** usando **i dati ufficiali su
 > presidi, apparecchiature, farmacie e ambiente** e l'IA per **porre le
 > domande giuste e spiegare perché un'opzione è compatibile e un'altra no**,

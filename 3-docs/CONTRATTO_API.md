@@ -1,4 +1,4 @@
-# Contratto API di REGIA — v2 (perimetro «valore per il cittadino»)
+# Contratto API di SubitoSalute Lazio — v2 (perimetro «valore per il cittadino»)
 
 Congelato il 2026-09-10. Sostituisce il contratto v1 (che aveva `/api/piano`,
 `/api/triage`, `/api/simula`: **rimossi**, la gestione operativa del 118, il
